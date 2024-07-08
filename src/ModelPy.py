@@ -19,7 +19,7 @@ import base64
 # hide EDA
 show_eda = False
 
-running_locally = True
+running_locally = False
 if running_locally:
     resources_folder = 'karma/resources'
 else:
