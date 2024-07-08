@@ -174,11 +174,9 @@ st.subheader('Feedback')
 satva_choice = st.selectbox('Satva', ('Dominant', 'High', 'Moderate', 'Low'))
 tamas_choice = st.selectbox('Tamas', ('Low', 'Moderate', 'High', 'Dominant'))
 
-st.subheader('Improving Karma Coordinates')
+st.subheader('Include your zodiac sign and horoscope in calculations')
 
-st.subheader('Including zodiac sign and horoscope in calculations')
-
-st.subheader('Recommended life-style improvement resources')
+st.subheader('Improve Karma Coordinates')
 
 
 # Option to download the result as PDF
