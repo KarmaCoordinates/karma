@@ -5,13 +5,14 @@ import itertools
 
 
 def karma_coordinates_label(row):
+    remaining_human_lives = round(row['karma_coordinates'])
     if row['karma_coordinates'] > 11:
-        return "Ahead by 85% or more! Gunas=Satva=Dominant, Tamas=Low"
+        return f'Score: {remaining_human_lives}/13 (Nearing Moksha). Satva=Dominant, Tamas=Low'
     if row['karma_coordinates'] > 9:
-        return "Ahead by 70% or more! Gunas=Satva=High, Tamas=Moderate"
+        return f'Score: {remaining_human_lives}/13 (Highly evolved). Gunas=Satva=High, Tamas=Moderate'
     if row['karma_coordinates'] > 5:
-        return "Ahead by about 40% or more! Gunas=Satva=Moderate, Tamas=High"
-    return "Ahead by 5 or more! Gunas=Satva=Low, Tamas=Dominant"
+        return f'Score: {remaining_human_lives}/13 (Moderately evolved). Gunas=Satva=Moderate, Tamas=High'
+    return f'Score: {remaining_human_lives}/13 (Evolving). Gunas=Satva=Low, Tamas=Dominant'
 
 
 
@@ -67,7 +68,10 @@ df = pd.merge(negative_emotions_df,
         how="cross"),
     how="cross")
 
+# Scale the calculated level
 df['scaled_level'] = df.apply(calculate_level, axis = 1)
+
+# Transform scale to 1-13 billion year or 1-13 million human lives
 df = df.loc[:, ~df.columns.str.match('.*_weight')]
 minkc = 1
 maxkc = 13
@@ -80,6 +84,6 @@ chunk_size = 70000
 num_chunks = len(df) // chunk_size + 1
 
 for i, chunk in enumerate(np.array_split(df, num_chunks)):
-    chunk.to_csv(f'kc3_synthout_chunk_{i}.csv', index=False)
+    chunk.to_csv(f'karma/resources/kc3_synthout_chunk_{i}.csv', index=False)
 
 
