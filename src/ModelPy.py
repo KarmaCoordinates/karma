@@ -66,7 +66,7 @@ Our mind and bodies are enabled by Rajas.
 has the highest Tamas.  
 '''
 
-st.text(txt)
+st.markdown(txt)
 
 # Load the data
 df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
