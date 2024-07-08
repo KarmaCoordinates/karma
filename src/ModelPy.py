@@ -15,13 +15,50 @@ import matplotlib.pyplot as plt
 from fpdf import FPDF
 import base64
 
+# hide EDA
+show_eda = False
+
+st.title('Karma Coordinates Prediction App')
+
+# web content
+st.image('karma/kapil-muni-image.png', caption='Kapil muni 5000 BC')
+
+txt = '''According to Sankhya-yoga Prakriti (the universe) exists for providing
+experiences  to Purush. Purush upon realization that “I exist” is liberated
+(Moksha).  Every life form in Prakriti is engaged in providing experiences to a
+Purush. Once  all Purush are awakened, the Prakriti’s work is complete and it
+collapses into  a singularity and the next cycle is started with a big-bang. As
+per the open model with omega of 6, universe is 6 billion years old and it
+will end when it is about 13 billion years old. That is in another 7
+billion years. (https://en.wikipedia.org/wiki/Ultimate_fate_of_the_universe) 
+A life form comes into an existence due to a microscopic particle in
+nature called as Sukshm. Human life is the only known form of Sukshm that is
+capable of achieving Moksha for its Purush.   Sankhya-yoga quantifies and
+explains attributes (Gunas) and tendencies (Bhavas) that can take a life form
+closer to achieving Moksha.   Karma Coordinates is a fun app developed to
+approximate based on your Gunas and Bhavas your current position in this karmic
+journey of many lives until Moksha.    A score of 5 billion years, means you
+are already at about 11 billion year mark - very near to achieving the
+awakening state. A score of 1 billion years means you are at 7 billion year
+mark, a little bit ahead but can speed it up by certain lifestyle based
+changes.  Karma Coordinates outcome is also explained in terms of three Gunas -
+Satva, Rajas and Tamas:  Satva is the light (Prakash) property in the
+Prakriti. The neural network in our brain - our intellect - has the highest
+Satva. Rajas is the energy property in the Prakriti. It moves mass. It
+activates. Our mind and bodies are enabled by Rajas. Tamas is the mass property
+in the Prakriti - The flesh and bones of our body has highest Tamas.  
+'''
+
+st.text(txt)
+
 # Load the data
-df = pd.read_excel('C:/Users/Acer/Desktop/Karmic_Coords/kc9_output_chunk_0 (1).xlsx')
+df = pd.read_csv('kc3_synthout_chunk_0.csv')
+df = df.drop(columns=['scaled_level', 'karma_coordinates'])
 
 # Overall Statistics
-st.title('Karma Coordinates Prediction App')
-st.subheader('Overall Statistics')
-st.write(df.describe(include='all'))
+if show_eda: 
+    st.subheader('Overall Statistics')
+    st.write(df.describe(include='all'))
 
 # Encode the target variable
 label_encoder = LabelEncoder()
@@ -41,31 +78,37 @@ preprocessor = ColumnTransformer(
         ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
     ])
 
-# Exploratory Data Analysis (EDA)
-st.subheader('Exploratory Data Analysis')
-for col in X.columns:
-    fig, ax = plt.subplots()
-    if col in categorical_cols:
-        sns.countplot(x=df[col], ax=ax)
-        st.pyplot(fig)
-        st.write(f'The plot above shows the distribution of the {col} feature. It represents the count of each category present in the dataset.')
-    else:
-        sns.histplot(df[col], kde=True, ax=ax)
-        st.pyplot(fig)
-        st.write(f'The plot above shows the distribution of the {col} feature. It represents the frequency of different values within this numerical feature. The line indicates the density of the values.')
+# Exploratory Data Analysis (EDA)$
+if show_eda: 
+    st.subheader('Exploratory Data Analysis')
+    for col in X.columns:
+        fig, ax = plt.subplots()
+        if col in categorical_cols:
+            sns.countplot(x=df[col], ax=ax)
+            st.pyplot(fig)
+            st.write(f'The plot above shows the distribution of the {col} feature. It represents the count of each category present in the dataset.')
+        else:
+            sns.histplot(df[col], kde=True, ax=ax)
+            st.pyplot(fig)
+            st.write(f'The plot above shows the distribution of the {col} feature. It represents the frequency of different values within this numerical feature. The line indicates the density of the values.')
 
-# User selects the model
-st.subheader('Modeling')
-model_choice = st.selectbox('Select Model', ('RandomForest', 'LogisticRegression'))
 
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Create a model pipeline based on user choice
-if model_choice == 'RandomForest':
+if show_eda: 
+    # User selects the model
+    st.subheader('Modeling')
+    model_choice = st.selectbox('Select Model', ('RandomForest', 'LogisticRegression'))
+
+    # Create a model pipeline based on user choice
+    if model_choice == 'RandomForest':
+        model = make_pipeline(preprocessor, RandomForestClassifier(random_state=42))
+    elif model_choice == 'LogisticRegression':
+        model = make_pipeline(preprocessor, LogisticRegression(random_state=42))
+
+if show_eda == False:
     model = make_pipeline(preprocessor, RandomForestClassifier(random_state=42))
-elif model_choice == 'LogisticRegression':
-    model = make_pipeline(preprocessor, LogisticRegression(random_state=42))
 
 # Train the model
 model.fit(X_train, y_train)
@@ -76,15 +119,17 @@ accuracy = accuracy_score(y_test, y_pred)
 conf_matrix = confusion_matrix(y_test, y_pred)
 
 # Display model performance
-st.subheader('Model Performance')
-st.write(f'Accuracy: {accuracy:.2f}')
-st.write('Accuracy represents the proportion of correct predictions made by the model out of all predictions. It is a measure of how well the model is performing.')
+if show_eda: 
+    st.subheader('Model Performance')
+    st.write(f'Accuracy: {accuracy:.2f}')
+    st.write('Accuracy represents the proportion of correct predictions made by the model out of all predictions. It is a measure of how well the model is performing.')
 
-st.subheader('Confusion Matrix')
-fig, ax = plt.subplots()
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', ax=ax)
-st.pyplot(fig)
-st.write('The confusion matrix shows the number of correct and incorrect predictions made by the model. Each row represents the actual class, while each column represents the predicted class. The diagonal values indicate correct predictions.')
+if show_eda: 
+    st.subheader('Confusion Matrix')
+    fig, ax = plt.subplots()
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', ax=ax)
+    st.pyplot(fig)
+    st.write('The confusion matrix shows the number of correct and incorrect predictions made by the model. Each row represents the actual class, while each column represents the predicted class. The diagonal values indicate correct predictions.')
 
 # Create input fields for user
 st.subheader('Input Features')
