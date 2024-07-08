@@ -19,12 +19,19 @@ import base64
 # hide EDA
 show_eda = False
 
+running_locally = False
+if running_locally:
+    resources_folder = 'karma/resources'
+else:
+    resources_folder = 'resources'
+
+
 st.title('Karma Coordinates Prediction App')
 
 # web content
-st.image('resources/kapil-muni-image.png', caption='Kapil muni 5000 BC')
+st.image(f'{resources_folder}/kapil-muni-image.png', caption='Kapil muni 5000 BC')
 
-pdf = '<a href="{resources/samkhya-karika.pdf}">pdf</a>'
+pdf = f'<a href="{resources_folder}/samkhya-karika.pdf">pdf</a>'
 
 txt = f'''According to Sankhya-yoga, Prakriti (the universe) exists for providing
 experiences to Purush. Purush upon realization that “I exist” is liberated
@@ -62,7 +69,7 @@ has the highest Tamas.
 st.text(txt)
 
 # Load the data
-df = pd.read_csv('resources/kc3_synthout_chunk_0.csv')
+df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
 df = df.drop(columns=['scaled_level', 'karma_coordinates'])
 
 # Overall Statistics
