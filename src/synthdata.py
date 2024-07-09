@@ -7,12 +7,12 @@ import itertools
 def karma_coordinates_label(row):
     remaining_human_lives = round(row['karma_coordinates'])
     if row['karma_coordinates'] > 11:
-        return f'Score: {remaining_human_lives}/13 (Nearing Moksha). Satva=Dominant, Tamas=Low'
+        return f'{remaining_human_lives}/13 Nearing Moksha. Satva=Dominant, Tamas=Low'
     if row['karma_coordinates'] > 9:
-        return f'Score: {remaining_human_lives}/13 (Highly evolved). Gunas=Satva=High, Tamas=Moderate'
+        return f'{remaining_human_lives}/13 Highly Awakened. Satva=High, Tamas=Moderate'
     if row['karma_coordinates'] > 5:
-        return f'Score: {remaining_human_lives}/13 (Moderately evolved). Gunas=Satva=Moderate, Tamas=High'
-    return f'Score: {remaining_human_lives}/13 (Evolving). Gunas=Satva=Low, Tamas=Dominant'
+        return f'{remaining_human_lives}/13 Moderately Awakened. Satva=Moderate, Tamas=High'
+    return f'{remaining_human_lives}/13 Awakening has started. Satva=Low, Tamas=Dominant'
 
 
 

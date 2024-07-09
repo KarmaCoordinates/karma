@@ -26,6 +26,7 @@ def run_app(local_env):
     pdf = functions.create_pdf(input_df, prediction)
     functions.download_pdf(pdf, user_input, prediction_label)
 
+    functions.show_user_feedback()
 
 run_app(False)
 

@@ -68,8 +68,6 @@ def show_eda(df, X, categorical_cols):
             st.pyplot(fig)
             st.write(f'The plot above shows the distribution of the {col} feature. It represents the frequency of different values within this numerical feature. The line indicates the density of the values.')
 
-#print('0')
-
 
 def show_models():
     # User selects the model
@@ -93,9 +91,6 @@ def train_model(X, y, model_choice, _preprocessor):
 
     return model, X_test, y_test
 
-
-
-#print('1')
 
 # Model evaluation
 def model_eval(model, X_test, y_test):
@@ -131,16 +126,12 @@ def show_user_input(df, X, categorical_cols):
 
     return input_df, user_input
 
-#print('2')
-
 # Make prediction
 def make_prediction(model, label_encoder, input_df):
     prediction = model.predict(input_df)
     prediction_label = label_encoder.inverse_transform(prediction)
     return prediction, prediction_label
 
-
-#print('3')
 
 # Display prediction
 def show_prediction(prediction_label):
@@ -154,10 +145,11 @@ def show_user_feedback():
     satva_choice = st.selectbox('Satva', ('Dominant', 'High', 'Moderate', 'Low'), key='satva_feedback')
     tamas_choice = st.selectbox('Tamas', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback')
 
+def horoscope_calculation():
     st.subheader('Include your zodiac sign and horoscope in calculations')
 
+def improving_karma_coordinates():
     st.subheader('Improve Karma Coordinates')
-
 
 # Option to download the result as PDF
 def create_pdf(input_data, prediction):
