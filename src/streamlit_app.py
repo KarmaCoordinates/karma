@@ -16,10 +16,6 @@ import matplotlib.pyplot as plt
 from fpdf import FPDF
 import base64
 
-
-# locally or web
-running_locally = True
-
 def write_content(resources_folder):
     # title
     st.title('Karma Coordinates Calculator App')
@@ -234,7 +230,7 @@ def download_pdf(pdf, user_input, prediction_label):
         st.markdown(href, unsafe_allow_html=True)
 
 
-def main(show_eda, local_env):
+def run_app(show_eda, local_env):
     # hide EDA
     show_eda = False
     if local_env:
@@ -269,4 +265,4 @@ def main(show_eda, local_env):
     download_pdf(pdf, user_input, prediction_label)
 
 
-main(False, False)
+run_app(False, False)
