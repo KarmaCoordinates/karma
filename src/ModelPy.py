@@ -74,32 +74,39 @@ st.markdown(txt)
 def load_data():
     df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
     df = df.drop(columns=['scaled_level', 'karma_coordinates'])
-    return df
 
-df = load_data()
+    # Encode the target variable
+    label_encoder = LabelEncoder()
+    df['karma_coordinates_label'] = label_encoder.fit_transform(df['karma_coordinates_label'])
+
+    # Split the data into features and target
+    X = df.drop(columns=['karma_coordinates_label'])
+    y = df['karma_coordinates_label']
+
+    return df, X, y, label_encoder
+
+df, X, y, label_encoder = load_data()
 
 # Overall Statistics
 if show_eda: 
     st.subheader('Overall Statistics')
     st.write(df.describe(include='all'))
 
-# Encode the target variable
-label_encoder = LabelEncoder()
-df['karma_coordinates_label'] = label_encoder.fit_transform(df['karma_coordinates_label'])
-
-# Split the data into features and target
-X = df.drop(columns=['karma_coordinates_label'])
-y = df['karma_coordinates_label']
 
 # Encode categorical features
-categorical_cols = X.select_dtypes(include=['object']).columns
-numeric_cols = X.select_dtypes(include=['number']).columns
+@st.cache_data
+def encode_features():
+    categorical_cols = X.select_dtypes(include=['object']).columns
+    numeric_cols = X.select_dtypes(include=['number']).columns
 
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', SimpleImputer(strategy='mean'), numeric_cols),
-        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
-    ])
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', SimpleImputer(strategy='mean'), numeric_cols),
+            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
+        ])
+    return categorical_cols, numeric_cols, preprocessor
+
+categorical_cols, numeric_cols, preprocessor = encode_features()
 
 # Exploratory Data Analysis (EDA)$
 if show_eda: 
@@ -115,14 +122,20 @@ if show_eda:
             st.pyplot(fig)
             st.write(f'The plot above shows the distribution of the {col} feature. It represents the frequency of different values within this numerical feature. The line indicates the density of the values.')
 
+#print('0')
 
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+model_choice = 'RandomForest'
 if show_eda: 
     # User selects the model
     st.subheader('Modeling')
     model_choice = st.selectbox('Select Model', ('RandomForest', 'LogisticRegression'))
+
+
+@st.cache_data
+def train_model():
+        # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Create a model pipeline based on user choice
     if model_choice == 'RandomForest':
@@ -130,11 +143,15 @@ if show_eda:
     elif model_choice == 'LogisticRegression':
         model = make_pipeline(preprocessor, LogisticRegression(random_state=42))
 
-if show_eda == False:
-    model = make_pipeline(preprocessor, RandomForestClassifier(random_state=42))
+    # Train the model
+    model.fit(X_train, y_train)
 
-# Train the model
-model.fit(X_train, y_train)
+    return model, X_test, y_test
+
+
+model, X_test, y_test = train_model()
+
+#print('1')
 
 # Model evaluation
 y_pred = model.predict(X_test)
@@ -166,9 +183,14 @@ for col in X.columns:
 # Convert user input to DataFrame
 input_df = pd.DataFrame(user_input, index=[0])
 
+#print('2')
+
 # Make prediction
 prediction = model.predict(input_df)
 prediction_label = label_encoder.inverse_transform(prediction)
+
+
+#print('3')
 
 # Display prediction
 st.subheader('AI prediction')
