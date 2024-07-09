@@ -27,6 +27,7 @@ def run_app(local_env):
     functions.download_pdf(pdf, user_input, prediction_label)
 
     functions.show_user_feedback()
+    web_content.request_feedback_note()
 
 run_app(False)
 
