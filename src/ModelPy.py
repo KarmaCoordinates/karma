@@ -19,14 +19,15 @@ import base64
 # hide EDA
 show_eda = False
 
+# locally or web
 running_locally = False
 if running_locally:
     resources_folder = 'karma/resources'
 else:
     resources_folder = 'resources'
 
-
-st.title('Karma Coordinates Prediction App')
+# title
+st.title('Karma Coordinates Calculator App')
 
 # web content
 st.image(f'{resources_folder}/kapil-muni-image.png', caption='Kapil muni 5000 BC')
@@ -69,8 +70,13 @@ has the highest Tamas.
 st.markdown(txt)
 
 # Load the data
-df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
-df = df.drop(columns=['scaled_level', 'karma_coordinates'])
+@st.cache_data
+def load_data():
+    df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
+    df = df.drop(columns=['scaled_level', 'karma_coordinates'])
+    return df
+
+df = load_data()
 
 # Overall Statistics
 if show_eda: 
