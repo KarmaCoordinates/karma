@@ -2,8 +2,8 @@ import functions
 import web_content 
 
 
-def run_app(show_eda, local_env):
-    
+def run_app(local_env):
+
     if local_env:
         resources_folder = 'karma/resources'
     else:
@@ -27,5 +27,5 @@ def run_app(show_eda, local_env):
     functions.download_pdf(pdf, user_input, prediction_label)
 
 
-run_app(False, True)
+run_app(False)
 
