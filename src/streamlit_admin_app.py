@@ -2,8 +2,7 @@ import functions
 import web_content 
 
 
-def run_app(show_eda, local_env):
-    
+def run_app(local_env):
     if local_env:
         resources_folder = 'karma/resources'
     else:
@@ -16,8 +15,15 @@ def run_app(show_eda, local_env):
     df, X, y, label_encoder = functions.load_data(resources_folder)
     categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
 
+
+    functions.show_stats(df)
+    functions.show_eda(df, X, categorical_cols)
+    functions.show_models()
+
     model, X_test, y_test = functions.train_model(X, y, model_choice, preprocessor)
     accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
+
+    functions.model_perf(accuracy, conf_matrix)
 
     input_df, user_input = functions.show_user_input(df, X, categorical_cols)      
     prediction, prediction_label = functions.make_prediction(model, label_encoder, input_df)  
@@ -27,5 +33,5 @@ def run_app(show_eda, local_env):
     functions.download_pdf(pdf, user_input, prediction_label)
 
 
-run_app(False, True)
+run_app(True)
 
