@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 import numpy as np
 import sklearn 
@@ -21,15 +22,15 @@ import base64
 @st.cache_data
 def load_data(resources_folder):
     df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
-    df = df.drop(columns=['scaled_level', 'karma_coordinates'])
+    df = df.drop(columns=['scaled_level'])
 
     # Encode the target variable
     label_encoder = LabelEncoder()
-    df['karma_coordinates_label'] = label_encoder.fit_transform(df['karma_coordinates_label'])
+    df['karma_coordinates'] = label_encoder.fit_transform(round(df['karma_coordinates']))
 
     # Split the data into features and target
-    X = df.drop(columns=['karma_coordinates_label'])
-    y = df['karma_coordinates_label']
+    X = df.drop(columns=['karma_coordinates'])
+    y = df['karma_coordinates']
 
     return df, X, y, label_encoder
 
@@ -132,11 +133,51 @@ def make_prediction(model, label_encoder, input_df):
     prediction_label = label_encoder.inverse_transform(prediction)
     return prediction, prediction_label
 
+def lives_remaining(prediction_label):
+    # 5 billion years, prediction_lables are from 5-13 (in billion years)
+    current_distance = 5 
+    # total number of default human life existences
+    possible_human_existences = 13000000000 / 100 
+    dominant_satva_efficiency = 1000000
+    high_satva_efficiency = 100000
+    moderate_satva_efficiency = 10000
+    low_satva_efficiency = 1000
+    default_human_efficiency = 100
+    # Dominant satva means 1 year of life = 1000000, High satva means 1 year of life = 100000, Moderage satva means 1 year of life = 10000 years, Low satva means 1 year of life = 10 years of progress
+    if prediction_label > 11:
+        satva_multiplier = dominant_satva_efficiency
+    elif prediction_label > 9:
+        satva_multiplier = high_satva_efficiency
+    elif prediction_label > 7:
+        satva_multiplier = moderate_satva_efficiency
+    elif prediction_label > 5:
+        satva_multiplier = low_satva_efficiency
+    else:
+        satva_multiplier = default_human_efficiency
+
+    slope = (prediction_label / current_distance) * (satva_multiplier * prediction_label)
+    remaining_lives = (possible_human_existences / slope)
+    return f'{math.trunc(remaining_lives):,}'
+    #return remaining_lives
+
+def calculate_karma_coordinates(prediction_label):
+    if prediction_label > 11:
+        return f'Nearing Moksha! {lives_remaining(prediction_label)} lives to Moksha. Satva=Dominant, Tamas=Low'
+    elif prediction_label > 9:
+        return f'High Awakening! {lives_remaining(prediction_label)} lives to Moksha. Satva=High, Tamas=Moderate'
+    elif prediction_label > 7:
+        return f'Moderate Awakening! {lives_remaining(prediction_label)} lives to Moksha. Satva=Moderate, Tamas=High'
+    elif prediction_label > 5:
+        return f'Low Awakening! {lives_remaining(prediction_label)} lives to Moksha. Satva=Low, Tamas=Dominant'
+    else:
+        return f'Wake up! {lives_remaining(prediction_label)} lives to Moksha. Satva=Very-Low, Tamas=Dominant'
+
 
 # Display prediction
 def show_prediction(prediction_label):
+    lives_remaining = calculate_karma_coordinates(prediction_label[0])
     st.subheader('AI prediction')
-    st.write(f'# Your Karma Coordinates: **{prediction_label[0]}**')
+    st.write(f'# Your Karma Coordinates: **{lives_remaining}**')
     #st.write('The prediction above indicates the most likely karma coordinates label based on the input features provided.')
 
 # User feedback
