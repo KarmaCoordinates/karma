@@ -25,11 +25,10 @@ def write_content(resources_folder):
     of *Sukshm* that is capable of achieving *Moksha* for its *Purush*. *Sankhya*-yoga 
     quantifies and explains attributes (*Gunas*) and tendencies (*Bhavas*) that can 
     take a life-form closer to achieving *Moksha*.  
-    Karma Coordinates is a fun app developed to approximate based on your *Gunas* and 
+      Karma Coordinates is a fun app developed to approximate based on your *Gunas* and 
     *Bhavas* your current position in this karmic journey of many lives until *Moksha*. 
-    A score of 11/13 means you are very near to achieving the awakening state. A score 
-    of 7/13 means you are ahead but can speed it up by certain lifestyle changes.      
-    Karma Coordinates outcome is also explained in terms of three *Gunas* - *Satva*, 
+    One can exponentially speed-up karmic journey by certain lifestyle changes.      
+      Karma Coordinates outcome is also explained in terms of three *Gunas* - *Satva*, 
     *Rajas* and *Tamas*:  
     - *Satva* is the light (*Prakash*) property in the *Prakriti*. The neural network 
     in our brain - our intellect - has the highest *Satva*.  
@@ -49,3 +48,4 @@ to provide feedback based on their own belief of how the Gunas constitute and
 govern their bodies. The feedback will further refine the Karma Coordinates 
 classification system.
         '''
+    st.markdown(feedback)

@@ -76,7 +76,7 @@ df = df.loc[:, ~df.columns.str.match('.*_weight')]
 minkc = 1
 maxkc = 13
 df['karma_coordinates'] = (df['scaled_level'] - df['scaled_level'].min()) / (df['scaled_level'].max() - df['scaled_level'].min()) * (maxkc - minkc) + minkc
-df['karma_coordinates_label'] = df.apply(karma_coordinates_label, axis=1)
+# df['karma_coordinates_label'] = df.apply(karma_coordinates_label, axis=1)
 
 
 # 5.3 Writing Data to CSV in Chunks
