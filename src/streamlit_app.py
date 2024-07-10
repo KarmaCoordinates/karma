@@ -22,6 +22,7 @@ def run_app(local_env):
     input_df, user_input = functions.show_user_input(df, X, categorical_cols)      
     prediction, prediction_label = functions.make_prediction(model, label_encoder, input_df)  
     functions.show_prediction(prediction_label)
+    functions.explain_prediction(prediction_label)
 
     pdf = functions.create_pdf(input_df, prediction)
     functions.download_pdf(pdf, user_input, prediction_label)

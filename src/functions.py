@@ -23,6 +23,7 @@ import base64
 def load_data(resources_folder):
     df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
     df = df.drop(columns=['scaled_level'])
+    df['knowledge'] = df['knowledge'].astype(str)
 
     # Encode the target variable
     label_encoder = LabelEncoder()
@@ -33,6 +34,15 @@ def load_data(resources_folder):
     y = df['karma_coordinates']
 
     return df, X, y, label_encoder
+
+@st.cache_data
+def column_hints():
+    df = pd.DataFrame(np.array([['How often you feel sad, depressed, etc.', 'How often you feel happy, excited, etc.', 
+                                 'Do you read philosophical literature and/or practice spiritutality',
+                                 'How often you drink, smoke, etc.', 'How often you work out.', 'Do you eat healthy.', 
+                                 'Number of years of education or equivalent experience', 'What is your professional line of work']]), 
+                      columns=['negative_emotion', 'positive_emotion', 'spirituality', 'drink', 'workout', 'diet', 'knowledge', 'discipline'])
+    return df
 
 
 # Overall Statistics
@@ -117,8 +127,9 @@ def show_user_input(df, X, categorical_cols):
     st.subheader('Calculate my Karma Coordinates')
     user_input = {}
     for col in X.columns:
+        hint =  column_hints()[col].iloc[0]
         if col in categorical_cols:
-            user_input[col] = st.selectbox(f'{col}', df[col].unique(), help=f'Select the value for {col}', key=f'kk_inputs_{col}')
+            user_input[col] = st.selectbox(f'{col}', df[col].unique(), help=hint, key=f'kk_inputs_{col}')
         else:
             user_input[col] = st.number_input(f'{col}', float(df[col].min()), float(df[col].max()), float(df[col].mean()), help=f'Input the value for {col}')
 
@@ -133,7 +144,7 @@ def make_prediction(model, label_encoder, input_df):
     prediction_label = label_encoder.inverse_transform(prediction)
     return prediction, prediction_label
 
-def lives_remaining(prediction_label):
+def calculate_karma_coordinates(prediction_label):
     # 5 billion years, prediction_lables are from 5-13 (in billion years)
     current_distance = 5 
     # total number of default human life existences
@@ -142,7 +153,7 @@ def lives_remaining(prediction_label):
     high_satva_efficiency = 100000
     moderate_satva_efficiency = 10000
     low_satva_efficiency = 1000
-    default_human_efficiency = 100
+    default_satva_efficiency = 100
     # Dominant satva means 1 year of life = 1000000, High satva means 1 year of life = 100000, Moderage satva means 1 year of life = 10000 years, Low satva means 1 year of life = 10 years of progress
     if prediction_label > 11:
         satva_multiplier = dominant_satva_efficiency
@@ -153,32 +164,47 @@ def lives_remaining(prediction_label):
     elif prediction_label > 5:
         satva_multiplier = low_satva_efficiency
     else:
-        satva_multiplier = default_human_efficiency
+        satva_multiplier = default_satva_efficiency
 
     slope = (prediction_label / current_distance) * (satva_multiplier * prediction_label)
     remaining_lives = (possible_human_existences / slope)
     return f'{math.trunc(remaining_lives):,}'
     #return remaining_lives
 
-def calculate_karma_coordinates(prediction_label):
+def explain_prediction(prediction_label):
+    df = pd.DataFrame([['Extra-ordinary', 'Extra-ordinary', 'Extra-ordinary', 'Extra-ordinary', 'Extra-ordinary', 'Extra-ordinary'], 
+                       ['Well-developed', 'Well-developed', 'Well-developed', 'Well-developed', 'Well-developed', 'Well-developed']], 
+                       columns=('Reasoning', 'Vocabulary', 'Dedicated Effort', '3 Knowledge to overcome sorrows', 'Acquisition of good people', 'Giving'))
+    #st.write(df)
+
     if prediction_label > 11:
-        return f'Nearing Moksha! {lives_remaining(prediction_label)} lives to Moksha. Satva=Dominant, Tamas=Low'
+        return '''
+        Satva=Dominant, Tamas=Very-Low  
+        *You have developed exceptional reasoning mind. 
+        You have developed exceptional skills to use words wisely and also understanding the meaning of what others say to you.
+        You have developed exceptional discipline to work on tasks at hand.
+        You have acquired company of good people. You give. 
+        You are a balanced person who doesn't get perturbed often.* 
+        '''
     elif prediction_label > 9:
-        return f'High Awakening! {lives_remaining(prediction_label)} lives to Moksha. Satva=High, Tamas=Moderate'
+        return '''High Awakening! Satva=High, Tamas=Low  
+        '''
     elif prediction_label > 7:
-        return f'Moderate Awakening! {lives_remaining(prediction_label)} lives to Moksha. Satva=Moderate, Tamas=High'
+        return '''Moderate Awakening! Satva=Moderate, Tamas=Moderate  
+        '''
     elif prediction_label > 5:
-        return f'Low Awakening! {lives_remaining(prediction_label)} lives to Moksha. Satva=Low, Tamas=Dominant'
+        return '''Low Awakening! Satva=Low, Tamas=High  
+        '''
     else:
-        return f'Wake up! {lives_remaining(prediction_label)} lives to Moksha. Satva=Very-Low, Tamas=Dominant'
+        return '''Wake up! Satva=Very-Low, Tamas=Dominant  
+        '''
 
 
 # Display prediction
 def show_prediction(prediction_label):
     lives_remaining = calculate_karma_coordinates(prediction_label[0])
     st.subheader('AI prediction')
-    st.write(f'# Your Karma Coordinates: **{lives_remaining}**')
-    #st.write('The prediction above indicates the most likely karma coordinates label based on the input features provided.')
+    st.markdown(f'# Your Karma Coordinates: **{lives_remaining}** lives to Moksha.')
 
 # User feedback
 def show_user_feedback():
