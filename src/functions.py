@@ -127,9 +127,9 @@ def show_user_input(df, X, categorical_cols):
     st.subheader('Calculate my Karma Coordinates')
     user_input = {}
     for col in X.columns:
-        hint =  column_hints()[col].iloc[0]
+        #hint =  column_hints()[col].iloc[0]
         if col in categorical_cols:
-            user_input[col] = st.selectbox(f'{col}', df[col].unique(), help=hint, key=f'kk_inputs_{col}')
+            user_input[col] = st.selectbox(f'{col}', df[col].unique(), help=f'Select {col}', key=f'kk_inputs_{col}')
         else:
             user_input[col] = st.number_input(f'{col}', float(df[col].min()), float(df[col].max()), float(df[col].mean()), help=f'Input the value for {col}')
 
