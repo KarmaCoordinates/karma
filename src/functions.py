@@ -16,7 +16,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 import base64
+import pickle
 
+kc_model_final = 'kc_model_finalized.sav'
 
 # Load the data
 @st.cache_data
@@ -87,9 +89,9 @@ def show_models():
 
 
 @st.cache_data
-def train_model(X, y, model_choice, _preprocessor):
+def define_model(X, y, model_choice, _preprocessor):
         # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
     # Create a model pipeline based on user choice
     if model_choice == 'RandomForest':
@@ -97,10 +99,26 @@ def train_model(X, y, model_choice, _preprocessor):
     elif model_choice == 'LogisticRegression':
         model = make_pipeline(_preprocessor, LogisticRegression(random_state=42))
 
-    # Train the model
-    model.fit(X_train, y_train)
 
-    return model, X_test, y_test
+    return model, X_train, X_test, y_train, y_test
+
+def train_model(model, X_train, y_train):
+    # Train the model
+    model = model.fit(X_train, y_train)
+    return model
+
+def save_model(model, resources_folder):
+    # save the model to disk
+    filename = f'{resources_folder}/{kc_model_final}'
+    pickle.dump(model, open(filename, 'wb'))
+
+@st.cache_data
+def load_model(resources_folder):
+    filename = f'{resources_folder}/{kc_model_final}'
+    model = pickle.load(open(filename, 'rb'))
+    return model
+
+
 
 
 # Model evaluation
@@ -208,9 +226,9 @@ def show_prediction(prediction_label):
 
 # User feedback
 def show_user_feedback():
-    st.subheader('Feedback')
-    satva_choice = st.selectbox('Satva', ('Dominant', 'High', 'Moderate', 'Low'), key='satva_feedback')
-    tamas_choice = st.selectbox('Tamas', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback')
+    st.subheader('Your Feedback')
+    satva_choice = st.selectbox('What do you believe your Satva is?', ('Dominant', 'High', 'Moderate', 'Low'), key='satva_feedback')
+    tamas_choice = st.selectbox('What do you believe your Tamas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback')
 
 def horoscope_calculation():
     st.subheader('Include your zodiac sign and horoscope in calculations')
