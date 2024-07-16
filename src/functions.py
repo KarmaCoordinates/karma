@@ -263,3 +263,5 @@ def download_pdf(pdf, user_input, prediction_label):
         href = f'<a href="data:application/octet-stream;base64,{b64}" download="prediction_report.pdf">Download PDF Report</a>'
         st.markdown(href, unsafe_allow_html=True)
 
+def end_process():
+    st.stop()
