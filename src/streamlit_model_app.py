@@ -22,6 +22,9 @@ def run_app():
     print('Saving model')
     functions.save_model(model, resources_folder)
 
+    print('Model trained and saved. You can exit now!')
+
+    functions.end_process()
 
 run_app()
 
