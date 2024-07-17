@@ -10,7 +10,8 @@ Security group for instances only allows port 80 access from your ALB.
 certonly --webroot --webroot-path=/var/www/html --email sdixit@ohioedge.com --agree-tos --no-eff-email --staging -d karmacoordinates.org  -d www.karmacoordinates.org
 
 
-# route 8051 to 80
+# route 8051 to 80 
+# ref: https://eladnava.com/binding-nodejs-port-80-using-nginx/
 #ngix config
 sudo vi /etc/nginx/sites-enabled/streamlit
 ## add to streamlit file
@@ -35,3 +36,10 @@ sudo ln -s /etc/nginx/sites-available/streamlit /etc/nginx/sites-enabled/streaml
 
 sudo systemctl start nginx
 sudo systemctl enable nginx
+
+
+# s3 bucket - setup kc-dev access keys, security and us-east-2 default region
+aws configure
+AWS Access Key ID [None]: kc-deve-key_id
+AWS Secret Access Key [None]: kc-dev-access_key
+Default region name [None]: us-east-2

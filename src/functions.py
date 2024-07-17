@@ -16,12 +16,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 import base64
-import pickle
+import file_functions as ff
 
 
 # Load the data
-def read_features_file(resources_folder):
-    df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
+def read_features_file(bucket_name, obj_key):
+    # s3file = ff.read_from_s3('karmacoordinates', 'kc3_synthout_chunk_0.csv')
+    # df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
+    df = pd.read_csv(f's3://{bucket_name}/{obj_key}')
     df = df.drop(columns=['scaled_level'])
     df['knowledge'] = df['knowledge'].astype(str)
 
@@ -101,18 +103,6 @@ def train_model(model, X_train, y_train):
     # Train the model
     model = model.fit(X_train, y_train)
     return model
-
-def save_data_using_pickle(model, resources_folder, resource_filename):
-    # save the model to disk
-    filename = f'{resources_folder}/{resource_filename}'
-    pickle.dump(model, open(filename, 'wb'))
-
-def load_pickle_data(resources_folder, resource_filename):
-    filename = f'{resources_folder}/{resource_filename}'
-    model = pickle.load(open(filename, 'rb'))
-    return model
-
-
 
 
 # Model evaluation
