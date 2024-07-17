@@ -4,7 +4,7 @@ import boto3
 
 def save_data_using_pickle(model, bucket_name, object_key):
     # save the model to disk
-    s3_uri = f'tmp/{object_key}'
+    s3_uri = f'/tmp/{object_key}'
     pickle.dump(model, open(s3_uri, 'wb'))
     # pickle_byte_obj = pickle.dumps(model)
     s3 = boto3.client("s3")
