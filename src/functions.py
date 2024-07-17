@@ -18,11 +18,9 @@ from fpdf import FPDF
 import base64
 import pickle
 
-kc_model_final = 'kc_model_finalized.sav'
 
 # Load the data
-@st.cache_data
-def load_data(resources_folder):
+def read_features_file(resources_folder):
     df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
     df = df.drop(columns=['scaled_level'])
     df['knowledge'] = df['knowledge'].astype(str)
@@ -37,7 +35,6 @@ def load_data(resources_folder):
 
     return df, X, y, label_encoder
 
-@st.cache_data
 def column_hints():
     df = pd.DataFrame(np.array([['How often you feel sad, depressed, etc.', 'How often you feel happy, excited, etc.', 
                                  'Do you read philosophical literature and/or practice spiritutality',
@@ -54,7 +51,6 @@ def show_stats(df):
 
 
 # Encode categorical features
-@st.cache_data
 def encode_features(X):
     categorical_cols = X.select_dtypes(include=['object']).columns
     numeric_cols = X.select_dtypes(include=['number']).columns
@@ -88,7 +84,6 @@ def show_models():
     model_choice = st.selectbox('Select Model', ('RandomForest', 'LogisticRegression'), key='models')
 
 
-@st.cache_data
 def define_model(X, y, model_choice, _preprocessor):
         # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
@@ -107,14 +102,13 @@ def train_model(model, X_train, y_train):
     model = model.fit(X_train, y_train)
     return model
 
-def save_model(model, resources_folder):
+def save_data_using_pickle(model, resources_folder, resource_filename):
     # save the model to disk
-    filename = f'{resources_folder}/{kc_model_final}'
+    filename = f'{resources_folder}/{resource_filename}'
     pickle.dump(model, open(filename, 'wb'))
 
-@st.cache_data
-def load_model(resources_folder):
-    filename = f'{resources_folder}/{kc_model_final}'
+def load_pickle_data(resources_folder, resource_filename):
+    filename = f'{resources_folder}/{resource_filename}'
     model = pickle.load(open(filename, 'rb'))
     return model
 
