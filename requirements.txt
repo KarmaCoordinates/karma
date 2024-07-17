@@ -7,4 +7,3 @@ pandas
 scikit-learn
 FPDF
 boto3
-pickle
