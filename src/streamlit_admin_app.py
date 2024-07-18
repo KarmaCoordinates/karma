@@ -9,7 +9,7 @@ def run_app():
     web_content.write_content(resources_folder)
 
     model_choice = 'RandomForest'
-    df, X, y, label_encoder = functions.read_features_file('karmacoordinates', 'kc3_synthout_chunk_0.csv')
+    df, X, y, label_encoder = functions.read_features('karmacoordinates', 'kc3_synthout_chunk_0.csv')
     categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
 
 

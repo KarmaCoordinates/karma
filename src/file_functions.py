@@ -3,6 +3,12 @@ import boto3
 import pandas as pd
 from pathlib import Path
 
+# return df
+def load_csv(bucket_name, object_key):
+    s3_uri = f's3://{bucket_name}/{object_key}'
+    # s3file = ff.read_from_s3('karmacoordinates', 'kc3_synthout_chunk_0.csv')
+    # df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
+    return pd.read_csv(s3_uri)
 
 
 def save_obj(obj, bucket_name, object_key):
