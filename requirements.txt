@@ -7,3 +7,5 @@ pandas
 scikit-learn
 FPDF
 boto3
+fsspec
+s3fs
