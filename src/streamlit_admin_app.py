@@ -1,23 +1,39 @@
+import streamlit as st
+import file_functions as ff
 import functions
 import web_content 
 
+@st.cache_data
+def cache_load_csv(bucket_name, features_data_file):
+    return ff.load_csv(bucket_name, features_data_file)
+
+@st.cache_data
+def cache_load_obj(bucket_name, pickled_model_data_file):
+    return ff.load_obj(bucket_name, pickled_model_data_file)
 
 def run_app():
+
+    bucket_name = 'karmacoordinates'
+    features_data_file = 'kc3_synthout_chunk_0.csv'
+    pickled_model_data_file = 'kc_model_finalized.sav'
+
     resources_folder = 'resources'
-
-
     web_content.write_content(resources_folder)
 
     model_choice = 'RandomForest'
-    df, X, y, label_encoder = functions.read_features('karmacoordinates', 'kc3_synthout_chunk_0.csv')
+    df = cache_load_csv(bucket_name, features_data_file)
+    df, X, y, label_encoder = functions.read_features(df)
     categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
+
+    model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
+
+    model = cache_load_obj(bucket_name, pickled_model_data_file)
 
 
     functions.show_stats(df)
     functions.show_eda(df, X, categorical_cols)
     functions.show_models()
 
-    model, X_test, y_test = functions.train_model(X, y, model_choice, preprocessor)
     accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
     functions.model_perf(accuracy, conf_matrix)
@@ -30,5 +46,5 @@ def run_app():
     functions.download_pdf(pdf, user_input, prediction_label)
 
 
-run_app(False)
+run_app()
 
