@@ -19,7 +19,7 @@ def cached_model_eval(_model, X_test, y_test):
 
 @st.cache_data
 def cached_load_pickle_data(bucket_name, object_key):
-    model = ff.load_pickle_data(bucket_name, object_key)
+    model = ff.load_obj(bucket_name, object_key)
     return model
 
 def run_app():
