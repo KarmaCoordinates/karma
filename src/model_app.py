@@ -22,7 +22,7 @@ def run_app():
     model = functions.train_model(model, X_train, y_train)
 
     print('Saving model')
-    ff.save_data_using_pickle(model, bucket_name, pickled_model_data_file)
+    ff.save_obj(model, bucket_name, pickled_model_data_file)
 
     print('Model trained and saved. You can exit now!')
 
