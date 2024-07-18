@@ -21,10 +21,10 @@ def load_obj(bucket_name, object_key):
         print(f'using local file:{local_uri}')
         return pickle.load(open(local_uri, 'rb'))
     else:
-        s3_file = f's3://{bucket_name}/{object_key}'
-        print(f'reading s3 file:{s3_file}')
-        data = pd.read_pickle(s3_file)
-        print(f'saving s3 file:{s3_file} locally at: {local_uri}')
+        s3_uri = f's3://{bucket_name}/{object_key}'
+        print(f'reading s3 file:{s3_uri}')
+        data = pd.read_pickle(s3_uri)
+        print(f'saving s3 file:{s3_uri} locally at: {local_uri}')
         pickle.dump(data, open(local_uri, 'wb'))
         return data
     # s3_uri = f'/tmp/{object_key}'
