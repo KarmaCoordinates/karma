@@ -10,7 +10,8 @@ def run_app():
     # web_content.write_content(resources_folder)
 
     model_choice = 'RandomForest'
-    df, X, y, label_encoder = functions.read_features_file(bucket_name, features_data_file)
+    df = ff.load_csv(bucket_name, features_data_file)
+    df, X, y, label_encoder = functions.read_features(df)
     categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
 
     # functions.show_models()

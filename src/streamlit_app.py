@@ -3,24 +3,12 @@ import web_content
 import streamlit as st
 import file_functions as ff
 
-
 @st.cache_data
-def cache_model(bucket_name, features_data_file):
-    model_choice = 'RandomForest'
- 
-    df, X, y, label_encoder = functions.read_features_file(bucket_name, features_data_file)
-    categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
-    model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
-    return df, X, y, label_encoder, categorical_cols, model, X_test, y_test
+def cache_load_csv(bucket_name, features_data_file):
+    return ff.load_csv(bucket_name, features_data_file)
 
-@st.cache_data
-def cached_model_eval(_model, X_test, y_test):
-    return functions.model_eval(_model, X_test, y_test)
-
-@st.cache_data
-def cached_load_pickle_data(bucket_name, object_key):
-    model = ff.load_obj(bucket_name, object_key)
-    return model
+def cache_load_obj(bucket_name, pickled_model_data_file):
+    return ff.load_obj(bucket_name, pickled_model_data_file)
 
 def run_app():
     bucket_name = 'karmacoordinates'
@@ -31,11 +19,15 @@ def run_app():
     web_content.write_content(resources_folder)
 
     model_choice = 'RandomForest'
-    df, X, y, label_encoder, categorical_cols, model, X_test, y_test = cache_model(bucket_name, features_data_file)
+    df = cache_load_csv(bucket_name, features_data_file)
+    df, X, y, label_encoder = functions.read_features(df)
+    categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
 
-    model = cached_load_pickle_data(bucket_name, pickled_model_data_file)
+    model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
 
-    accuracy, conf_matrix = cached_model_eval(model, X_test, y_test)
+    model = cache_load_obj(bucket_name, pickled_model_data_file)
+
+    accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
     input_df, user_input = functions.show_user_input(df, X, categorical_cols)      
     prediction, prediction_label = functions.make_prediction(model, label_encoder, input_df)  
