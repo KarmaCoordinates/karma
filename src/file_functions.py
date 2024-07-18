@@ -5,10 +5,10 @@ from pathlib import Path
 
 
 
-def save_obj(model, bucket_name, object_key):
+def save_obj(obj, bucket_name, object_key):
     # save the model to disk
     local_uri = f'/tmp/{object_key}'
-    pickle.dump(model, open(local_uri, 'wb'))
+    pickle.dump(obj, open(local_uri, 'wb'))
     # pickle_byte_obj = pickle.dumps(model)
     s3 = boto3.client("s3")
     s3.upload_file(local_uri, bucket_name, object_key)
