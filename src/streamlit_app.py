@@ -7,6 +7,7 @@ import file_functions as ff
 def cache_load_csv(bucket_name, features_data_file):
     return ff.load_csv(bucket_name, features_data_file)
 
+@st.cache_data
 def cache_load_obj(bucket_name, pickled_model_data_file):
     return ff.load_obj(bucket_name, pickled_model_data_file)
 
