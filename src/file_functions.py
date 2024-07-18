@@ -3,6 +3,8 @@ import boto3
 import pandas as pd
 from pathlib import Path
 
+temp_folder = 'resources'
+
 # return df
 def load_csv(bucket_name, object_key):
     s3_uri = f's3://{bucket_name}/{object_key}'
@@ -13,7 +15,7 @@ def load_csv(bucket_name, object_key):
 
 def save_obj(obj, bucket_name, object_key):
     # save the model to disk
-    local_uri = f'/tmp/{object_key}'
+    local_uri = f'{temp_folder}/{object_key}'
     pickle.dump(obj, open(local_uri, 'wb'))
     # pickle_byte_obj = pickle.dumps(model)
     s3 = boto3.client("s3")
@@ -21,7 +23,7 @@ def save_obj(obj, bucket_name, object_key):
     
 
 def load_obj(bucket_name, object_key):
-    local_uri = f'/tmp/{object_key}'
+    local_uri = f'{temp_folder}/{object_key}'
     objfile = Path(local_uri)
     if objfile.is_file():
         print(f'using local file:{local_uri}')
