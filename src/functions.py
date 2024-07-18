@@ -20,10 +20,11 @@ import file_functions as ff
 
 
 # Load the data
-def read_features_file(bucket_name, obj_key):
+def read_features_file(bucket_name, object_key):
+    s3_uri = f's3://{bucket_name}/{object_key}'
     # s3file = ff.read_from_s3('karmacoordinates', 'kc3_synthout_chunk_0.csv')
     # df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
-    df = pd.read_csv(f's3://{bucket_name}/{obj_key}')
+    df = pd.read_csv(s3_uri)
     df = df.drop(columns=['scaled_level'])
     df['knowledge'] = df['knowledge'].astype(str)
 
