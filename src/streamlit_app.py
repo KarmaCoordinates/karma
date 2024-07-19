@@ -11,6 +11,14 @@ def cache_load_csv(bucket_name, features_data_file):
 def cache_load_obj(bucket_name, pickled_model_data_file):
     return ff.load_obj(bucket_name, pickled_model_data_file)
 
+@st.cache_data
+def cache_read_features(df):
+    return functions.read_features(df)
+
+@st.cache_data
+def cache_encode_features(X):
+    return functions.encode_features(X)
+
 def run_app():
     bucket_name = 'karmacoordinates'
     features_data_file = 'kc3_synthout_chunk_0.csv'
@@ -21,8 +29,8 @@ def run_app():
 
     model_choice = 'RandomForest'
     df = cache_load_csv(bucket_name, features_data_file)
-    df, X, y, label_encoder = functions.read_features(df)
-    categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
+    df, X, y, label_encoder = cache_read_features(df)
+    categorical_cols, numeric_cols, preprocessor = cache_encode_features(X)
 
     model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
 
