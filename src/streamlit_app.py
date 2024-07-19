@@ -19,6 +19,10 @@ def cache_read_features(df):
 def cache_encode_features(X):
     return functions.encode_features(X)
 
+@st.cache_data
+def cache_define_model(X, y, model_choice, _preprocessor):
+    return functions.define_model(X, y, model_choice, _preprocessor)
+
 def run_app():
     bucket_name = 'karmacoordinates'
     features_data_file = 'kc3_synthout_chunk_0.csv'
@@ -31,12 +35,10 @@ def run_app():
     df = cache_load_csv(bucket_name, features_data_file)
     df, X, y, label_encoder = cache_read_features(df)
     categorical_cols, numeric_cols, preprocessor = cache_encode_features(X)
-
-    model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
-
+    model, X_train, X_test, y_train, y_test = cache_define_model(X, y, model_choice, preprocessor)
     model = cache_load_obj(bucket_name, pickled_model_data_file)
 
-    accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
+    # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
     input_df, user_input = functions.show_user_input(df, X, categorical_cols)      
     prediction, prediction_label = functions.make_prediction(model, label_encoder, input_df)  
@@ -45,7 +47,7 @@ def run_app():
 
     pdf = functions.create_pdf(input_df, prediction)
     functions.download_pdf(pdf, user_input, prediction_label)
-
+    
     web_content.request_feedback_note()
     functions.show_user_feedback()
 
