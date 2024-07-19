@@ -52,3 +52,6 @@ ps -ax | grep streamlit
 mprof run --attach {pid}
 
 mprof plot -o output.png
+
+# logs
+journalctl --since "1 day ago" -u streamlit-app.service
