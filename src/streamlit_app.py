@@ -10,7 +10,7 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
     categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
     model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
     model = ff.load_obj(bucket_name, pickled_model_data_file)
-    return df, X, categorical_cols, model, label_encoder
+    return df, X.columns, categorical_cols, model, label_encoder
 
 
 def run_app():
@@ -23,11 +23,11 @@ def run_app():
 
     model_choice = 'RandomForest'
 
-    df, X, categorical_cols, model, label_encoder = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
+    df, columns, categorical_cols, model, label_encoder = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
-    input_df, user_input = functions.show_user_input(df, X, categorical_cols)      
+    input_df, user_input = functions.show_user_input(df, columns, categorical_cols)      
     prediction, prediction_label = functions.make_prediction(model, label_encoder, input_df)  
     functions.show_prediction(prediction_label)
     functions.explain_prediction(prediction_label)

@@ -125,10 +125,10 @@ def model_perf(accuracy, conf_matrix):
     st.write('The confusion matrix shows the number of correct and incorrect predictions made by the model. Each row represents the actual class, while each column represents the predicted class. The diagonal values indicate correct predictions.')
 
 # Create input fields for user
-def show_user_input(df, X, categorical_cols):
+def show_user_input(df, columns, categorical_cols):
     st.subheader('Calculate my Karma Coordinates')
     user_input = {}
-    for col in X.columns:
+    for col in columns:
         #hint =  column_hints()[col].iloc[0]
         if col in categorical_cols:
             user_input[col] = st.selectbox(f'{col}', df[col].unique(), help=f'Select {col}', key=f'kk_inputs_{col}')
