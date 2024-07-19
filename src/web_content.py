@@ -1,6 +1,8 @@
 import streamlit as st
 
 def write_content(resources_folder):
+    st.set_page_config(page_title="Karma Coordinates")
+
     # title
     st.title('Karma Coordinates Calculator App')
 
