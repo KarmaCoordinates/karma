@@ -43,3 +43,12 @@ aws configure
 AWS Access Key ID [None]: kc-deve-key_id
 AWS Secret Access Key [None]: kc-dev-access_key
 Default region name [None]: us-east-2
+
+
+
+# memory profiling
+conda install memory_profiler
+ps -ax | grep streamlit
+mprof run --attach {pid}
+
+mprof plot -o output.png
