@@ -4,24 +4,14 @@ import streamlit as st
 import file_functions as ff
 
 @st.cache_data
-def cache_load_csv(bucket_name, features_data_file):
-    return ff.load_csv(bucket_name, features_data_file)
+def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
+    df = ff.load_csv(bucket_name, features_data_file)
+    df, X, y, label_encoder = functions.read_features(df)
+    categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
+    model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
+    model = ff.load_obj(bucket_name, pickled_model_data_file)
+    return df, X, categorical_cols, model, label_encoder
 
-@st.cache_data
-def cache_load_obj(bucket_name, pickled_model_data_file):
-    return ff.load_obj(bucket_name, pickled_model_data_file)
-
-@st.cache_data
-def cache_read_features(df):
-    return functions.read_features(df)
-
-@st.cache_data
-def cache_encode_features(X):
-    return functions.encode_features(X)
-
-@st.cache_data
-def cache_define_model(X, y, model_choice, _preprocessor):
-    return functions.define_model(X, y, model_choice, _preprocessor)
 
 def run_app():
     bucket_name = 'karmacoordinates'
@@ -32,11 +22,8 @@ def run_app():
     web_content.write_content(resources_folder)
 
     model_choice = 'RandomForest'
-    df = cache_load_csv(bucket_name, features_data_file)
-    df, X, y, label_encoder = cache_read_features(df)
-    categorical_cols, numeric_cols, preprocessor = cache_encode_features(X)
-    model, X_train, X_test, y_train, y_test = cache_define_model(X, y, model_choice, preprocessor)
-    model = cache_load_obj(bucket_name, pickled_model_data_file)
+
+    df, X, categorical_cols, model, label_encoder = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
@@ -47,7 +34,7 @@ def run_app():
 
     pdf = functions.create_pdf(input_df, prediction)
     functions.download_pdf(pdf, user_input, prediction_label)
-    
+
     web_content.request_feedback_note()
     functions.show_user_feedback()
 
