@@ -27,7 +27,8 @@ def run_app():
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
-    input_df, user_input = functions.show_user_input(df, columns, categorical_cols)      
+    input_df, user_input = functions.show_user_input(df, columns, categorical_cols)   
+       
     prediction, prediction_label = functions.make_prediction(model, label_encoder, input_df)  
     functions.show_prediction(prediction_label)
     functions.explain_prediction(prediction_label)
