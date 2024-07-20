@@ -36,8 +36,8 @@ def run_app():
     pdf = functions.create_pdf(input_df, prediction)
     functions.download_pdf(pdf, user_input, prediction_label)
 
-    web_content.request_feedback_note()
-    functions.show_user_feedback()
+    # web_content.request_feedback_note()
+    # functions.show_user_feedback()
 
     web_content.write_sankhya_references()
 
