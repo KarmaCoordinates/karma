@@ -12,7 +12,7 @@ def write_content(resources_folder):
     pdf = f'<a href="{resources_folder}/samkhya-karika.pdf">pdf</a>'
 
     about_karma_coordinates = ''' 
-According to *Sankhya*-yoga, a doctrine of Kapil *Muni* (Sage) dating back to 5025 BC (https://en.wikipedia.org/wiki/Samkhya), *Prakriti* (the universe) exists for providing experiences to *Purush* (an experiencer). *Purush* upon realization that “I exist” achieves *Moksha* (liberation). *Prakriti* is constructed of three *Gunas* (root physical properties) - *Satva* (light), *Rajas* (energy) and *Tamas* (mass)  and *Purush* is an unobservable entity outside of *Prakriti* that is not constructed of these three *Gunas*.
+According to *Sankhya*-yoga, a doctrine of Kapil *Muni* (Sage) dating back to 5561 BCE (https://en.wikipedia.org/wiki/Samkhya), *Prakriti* (the universe) exists for providing experiences to *Purush* (an experiencer). *Purush* upon realization that “I exist” achieves *Moksha* (liberation). *Prakriti* is constructed of three *Gunas* (root physical properties) - *Satva* (light), *Rajas* (energy) and *Tamas* (mass)  and *Purush* is an unobservable entity outside of *Prakriti* that is not constructed of these three *Gunas*.
 
 Every *Jiva* (life-form) in *Prakriti* is engaged in providing experiences to a *Purush* that trigger *Bhava*. A life-form comes into an existence due to *Sukshm* (a microscopic particle in the nature). It is *Sukshm* that gets tinged with *Bhava* (acquired tendencies), from a life-form to life-form! Once all *Bhava* are overcome/consumed, *Purush* realizes that "I exist" and *Moksha* is achieved.
 
@@ -35,7 +35,7 @@ Karma Coordinates outcome is also explained in terms of three *Gunas*:
 def write_sankhya_references():
     subheader = "References"
     references = '''
-    The samkhya philosophy; ***Authors/Credits: Aniruddha. Vritti; Vijñanabhiksu, fl. 1550. Bhasya; Mahadeva Vedantin. Vritti-sara; Translated by: Nandlal Sinha 1915***; https://archive.org/details/thesamkhyaphilos00sinhuoft
+    Aniruddha. Vritti; Vijñanabhiksu, fl. 1550. Bhasya; Mahadeva Vedantin. Vritti-sara; Translated by: Nandlal Sinha (1915). ***The samkhya philosophy***. Available at: https://archive.org/details/thesamkhyaphilos00sinhuoft.
 '''
     st.subheader(subheader)
     st.markdown(references)
