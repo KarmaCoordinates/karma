@@ -66,9 +66,9 @@ def encode_features(X):
 
 
 # Exploratory Data Analysis (EDA)$
-def show_eda(df, X, categorical_cols):
+def show_eda(df, columns, categorical_cols):
     st.subheader('Exploratory Data Analysis')
-    for col in X.columns:
+    for col in columns:
         fig, ax = plt.subplots()
         if col in categorical_cols:
             sns.countplot(x=df[col], ax=ax)
