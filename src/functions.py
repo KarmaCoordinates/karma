@@ -206,11 +206,11 @@ def explain_prediction(prediction_label):
 def show_prediction(prediction_label):
     lives_remaining = calculate_karma_coordinates(prediction_label[0])
     st.subheader('AI prediction')
-    st.markdown(f'# Your Karma Coordinates: **{lives_remaining}** lives to Moksha.')
+    st.markdown(f'># Your Karma Coordinates: **{lives_remaining}** lives to Moksha.')
 
 # User feedback
 def show_user_feedback():
-    st.subheader('Your Feedback')
+    # st.subheader('Your Feedback')
     satva_choice = st.selectbox('What do you believe your Satva is?', ('Dominant', 'High', 'Moderate', 'Low'), key='satva_feedback')
     tamas_choice = st.selectbox('What do you believe your Tamas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback')
 
