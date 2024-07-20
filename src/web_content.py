@@ -12,7 +12,7 @@ def write_content(resources_folder):
     pdf = f'<a href="{resources_folder}/samkhya-karika.pdf">pdf</a>'
 
     about_karma_coordinates = ''' 
-According to *Sankhya*, a doctrine acredited to Kapil *Muni* (Sage) dating back to 5561 BCE, *Prakriti* (the universe) exists for providing experiences to *Purush* (an experiencer). *Purush* upon realization that “I exist” achieves *Moksha* (liberation). *Prakriti* is constructed of three *Guna* (root physical properties) - *Satva* (light), *Raja* (energy) and *Tama* (mass)  and *Purush* is an unobservable entity outside of *Prakriti* that is not constructed of these three *Gunas*. (Aniruddha. et al., 1915; Wikipedia contributors, 2024).
+According to *Sankhya*, a doctrine acredited to Kapil *Muni* (Sage) dating back to 5561 BCE, *Prakriti* (the universe) exists for providing experiences to *Purush* (an experiencer). *Purush* upon realization that “I exist” achieves *Moksha* (liberation). *Prakriti* is constructed of three *Guna* (root physical properties) - *Satva* (light), *Raja* (energy) and *Tama* (mass)  and *Purush* is an unobservable entity outside of *Prakriti* that is not constructed of these three *Gunas*. (Aniruddha. et al., 1915; Wikipedia contributors. (2024, July 19). Samkhya).
 
 Every *Jiva* (life-form) in *Prakriti* is engaged in providing experiences to a *Purush* that incite *Bhava*. *Jiva* comes into an existence due to *Sukshm* (a microscopic particle). It is *Sukshm* that gets tinged with *Bhava* (acquired tendencies), carrying *Bhava* from existence to existence! Once all *Bhava* are overcome/consumed, *Purush* realizes/knows that "I exist" and *Moksha* is achieved.
 
