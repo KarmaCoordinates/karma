@@ -18,19 +18,20 @@ Every *Jiva* (life-form) in *Prakriti* is engaged in providing experiences to a 
 
 Once  all *Purush* awake, *Prakriti*’s work is complete and it collapses into a singularity and the next cycle of big-bang - big-crunch begins. As per the open model with omega of 6, universe is 6 billion years old and it will end when it is about 13 billion years old - that is in another 7 billion years. (Wikipedia contributors. (2024, June 27); Ultimate fate of the universe). A human life is the only known form of *Sukshm* that is capable of achieving *Moksha* for its *Purush*. 
 
-*Sankhya*-yoga quantifies *Bhava* (tendencies), overcoming which takes a *Sukshm* closer to achieving *Moksha*. Karma Coordinates is a fun app developed to calculate your current position in this karmic journey of many lives - from the beginning to *Moksha*, by approximating your current *Bhava*. 
-
-You can exponentially speed-up karmic journey by small lifestyle changes.
-
-Karma Coordinates outcome is also explained in terms of three *Gunas*:  
-    - ***Satva*** is the *Prakash* (light) property in the *Prakriti*. The neural network in our brain - our intellect - has the highest *Satva*.  
-    - ***Rajas*** is the energy property in the *Prakriti*. It moves mass. It activates. Our mind and bodies are enabled by *Rajas*.  
-    - ***Tamas*** is the mass property in the *Prakriti*  
+*Sankhya*-yoga quantifies *Bhava* (tendencies), overcoming which takes a *Sukshm* closer to achieving *Moksha*. Karma Coordinates is a fun app developed to calculate your current position in this karmic journey of many lives - from the beginning to *Moksha*, by approximating your current *Bhava*. And yes, even small lifestyle changes can put you on a fast-track!
 '''
 
 
     st.markdown(about_karma_coordinates)
 
+
+def guna_details():
+    text = '''
+    Karma Coordinates outcome is also explained in terms of three *Gunas*:  
+    - ***Satva*** is the *Prakash* (light) property in the *Prakriti*. The neural network in our brain - our intellect - has the highest *Satva*.  
+    - ***Rajas*** is the energy property in the *Prakriti*. It moves mass. It activates. Our mind and bodies are enabled by *Rajas*.  
+    - ***Tamas*** is the mass property in the *Prakriti*  
+'''
 
 def write_sankhya_references():
     subheader = "References"
