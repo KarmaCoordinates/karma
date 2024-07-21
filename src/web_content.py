@@ -18,7 +18,7 @@ Every *Jiva* (life-form) in *Prakriti* is engaged in providing experiences to a 
 
 Once  all *Purush* awake, *Prakriti*’s work is complete and it collapses into a singularity and the next cycle of big-bang - big-crunch begins. As per the open model with omega of 6, universe is 6 billion years old and it will end when it is about 13 billion years old - that is in another 7 billion years. (Wikipedia contributors. (2024, June 27); Ultimate fate of the universe). A human life is the only known form of *Sukshm* that is capable of achieving *Moksha* for its *Purush*. 
 
-*Sankhya*-yoga quantifies *Bhava* (tendencies), overcoming which takes a *Sukshm* closer to achieving *Moksha*. Karma Coordinates is a fun app developed to calculate your current position in this karmic journey of many lives - from the beginning to *Moksha*, by approximating your current *Bhava*. And yes, even small lifestyle changes can put you on a fast-track!
+*Sankhya*-yoga quantifies *Bhava* (tendencies), overcoming which takes a *Sukshm* closer to achieving *Moksha*. Karma Coordinates is a fun app developed to calculate your current position in this karmic journey of many lives - from the beginning to *Moksha*, by approximating your current *Bhava*. And yes, even small lifestyle changes can put you on a fast-track - speeding your journey by thousands of years!
 '''
 
 
