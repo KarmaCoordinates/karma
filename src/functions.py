@@ -125,15 +125,18 @@ def model_perf(accuracy, conf_matrix):
     st.write('The confusion matrix shows the number of correct and incorrect predictions made by the model. Each row represents the actual class, while each column represents the predicted class. The diagonal values indicate correct predictions.')
 
 # Create input fields for user
-def show_user_input(df, columns, categorical_cols):
+def show_user_input(data_dictionary_array, df, columns, categorical_cols):
     st.subheader('Calculate my Karma Coordinates')
     user_input = {}
-    for col in columns:
+    for row in data_dictionary_array:
+        col = row[0]
+        display_name = row[1]
+        hint = row[2]
         #hint =  column_hints()[col].iloc[0]
         if col in categorical_cols:
-            user_input[col] = st.selectbox(f'{col}', df[col].unique(), help=f'Select {col}', key=f'kk_inputs_{col}')
+            user_input[col] = st.selectbox(f'{display_name}', df[col].unique(), help=f'Answer the question: {hint}', key=f'kk_inputs_{col}')
         else:
-            user_input[col] = st.number_input(f'{col}', float(df[col].min()), float(df[col].max()), float(df[col].mean()), help=f'Input the value for {col}')
+            user_input[col] = st.number_input(f'{display_name}', float(df[col].min()), float(df[col].max()), float(df[col].mean()), help=f'Answer the question: {hint}')
 
     # Convert user input to DataFrame
     input_df = pd.DataFrame(user_input, index=[0])
