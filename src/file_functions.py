@@ -45,3 +45,10 @@ def load_pickle_obj_from_s3(bucket_name, object_key):
     # s3.download_file(bucket_name, object_key, s3_uri)
     # return pickle.load(open(s3_uri, 'rb'))
     #return pickle.loads(s3.Bucket(bucket_name).Object(object_key).get()['Body'].read())
+
+def save_file_to_s3(filename, bucket_name, object_key):
+    logging.info('calling save_obj')
+    # save the model to disk
+    # pickle_byte_obj = pickle.dumps(model)
+    s3 = boto3.client("s3")
+    s3.upload_file(filename, bucket_name, object_key, ExtraArgs={'ContentType': 'text/html', "ContentEncoding" : "utf-8"})
