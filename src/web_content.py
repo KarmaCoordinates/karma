@@ -1,15 +1,15 @@
 import streamlit as st
 
-def write_content(resources_folder):
+def write_content(static_files_folder):
     st.set_page_config(page_title="Karma Coordinates")
 
     # title
     st.title('Karma Coordinates Calculator App')
 
     # web content
-    st.image(f'{resources_folder}/kapil-muni-image.png', caption='Kapil Muni 5561 BCE')
+    st.image(f'{static_files_folder}/kapil-muni-image.png', caption='Kapil Muni 5561 BCE')
 
-    pdf = f'<a href="{resources_folder}/samkhya-karika.pdf">pdf</a>'
+    pdf = f'<a href="{static_files_folder}/samkhya-karika.pdf">pdf</a>'
 
     about_karma_coordinates = ''' 
 According to *Sankhya*, a doctrine acredited to Kapil *Muni* (Sage) dating back to 5561 BCE, *Prakriti* (the universe) exists for providing experiences to *Purush* (an experiencer). *Purush* upon realization that “I exist” achieves *Moksha* (liberation). *Prakriti* is constructed of three *Guna* (root physical properties) - *Satva* (light), *Raja* (energy) and *Tama* (mass)  and *Purush* is an unobservable entity outside of *Prakriti* that is not constructed of these three *Gunas* (Aniruddha. et al., 1915; Wikipedia contributors. (2024, July 19). Samkhya).
@@ -41,6 +41,8 @@ def write_sankhya_references():
     Wikipedia contributors. (2024, July 19). Samkhya. In Wikipedia, The Free Encyclopedia. Retrieved 15:34, July 20, 2024, from https://en.wikipedia.org/w/index.php?title=Samkhya&oldid=1235515297
 
     Wikipedia contributors. (2024, June 27). Ultimate fate of the universe. In Wikipedia, The Free Encyclopedia. Retrieved 15:36, July 20, 2024, from https://en.wikipedia.org/w/index.php?title=Ultimate_fate_of_the_universe&oldid=1231304126    
+
+     Sandeep Dixit, 2024. [*Calculating Karma Coordinates*](app/static/calculating_karma_coordinates.md)
 '''
     st.subheader(subheader)
     st.markdown(references)
