@@ -16,7 +16,7 @@ def load_csv(bucket_name, object_key):
     return pd.read_csv(s3_uri)
 
 
-def save_obj(obj, bucket_name, object_key):
+def save_pickle_obj(obj, bucket_name, object_key):
     logging.info('calling save_obj')
     # save the model to disk
     local_uri = f'{temp_folder}/{object_key}'
@@ -26,7 +26,7 @@ def save_obj(obj, bucket_name, object_key):
     s3.upload_file(local_uri, bucket_name, object_key)
     
 
-def load_obj(bucket_name, object_key):
+def load_pickle_obj(bucket_name, object_key):
     logging.info('calling load_obj')
     local_uri = f'{temp_folder}/{object_key}'
     objfile = Path(local_uri)
