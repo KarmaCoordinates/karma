@@ -26,8 +26,8 @@ def run_app():
 
 
 
-    resources_folder = 'resources'
-    web_content.write_content(resources_folder)
+    static_files_folder = '.static'
+    web_content.write_content(static_files_folder)
 
     model_choice = 'RandomForest'
 
