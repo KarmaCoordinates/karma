@@ -7,7 +7,7 @@ def write_content(static_files_folder):
     st.title('Karma Coordinates Calculator App')
 
     # web content
-    st.image(f'{static_files_folder}/kapil-muni-image.png', caption='Kapil Muni 5561 BCE')
+    st.image(f'{static_files_folder}/kapil-muni-image.png', caption='Kapil Muni 5561 BCE', width=250)
 
     pdf = f'<a href="{static_files_folder}/samkhya-karika.pdf">pdf</a>'
 
