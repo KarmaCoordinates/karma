@@ -9,7 +9,7 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
     df, X, y, label_encoder = functions.read_features(df)
     categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
     model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
-    model = ff.load_pickle_obj(bucket_name, pickled_model_data_file)
+    model = ff.load_pickle_obj_from_s3(bucket_name, pickled_model_data_file)
 
     accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
