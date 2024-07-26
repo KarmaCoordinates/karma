@@ -4,55 +4,41 @@
 ### Version: 1.1
 
 ## Overview
-This paper explains the formula used to calculate Karma Coordinates. Every attempt is made to provide references to the philosophical and/or theological doctrines that contributed to the concept of Karma Coordinates. It is only upon contemplation and meditation on these doctrines has the concept of Karma Coordinates manifested itself. 
+This paper explains the logic behind Karma coordinate calculations. Every attempt is made to provide references to the philosophical and/or theological and/or deduction-by-inference doctrines that contributed to the concept of Karma Coordinates. It is only upon the contemplation and meditation on these doctrines has the concept of Karma Coordinates manifested itself. 
 
-People in different phases and/or states of their lives may have varied opinions on some of these doctrines from completely in agreement to completely in denial. Such varied opinion shall not keep anyone from benefitting from Karma Coordinates. The first and foremost benefit is that it will set you on a path of success. The fundamental aspect of Karma Coordinates is to measure, assess and help grow the clarity one requires in deciphering what is true and what is not true. With clarity of thoughts one reaches best decisions which can achieve miracles! The second benefit is to develop a philosophical thought process that is needed in today's complex and challenging world to overcome difficult times, which happen to everyone of us, that we are unable to do anything about. The third benefit is to help you be the master of your own destiny.
+People in different phases and states/conditions of their lives may have varied opinions on these doctrines from completely in agreement to completely in denial. Such varied opinion however shall not keep anyone from benefitting from Karma Coordinates. The first and foremost benefit is that it will set you on a *path of success*. The second benefit is the effective development of *thought process* that is a must in today's complex and challenging world to overcome difficult times, which happen to everyone of us and are beyond our control. The third benefit is to *learn various activities* you can do to help yourself grow - become the *master of your own destiny*.
 
+## Clarity of thinking
+The fundamental aspect of Karma Coordinates is to *measure, assess and help grow the clarity of thinking* that one requires in deciphering what is true and real and what is not. With clarity of thoughts one arrives at right decisions which achieve miracles! 
 
+When one remembers a thing, what is actually happening? We know, the brain *physically gets modified* to retain the information. Everything we see, hear, smell, taste and touch - our five sensory faculties are constantly collecting information, sending it to brain, which too is constantly getting physically modified. The physical modifications of brain can be categorized in four types 1) false information 2) inaccurate information  3) complecency and 4) true knowledge. 
+
+- False information: Visualize a scenario, you walk into a dark room and there is a rope on the floor. You think it is a snake. You get scared and run out of the room. What has happened here? Well, actually your brain got physically modified and now has retained a piece of information that there is a snake in the room. Imagine hundreds of such *false information* registering in a brain. Will decisions based on such information right, beneficial to self?  
+- Inaccurate information: Many people are born with or develop faulty sensory faculties. For example, in the evening you see a person standing 500 feet away when there is actually a tree, etc. Imagine hundreds of such *inaccuarate information* registering in a brain. Decisions are not going to be based on reality and truth. 
+- Complecency: Compecency is a state where not much modifications are happening. You go to office, nothing new happens. You sit in front of TV, nothing new is seen. No new information is being registered. Such stagnation is not conducive to continuously developing clarity of thinking.
+- True knowledge: True knowledge is a state where the above three are missing. It is a state of physical modification where a brain holds only the true and real information. Visualize this state, all decisions in this state will right. One will have complete clarity of things observed by the five sensory faculties.
 
 ## Factors used in calculating Karma Corodinates
+The clarity of one's thinking is thus the fundamental aspect of Karma Coordinates computation. Below are the positive and negative factors used in computing Karma Coordinates. Positive factors help develop clarity and negative factors make thinking foggy.
+
 ### Positive factors
 - Knowledge: This is measured in terms of years of education and/or equivalent experience.
 - Discipline: Certain disciplines develop natural inclination to rationalization and proensity to achieving clarity.
-- Diet: Our diet supports our activities. One of the activity to achieve clarity is the way we think. Excessively lithargic diet will not help in growing the clarity. Whereas diet that is stimulating will help in growing the clarity.
-- Workout: Regular workout is essential to keep us healthy and create vital forces. In poor health most likely time will be spent on taking care of the physical needs. There won't be any time left for dedicated effort in achieving clarity of thoughts.
-- Spirituality: Sprituality or thinking about questions such as what is the purpose of this universe, why are life forms created, what is our purpose, is an essential activity to trigger the process of achieving clarity. 
+- Diet: Our diet supports our activities. One of the activities to grow clarity is our ability to think. Excessively lithargic diet thus will not help. Whereas diet that are stimulating will help.
+- Workout: Regular workout is essential to remain healthy and create necessary vital forces. In poor health most likely time will be spent on taking care of the physical needs. There won't be any time left for dedicated effort in growing clarity of thoughts.
+- Philosophy/Spirituality: Sprituality or thinking about questions such as what is the purpose of this universe, why are life forms created, what is our purpose, is an essential activity to trigger the process of developing clarity. 
 - Fasting: Fasting is a tools for developing control over one's impulses. It is a tool to achieve good health as well.
 ### Negative factors
-- Drink: Drinking/smoking, etc muddy one's thinking. And works against the process of clarity development.
+- Drink: Drinking/smoking, etc muddies one's thinking. And works against the process of clarity development.
 - Positive or negative emotions: Both positive and negative emotions take over / dominates one's thinking and thus deviating one from the path of achieving clarity.
-- Use of swear words: Use of swear words typically is a state where one lacks the vocabulary to articulate the state of mind. Right vocabulary is a must tool so when one thinks there is also a right formulation of reasoning.
+- Use of swear words: Use of swear words is a state where one lacks the vocabulary to articulate the state of mind. Right vocabulary is a must tool so when one thinks there can be right formulation of reasoning.
 
 
-# What is the basis of transmigrating through many existences?
-- Number of species, every *Jiva* *Sukshma* has to transmigrate,  
-
-# Who achieves Moksha
-कर्मजं बुद्धियुक्ता हि फलं त्यक्त्वा मनीषिण: | जन्मबन्धविनिर्मुक्ता: पदं गच्छन्त्यनामयम् || 51|| (Bhagavad Gita, ch. 2 verse.51).
-
-The wise ones, whose mind is immersed in wisdom and intelligence, detach themselves from the fruit of born of their actions. On doing so they free themselves from the bondage of re-birth and thus go on to attain a state of being which is beyond all sufferings (Bhagavad Gita, ch. 2 verse.51)..
-
-## Duration of universe
-
-सहस्रयुगपर्यन्तमहर्यद्ब्रह्मणो विदु: | रात्रिं युगसहस्रान्तां तेऽहोरात्रविदो जना: || 17|| (Bhagavad Gita, ch. 8 verse.17).
-One day of Brahma (kalp) lasts a thousand cycles of the four ages (mahā yug) and his night also extends for the same span of time. The wise who know this understand the reality about day and night (Bhagavad Gita, ch. 8 verse.17)..
-
-## Number of species:
-Knowing the number of species on Earth is one of the most basic yet elusive questions in science. Unfortunately, obtaining an accurate number is constrained by the fact that most species remain to be described and because indirect attempts to answer this question have been highly controversial. Here, we document that the taxonomic classification of species into higher taxonomic groups (from genera to phyla) follows a consistent pattern from which the total number of species in any taxonomic group can be predicted. Assessment of this pattern for all kingdoms of life on Earth predicts ∼8.7 million (±1.3 million SE) species globally, of which ∼2.2 million (±0.18 million SE) are marine. Our results suggest that some 86% of the species on Earth, and 91% in the ocean, still await description (Mora C et al., 2011).
+## Many lives or transmigrating through many existences
+We now know about the clarity of thinking. It is computed on a scale of 0 to 1. Now we need to transpose that score into number of lives. Here we rely on 1) concept that every *Sukshma* transmigrate through every species, 2) number of species in the universe 3) the end of the journey *Moksh*  and 4) duration of universe.
 
 
-॥ श्रीविष्णुरुवाच ॥ ॥ पुत्र त्वं विधिना चाद्य कुरु ब्रह्मांडगोलके ॥ पातालं भूतलं चैव सिंधुसागरकाननम्‌ ॥ २६ ॥ वृक्षाश्च गिरयो द्विपदाः पशवस्तथा ॥ पक्षिणश्रैव गंधर्वाः सिद्वा यक्षाश्च राक्षसाः ॥ २७॥ श्रापदाद्याश्च ये जीवाश्चतुराशीतियोनयः ॥ उद्भिजाः स्वेदजाश्चैव जरायुजास्तथांडजाः ॥२८॥ **एकविंशतिलक्षाणि एकैकस्य च योनयः** ॥ कुरु त्वं सकलं चाशु इत्युक्त्वांतरधीयत ॥ ब्रह्मणा निर्मितं सर्वं ब्रह्मांडं च यथोदितम्‌ ॥ २९ ॥ (Shri Skand Purana 3, Brahma Khanda 2, Dharmaranya Khanda 8.26-8.29)
-
-Śrīviṣṇu said (to Brahma): "Now, dear son, create duly nether worlds, earth, rivers, seas and forests in the Cosmic Sphere. The following too should be created: trees, mountains, bipeds, animals, birds, Gandharvas, Siddhas, Yakṣas, Rākṣasas, beasts of prey and all those living beings. They are to be of four different types, each consisting of two million and one hundred thousand species (**eight million and four hundred thousand species**). They are: (1) Udbhijjas or species of vegetation that grow breaking up the surface of the earth; (2) Svedajas or sweat-born ones such as insects, worms etc.; (3) Jarāyujas (viviparous beings) and (4) Aṇḍajas (oviparous beings). You create all these things quickly.” After saying this, he vanished. The Cosmic Egg was created by Brahmā in the manner as instructed (Shri Skand Purana 3, Brahma Khanda 2, Dharmaranya Khanda 8.26-8.29).
-
-अथान्यचाप्युक्तं यः कर्त्ता सोऽयं वै भूतात्मा करणैःकारयिताऽन्तःपुरुषः। अथ यथाग्निनाऽयः पिण्डो वाऽभिभूतः कर्तृभिर्हन्यमानो नानात्वमुपैत्येवं वाव खल्वसौ भूतात्माऽन्तःपुरुषेणाभिभूतो गुणैर्हन्यमानो नानात्वमुपैत्यथ यत्त्रिगुणं | **चतुरशीतिलक्षयोनि** परिणतं भूतत्रिगुणमेतद्वै नानात्वस्य रूपं | तानि ह वा एतानि गुणानि पुरुषेणेरितानि चक्रमिव चक्रिणेति | अथ यथाऽयः पिण्डे हन्यमाने नाग्निरभिभूयत्येवं नाभिभूयत्यसौ पुरुषोऽभिभूयत्ययं भूतात्मोपसं श्लिष्टत्वात् इति ॥ ३ ॥ (Sanskrit Commentary of Upanishad Brahmayogin, 2016, p. 437)
-
-अथान्यचाप्युक्तं यः कर्त्ता सोऽयं वै भूतात्मा करणैःकारयितान्तःपुरुषः। अथ यथाग्निनाऽयस्पिण्डो वाभिभूतः कर्तृभिर्हन्यमानो नानात्वमुपैत्येवं वाव खल्वसौ भूतात्मान्तःपुरुषेणाभिभूतो गुणैर्हन्यमानो नानात्वमुपैति | **चतुर्जालं चतुर्दशविधं चतुरशीतिधा** परिणतं भूतगणमेतद्दै नानात्वस्य रूपं | तानि इ वा एतानि गुणानि पुरुषेणेरितानि चक्रमिव मृत्पचेनेति | अथ यथाऽयस्पिण्डे हन्यमाने नाग्निरांभभूयत्यावं नाभिभूयत्यसौ पुरुषोऽभिभूयत्ययं भूतात्मोपसंश्लिष्टत्वादिति ॥ ३ ॥ (Ed by K B Cowell With Commentary By Rama Tirtha, 1935, p. 48)
-
-Through 8.4 million incarnations they wander lost and confused; through all their wandering and roaming, they are ruined (DiscoverSikhism, p. 129, 3.27-4).
-
-
-## Rebirth through every species
+### Rebirth through every species
 
 जातस्य हि ध्रुवो मृत्युर्ध्रुवं जन्म मृतस्य च | तस्मादपरिहार्येऽर्थे न त्वं शोचितुमर्हसि || 27|| (Bhagavad Gita, ch. 2 verse. 27).
 Death is certain for one who has been born, and rebirth is inevitable for one who has died. Therefore, you should not lament over the inevitable (Bhagavad Gita, ch. 2 verse. 27).
@@ -75,11 +61,37 @@ Just as the embodied soul continuously passes from childhood to youth to old age
 वासांसि जीर्णानि यथा विहाय नवानि गृह्णाति नरोऽपराणि | तथा शरीराणि विहाय जीर्णा न्यन्यानि संयाति नवानि देही || 22|| (Bhagavad Gita, ch. 2 verse. 22).
 As a person sheds worn-out garments and wears new ones, likewise, at the time of death, the soul casts off its worn-out body and enters a new one (Bhagavad Gita, ch. 2 verse. 22)..
 
+
+### Number of species:
+Knowing the number of species on Earth is one of the most basic yet elusive questions in science. Unfortunately, obtaining an accurate number is constrained by the fact that most species remain to be described and because indirect attempts to answer this question have been highly controversial. Here, we document that the taxonomic classification of species into higher taxonomic groups (from genera to phyla) follows a consistent pattern from which the total number of species in any taxonomic group can be predicted. Assessment of this pattern for all kingdoms of life on Earth predicts ∼8.7 million (±1.3 million SE) species globally, of which ∼2.2 million (±0.18 million SE) are marine. Our results suggest that some 86% of the species on Earth, and 91% in the ocean, still await description (Mora C et al., 2011).
+
+
+॥ श्रीविष्णुरुवाच ॥ ॥ पुत्र त्वं विधिना चाद्य कुरु ब्रह्मांडगोलके ॥ पातालं भूतलं चैव सिंधुसागरकाननम्‌ ॥ २६ ॥ वृक्षाश्च गिरयो द्विपदाः पशवस्तथा ॥ पक्षिणश्रैव गंधर्वाः सिद्वा यक्षाश्च राक्षसाः ॥ २७॥ श्रापदाद्याश्च ये जीवाश्चतुराशीतियोनयः ॥ उद्भिजाः स्वेदजाश्चैव जरायुजास्तथांडजाः ॥२८॥ **एकविंशतिलक्षाणि एकैकस्य च योनयः** ॥ कुरु त्वं सकलं चाशु इत्युक्त्वांतरधीयत ॥ ब्रह्मणा निर्मितं सर्वं ब्रह्मांडं च यथोदितम्‌ ॥ २९ ॥ (Shri Skand Purana 3, Brahma Khanda 2, Dharmaranya Khanda 8.26-8.29)
+
+Śrīviṣṇu said (to Brahma): "Now, dear son, create duly nether worlds, earth, rivers, seas and forests in the Cosmic Sphere. The following too should be created: trees, mountains, bipeds, animals, birds, Gandharvas, Siddhas, Yakṣas, Rākṣasas, beasts of prey and all those living beings. They are to be of four different types, each consisting of two million and one hundred thousand species (**eight million and four hundred thousand species**). They are: (1) Udbhijjas or species of vegetation that grow breaking up the surface of the earth; (2) Svedajas or sweat-born ones such as insects, worms etc.; (3) Jarāyujas (viviparous beings) and (4) Aṇḍajas (oviparous beings). You create all these things quickly.” After saying this, he vanished. The Cosmic Egg was created by Brahmā in the manner as instructed (Shri Skand Purana 3, Brahma Khanda 2, Dharmaranya Khanda 8.26-8.29).
+
+अथान्यचाप्युक्तं यः कर्त्ता सोऽयं वै भूतात्मा करणैःकारयिताऽन्तःपुरुषः। अथ यथाग्निनाऽयः पिण्डो वाऽभिभूतः कर्तृभिर्हन्यमानो नानात्वमुपैत्येवं वाव खल्वसौ भूतात्माऽन्तःपुरुषेणाभिभूतो गुणैर्हन्यमानो नानात्वमुपैत्यथ यत्त्रिगुणं | **चतुरशीतिलक्षयोनि** परिणतं भूतत्रिगुणमेतद्वै नानात्वस्य रूपं | तानि ह वा एतानि गुणानि पुरुषेणेरितानि चक्रमिव चक्रिणेति | अथ यथाऽयः पिण्डे हन्यमाने नाग्निरभिभूयत्येवं नाभिभूयत्यसौ पुरुषोऽभिभूयत्ययं भूतात्मोपसं श्लिष्टत्वात् इति ॥ ३ ॥ (Sanskrit Commentary of Upanishad Brahmayogin, 2016, p. 437)
+
+अथान्यचाप्युक्तं यः कर्त्ता सोऽयं वै भूतात्मा करणैःकारयितान्तःपुरुषः। अथ यथाग्निनाऽयस्पिण्डो वाभिभूतः कर्तृभिर्हन्यमानो नानात्वमुपैत्येवं वाव खल्वसौ भूतात्मान्तःपुरुषेणाभिभूतो गुणैर्हन्यमानो नानात्वमुपैति | **चतुर्जालं चतुर्दशविधं चतुरशीतिधा** परिणतं भूतगणमेतद्दै नानात्वस्य रूपं | तानि इ वा एतानि गुणानि पुरुषेणेरितानि चक्रमिव मृत्पचेनेति | अथ यथाऽयस्पिण्डे हन्यमाने नाग्निरांभभूयत्यावं नाभिभूयत्यसौ पुरुषोऽभिभूयत्ययं भूतात्मोपसंश्लिष्टत्वादिति ॥ ३ ॥ (Ed by K B Cowell With Commentary By Rama Tirtha, 1935, p. 48)
+
+Through 8.4 million incarnations they wander lost and confused; through all their wandering and roaming, they are ruined (DiscoverSikhism, p. 129, 3.27-4).
+
+
+### *Moksha*
+कर्मजं बुद्धियुक्ता हि फलं त्यक्त्वा मनीषिण: | जन्मबन्धविनिर्मुक्ता: पदं गच्छन्त्यनामयम् || 51|| (Bhagavad Gita, ch. 2 verse.51).
+
+The wise ones, whose mind is immersed in wisdom and intelligence, detach themselves from the fruit of born of their actions. On doing so they free themselves from the bondage of re-birth and thus go on to attain a state of being which is beyond all sufferings (Bhagavad Gita, ch. 2 verse.51)..
+
+### Duration of *Prakriti*
+
+सहस्रयुगपर्यन्तमहर्यद्ब्रह्मणो विदु: | रात्रिं युगसहस्रान्तां तेऽहोरात्रविदो जना: || 17|| (Bhagavad Gita, ch. 8 verse.17).
+One day of Brahma (kalp) lasts a thousand cycles of the four ages (mahā yug) and his night also extends for the same span of time. The wise who know this understand the reality about day and night (Bhagavad Gita, ch. 8 verse.17)..
+
+
 ###
 
-## Deduction
-### If I exist now, isn't it a proof enough that I will exist again? What is stopping me from existing again? "I" is an awareness. 
-
+## Conclusion by inference
+Everyday we witness millions of *Jiv* being born around us in various species and millions dying. Every *Jiv* has a unique experience. A thing can come into an existence at a point, and registers unique experiences. What was the precursors to all these *Jiv*? Why every *Jiv* has a unique experience? What was the precursor to one coming into existence? Is is possible that similar recursor will happen again and cause an existence? And what is a *Jiv* - isn't it just an awareness?
 
 
 ## References
@@ -99,8 +111,8 @@ DiscoverSikhism (2013), *Sri Guru Granth Sahib Ji*,  https://archive.org/details
 
 
 
-## Resource Reference Style
+[## Resource Reference Style
 - https://guides.libraries.psu.edu/apaquickguide/overview; https://apastyle.apa.org/learn/faqs/index
 - MLA Core Elements: Author Last Name, First initial. Middle initial. (Year Published). Title of work. https://doi.org/xxxx or http://xxxx
-- APA in-text citation style uses the author's last name and the year of publication, for example: (Field, 2005). For direct quotations, include the page number as well, for example: (Field, 2005, p. 14).
+- APA in-text citation style uses the author's last name and the year of publication, for example: (Field, 2005). For direct quotations, include the page number as well, for example: (Field, 2005, p. 14).]::
 
