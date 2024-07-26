@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 import logging
 
-temp_folder = 'resources'
+temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/streamlit-app.log', filemode='w', level=logging.INFO)
 
 # return df
