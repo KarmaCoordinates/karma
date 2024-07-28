@@ -38,8 +38,7 @@ The clarity of one's thinking is thus the fundamental aspect of Karma Coordinate
 We scale the above factors and calculate the clarity of thinking score as: knowledge + discipline + diet + workout - drink + spirituality -  positive emotions - negative_emotion + fasting - swear_words
 
 ## Calculating number of lives 
-The calculated clarity of thinking score is scaled to 0 to 1. Now we need to transpose that score into number of lives. Here we rely on 1) concept that every *Sukshma* transmigrate through every species, and 2) duration of universe.
-
+The calculated clarity of thinking score is scaled to 0 to 1. We then transpose it into *number of lives* based on 1) a concept that every *Sukshm* transmigrate through every species, and 2) duration of universe.
 
 ### *Sukshm* transmigrating through every species
 जातस्य हि ध्रुवो मृत्युर्ध्रुवं जन्म मृतस्य च | तस्मादपरिहार्येऽर्थे न त्वं शोचितुमर्हसि || 27|| (Bhagavad Gita, ch. 2 verse. 27).
