@@ -1,24 +1,25 @@
 # Title: Calculating Karma Coodinates
 ### Author: Sandeep Dixit
+### Email: *sdixit@ohioedge.com*
 ### Date: July 24, 2004
 ### Version: 1.1
 
 ## Overview
-This paper explains the logic behind Karma coordinate calculations. Every attempt is made to provide references to the philosophical and/or theological and/or deduction-by-inference doctrines that contributed to the concept of Karma Coordinates. It is only upon the contemplation and meditation on these doctrines has the concept of Karma Coordinates manifested itself. 
+This paper explains the logic behind Karma coordinate calculations. Every attempt is made to provide references to the scientific and/or philosophical and/or theological doctrines that contributed to the concept of Karma Coordinates. It is only upon the contemplation and meditation on these doctrines has the concept of Karma Coordinates manifested itself. 
 
 People in different phases and states/conditions of their lives may have varied opinions on these doctrines from completely in agreement to completely in denial. Such varied opinion however shall not keep anyone from benefitting from Karma Coordinates. The first and foremost benefit is that it will set you on a *path of success*. The second benefit is the effective development of *thought process* that is a must in today's complex and challenging world to overcome difficult times, which happen to everyone of us and are beyond our control. The third benefit is to *learn various activities* you can do to help yourself grow - become the *master of your own destiny*.
 
 ## Clarity of thinking
 The fundamental aspect of Karma Coordinates is to *measure, assess and help grow the clarity of thinking* that one requires in deciphering what is true and real and what is not. With clarity of thoughts one arrives at right decisions which achieve miracles! 
 
-When one remembers a thing, what is actually happening? We know, the brain *physically gets modified* to retain the information. Everything we see, hear, smell, taste and touch - our five sensory faculties are constantly collecting information, sending it to brain, which too is constantly getting physically modified. The physical modifications of brain can be categorized in four types 1) false information 2) inaccurate information  3) complecency and 4) true knowledge. 
+When one remembers a thing, what is actually happening? We know, the brain *physically gets modified* to retain the information. Everything we see, hear, smell, taste and touch - our five sensory faculties are constantly collecting information, sending it to brain, which too is constantly getting physically modified. The physical modifications of brain can be categorized in four types 1) false information 2) inaccurate information  3) complacency and 4) true knowledge. 
 
 - False information: Visualize a scenario, you walk into a dark room and there is a rope on the floor. You think it is a snake. You get scared and run out of the room. What has happened here? Well, actually your brain got physically modified and now has retained a piece of information that there is a snake in the room. Imagine hundreds of such *false information* registering in a brain. Will decisions based on such information right, beneficial to self?  
 - Inaccurate information: Many people are born with or develop faulty sensory faculties. For example, in the evening you see a person standing 500 feet away when there is actually a tree, etc. Imagine hundreds of such *inaccuarate information* registering in a brain. Decisions are not going to be based on reality and truth. 
-- Complecency: Compecency is a state where not much modifications are happening. You go to office, nothing new happens. You sit in front of TV, nothing new is seen. No new information is being registered. Such stagnation is not conducive to continuously developing clarity of thinking.
-- True knowledge: True knowledge is a state where the above three are missing. It is a state of physical modification where a brain holds only the true and real information. Visualize this state, all decisions in this state will right. One will have complete clarity of things observed by the five sensory faculties.
+- Complacency: Complacency is a state where not much modifications are happening. You go to office, nothing new happens. You sit in front of TV, nothing new is seen. No new information is being registered. Such stagnation is not conducive to achieving clarity of thinking.
+- True knowledge: True knowledge is a state where the above three are missing. It is a state of physical modification where a brain holds only the true and real information. Visualize this state, all decisions in this state will be right. One will have complete clarity of things observed by the five sensory faculties.
 
-## Factors used in calculating Karma Corodinates
+## Calculating the clarity of thinking score
 The clarity of one's thinking is thus the fundamental aspect of Karma Coordinates computation. Below are the positive and negative factors used in computing Karma Coordinates. Positive factors help develop clarity and negative factors make thinking foggy.
 
 ### Positive factors
@@ -33,13 +34,14 @@ The clarity of one's thinking is thus the fundamental aspect of Karma Coordinate
 - Positive or negative emotions: Both positive and negative emotions take over / dominates one's thinking and thus deviating one from the path of achieving clarity.
 - Use of swear words: Use of swear words is a state where one lacks the vocabulary to articulate the state of mind. Right vocabulary is a must tool so when one thinks there can be right formulation of reasoning.
 
+### Formula
+We scale the above factors and calculate the clarity of thinking score as: knowledge + discipline + diet + workout - drink + spirituality -  positive emotions - negative_emotion + fasting - swear_words
 
-## Many lives or transmigrating through many existences
-We now know about the clarity of thinking. It is computed on a scale of 0 to 1. Now we need to transpose that score into number of lives. Here we rely on 1) concept that every *Sukshma* transmigrate through every species, 2) number of species in the universe 3) the end of the journey *Moksh*  and 4) duration of universe.
+## Calculating number of lives 
+The calculated clarity of thinking score is scaled to 0 to 1. Now we need to transpose that score into number of lives. Here we rely on 1) concept that every *Sukshma* transmigrate through every species, and 2) duration of universe.
 
 
-### Rebirth through every species
-
+### *Sukshm* transmigrating through every species
 जातस्य हि ध्रुवो मृत्युर्ध्रुवं जन्म मृतस्य च | तस्मादपरिहार्येऽर्थे न त्वं शोचितुमर्हसि || 27|| (Bhagavad Gita, ch. 2 verse. 27).
 Death is certain for one who has been born, and rebirth is inevitable for one who has died. Therefore, you should not lament over the inevitable (Bhagavad Gita, ch. 2 verse. 27).
 
@@ -54,7 +56,6 @@ Wandering and roaming through 8.4 million incarnations, you have now been given 
 
 His beings wander insanely through 8.4 million incarnations (DiscoverSikhism, p. 5650, 5.1161-7)
 
-
 देहिनोऽस्मिन्यथा देहे कौमारं यौवनं जरा । तथा देहान्तरप्राप्तिर्धीरस्तत्र न मुह्यति ॥ १३ ॥ (Bhagavad Gita, ch. 2 verse. 13).
 Just as the embodied soul continuously passes from childhood to youth to old age, similarly, at the time of death, the soul passes into another body. The wise are not deluded by this. (Bhagavad Gita, ch. 2 verse. 13).
 
@@ -62,7 +63,7 @@ Just as the embodied soul continuously passes from childhood to youth to old age
 As a person sheds worn-out garments and wears new ones, likewise, at the time of death, the soul casts off its worn-out body and enters a new one (Bhagavad Gita, ch. 2 verse. 22)..
 
 
-### Number of species:
+#### Number of species:
 Knowing the number of species on Earth is one of the most basic yet elusive questions in science. Unfortunately, obtaining an accurate number is constrained by the fact that most species remain to be described and because indirect attempts to answer this question have been highly controversial. Here, we document that the taxonomic classification of species into higher taxonomic groups (from genera to phyla) follows a consistent pattern from which the total number of species in any taxonomic group can be predicted. Assessment of this pattern for all kingdoms of life on Earth predicts ∼8.7 million (±1.3 million SE) species globally, of which ∼2.2 million (±0.18 million SE) are marine. Our results suggest that some 86% of the species on Earth, and 91% in the ocean, still await description (Mora C et al., 2011).
 
 
@@ -77,21 +78,20 @@ Knowing the number of species on Earth is one of the most basic yet elusive ques
 Through 8.4 million incarnations they wander lost and confused; through all their wandering and roaming, they are ruined (DiscoverSikhism, p. 129, 3.27-4).
 
 
-### *Moksha*
+#### *Moksha*
 कर्मजं बुद्धियुक्ता हि फलं त्यक्त्वा मनीषिण: | जन्मबन्धविनिर्मुक्ता: पदं गच्छन्त्यनामयम् || 51|| (Bhagavad Gita, ch. 2 verse.51).
 
 The wise ones, whose mind is immersed in wisdom and intelligence, detach themselves from the fruit of born of their actions. On doing so they free themselves from the bondage of re-birth and thus go on to attain a state of being which is beyond all sufferings (Bhagavad Gita, ch. 2 verse.51)..
 
 ### Duration of *Prakriti*
+In physical cosmology, the age of the universe is the time elapsed since the Big Bang. Astronomers have derived two different measurements of the age of the universe:[1] a measurement based on direct observations of an early state of the universe, which indicate an age of 13.787±0.020 billion years as interpreted with the Lambda-CDM concordance model as of 2021;[2] and a measurement based on the observations of the local, modern universe, which suggest a younger age.[3][4][5] (Wikipedia contributors. (2024, July 22). *Age of the universe*.)
 
 सहस्रयुगपर्यन्तमहर्यद्ब्रह्मणो विदु: | रात्रिं युगसहस्रान्तां तेऽहोरात्रविदो जना: || 17|| (Bhagavad Gita, ch. 8 verse.17).
 One day of Brahma (kalp) lasts a thousand cycles of the four ages (mahā yug) and his night also extends for the same span of time. The wise who know this understand the reality about day and night (Bhagavad Gita, ch. 8 verse.17)..
 
 
-###
-
-## Conclusion by inference
-Everyday we witness millions of *Jiv* being born around us in various species and millions dying. Every *Jiv* has a unique experience. A thing can come into an existence at a point, and registers unique experiences. What was the precursors to all these *Jiv*? Why every *Jiv* has a unique experience? What was the precursor to one coming into existence? Is is possible that similar recursor will happen again and cause an existence? And what is a *Jiv* - isn't it just an awareness?
+## Scientific Inquiry
+Everyday we witness millions of *Jiv* being born around us in form of various species and millions dying. Every *Jiv* has a unique experience. A *Jiv* comes into an existence, encounters unique experiences, develops *Bhav* and then perishes. What is the precursors to *Jiv*? Why every *Jiv* is presented a unique experience? If *Jiv* perishes, what continues - Who is the witness that knows after perishing of *Jiv*?? Is it an awareness, *Sukshm*, or God? In this *Prakriti* made up of three *Gunas*, what material is awareness, *Sukshm* or God made up of?
 
 
 ## References
@@ -109,6 +109,7 @@ Ed by K B Cowell With Commentary By Rama Tirtha (1935), *Maitrayaniya Upanishad*
 
 DiscoverSikhism (2013), *Sri Guru Granth Sahib Ji*,  https://archive.org/details/SriGuruGranthSahibJi-InGurmukhiRomanisedEnglish/page/n185/mode/2up
 
+Wikipedia contributors. (2024, July 22). *Age of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 23:46, July 27, 2024, from https://en.wikipedia.org/w/index.php?title=Age_of_the_universe&oldid=1236032234
 
 
 [## Resource Reference Style
