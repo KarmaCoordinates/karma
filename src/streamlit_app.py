@@ -49,7 +49,7 @@ def run_app():
     # web_content.request_feedback_note()
     # functions.show_user_feedback()
 
-    web_content.sankhya_references()
+    web_content.sankhya_references(static_files_folder)
 
 run_app()
 
