@@ -16,15 +16,7 @@ def brief(static_files_folder):
 
     pdf = f'<a href="{static_files_folder}/samkhya-karika.pdf">pdf</a>'
 
-    about_karma_coordinates = ''' 
-According to *Sankhya*, a doctrine acredited to Kapil *Muni* (Sage) dating back to 5561 BCE, *Prakriti* (the universe) exists for providing experiences to *Purush* (an experiencer) (Aniruddha. et al., 1915, p. 20, Shloka 21). *Purush* upon realization that “I exist” achieves *Moksh* (liberation) (Aniruddha. et al., 1915, p. 48-49, Shloka 64-66). *Prakriti* is constructed of three *Guna* (properties of root element) - *Sattv* (light), *Rajas* (energy) and *Tamas* (mass)  and *Purush* is an unobservable entity outside of *Prakriti* that is not constructed of these three *Gunas* (Aniruddha. et al., 1915, p. 17, Shloka 17).
-
-Every *Jiv* (life-form) in *Prakriti* is engaged in providing experiences to a *Purush* that incite *Bhav*. *Jiv* comes into an existence due to *Sukshm* (a microscopic particle). It is *Sukshm* that gets tinged with *Bhav* (acquired tendencies), carrying *Bhav* from existence to existence! Once all *Bhav* are overcome/consumed, *Purush* realizes "I exist"/becomes aware of itself and *Moksh* is achieved. A human life is the only known form of *Sukshm* that is capable of achieving *Moksh* for its *Purush*. (Aniruddha. et al., 1915, p. 33, Shloka 39-40)
-
-Once  all *Purush* awake, *Prakriti*’s work is complete and it collapses into a singularity and the next cycle of big-bang - big-crunch begins. As per the open model with omega of 6, universe is 6 billion years old and it will end when it is about 13 billion years old - that is in another 7 billion years (Wikipedia contributors. (2024, June 27); Ultimate fate of the universe).  
-
-*Sankhya*-yoga quantifies *Bhav* (tendencies), overcoming which takes a *Sukshm* closer to achieving *Moksh* (Aniruddha. et al., 1915, p. 38-41, Shloka 46-51). Karma Coordinates is a fun app developed to calculate your current position in this karmic journey of many lives - from the beginning to *Moksh* - by approximating your current *Bhav* (Sandeep Dixit, 2024). It is important to know that even small lifestyle changes can put you on a superfast-track - speeding your journey by thousands of years!
-'''
+    about_karma_coordinates = content = open(f'{static_files_folder}/karma_coordinates_summary.md', 'r').read()
 
     st.markdown(about_karma_coordinates)
     
@@ -37,19 +29,9 @@ def guna_details():
     - ***Tamas*** is the mass property in the *Prakriti*  
 '''
 
-def sankhya_references():
+def sankhya_references(static_files_folder):
     subheader = "References"
-    references = '''
-    Aniruddha. Vritti; Vijñanabhiksu, fl. 1550. Bhasya; Mahadeva Vedantin. Vritti-sara; Translated by: Nandlal Sinha (1915). *The samkhya philosophy*. Available at: https://archive.org/details/thesamkhyaphilos00sinhuoft.
-
-    Wikipedia contributors. (2024, July 19). *Samkhya*. In Wikipedia, The Free Encyclopedia. Retrieved 15:34, July 20, 2024, from https://en.wikipedia.org/w/index.php?title=Samkhya&oldid=1235515297
-
-    Wikipedia contributors. (2024, July 22). *Age of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 23:46, July 27, 2024, from https://en.wikipedia.org/w/index.php?title=Age_of_the_universe&oldid=1236032234
-
-    Wikipedia contributors. (2024, June 27). *Ultimate fate of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 15:36, July 20, 2024, from https://en.wikipedia.org/w/index.php?title=Ultimate_fate_of_the_universe&oldid=1231304126
-
-    Sandeep Dixit, 2024. *Calculating Karma Coordinates*, https://karmacoordinates.s3.us-east-2.amazonaws.com/calculating_karma_coordinates.html
-'''
+    references = content = open(f'{static_files_folder}/karma_coordinates_summary_references.md', 'r').read()
     st.subheader(subheader)
     st.markdown(references)
 
