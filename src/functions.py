@@ -209,7 +209,7 @@ def explain_prediction(prediction_label):
 def show_prediction(prediction_label):
     lives_remaining = calculate_karma_coordinates(prediction_label[0])
     st.subheader('AI prediction')
-    st.markdown(f'># Your Karma Coordinates: **{lives_remaining}** lives to Moksha.')
+    st.markdown(f'>## Your Karma Coordinates: **{lives_remaining}** lives to Moksha.')
 
 # User feedback
 def show_user_feedback():
