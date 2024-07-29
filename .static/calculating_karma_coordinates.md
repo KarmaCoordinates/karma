@@ -38,9 +38,20 @@ The clarity of one's thinking is thus the fundamental aspect of Karma Coordinate
 We scale the above factors and calculate the clarity of thinking score as: knowledge + discipline + diet + workout - drink + spirituality -  positive emotions - negative_emotion + fasting - swear_words
 
 ## Calculating number of lives 
-The calculated clarity of thinking score is scaled to 0 to 1. We then transpose it into *number of lives* based on 1) a concept that every *Sukshm* transmigrate through every species, and 2) duration of universe.
+The calculated clarity of thinking score is scaled to 0 to 1. It is then transposed into *number of lives* based on 1) duration of universe, and 2) a concept that every *Sukshm* transmigrate through every species - and average duration of each life/existence.
+
+### Duration of *Prakriti*
+Duration of *Prakriti*, i.e. the age of the universe is an evolving number. Varying from 7 billion years old to 13.8 billion years old. For Karma Coordiates calculation currently we have used The Friedmann Equation model. As per the open model with omega of 6, universe is 7 billion years old and it will end when it is about 13 billion years old - that is in another 7 billion years (Wikipedia contributors. (2024, June 27); Ultimate fate of the universe).
+
+In physical cosmology, the age of the universe is the time elapsed since the Big Bang. Astronomers have derived two different measurements of the age of the universe: a measurement based on direct observations of an early state of the universe, which indicate an age of 13.787±0.020 billion years as interpreted with the Lambda-CDM concordance model as of 2021; and a measurement based on the observations of the local, modern universe, which suggest a younger age. (Wikipedia contributors. (2024, July 22). *Age of the universe*.)
+
+सहस्रयुगपर्यन्तमहर्यद्ब्रह्मणो विदु: | रात्रिं युगसहस्रान्तां तेऽहोरात्रविदो जना: || 17|| (Bhagavad Gita, ch. 8 verse.17).
+One day of Brahma (kalp) lasts a thousand cycles of the four ages (mahā yug) and his night also extends for the same span of time. The wise who know this understand the reality about day and night (Bhagavad Gita, ch. 8 verse.17)..
+
 
 ### *Sukshm* transmigrating through every species
+*Sukshm* is the finest microscoping particle in *Prakriti* that brings *Jiv* into existence. *Sukshm* is premordial, independent, continuous, a finest particle in the universe. It goes from existence to existence - and gets tinged with *Bhav* (tendencies) during an existence. (Aniruddha. et al., 1915, p. 33, Shloka 39-40)
+
 जातस्य हि ध्रुवो मृत्युर्ध्रुवं जन्म मृतस्य च | तस्मादपरिहार्येऽर्थे न त्वं शोचितुमर्हसि || 27|| (Bhagavad Gita, ch. 2 verse. 27).
 Death is certain for one who has been born, and rebirth is inevitable for one who has died. Therefore, you should not lament over the inevitable (Bhagavad Gita, ch. 2 verse. 27).
 
@@ -82,18 +93,18 @@ Through 8.4 million incarnations they wander lost and confused; through all thei
 
 The wise ones, whose mind is immersed in wisdom and intelligence, detach themselves from the fruit of born of their actions. On doing so they free themselves from the bondage of re-birth and thus go on to attain a state of being which is beyond all sufferings (Bhagavad Gita, ch. 2 verse.51)..
 
-### Duration of *Prakriti*
-In physical cosmology, the age of the universe is the time elapsed since the Big Bang. Astronomers have derived two different measurements of the age of the universe:[1] a measurement based on direct observations of an early state of the universe, which indicate an age of 13.787±0.020 billion years as interpreted with the Lambda-CDM concordance model as of 2021;[2] and a measurement based on the observations of the local, modern universe, which suggest a younger age.[3][4][5] (Wikipedia contributors. (2024, July 22). *Age of the universe*.)
-
-सहस्रयुगपर्यन्तमहर्यद्ब्रह्मणो विदु: | रात्रिं युगसहस्रान्तां तेऽहोरात्रविदो जना: || 17|| (Bhagavad Gita, ch. 8 verse.17).
-One day of Brahma (kalp) lasts a thousand cycles of the four ages (mahā yug) and his night also extends for the same span of time. The wise who know this understand the reality about day and night (Bhagavad Gita, ch. 8 verse.17)..
-
 
 ## Scientific Inquiry
 Everyday we witness millions of *Jiv* being born around us in form of various species and millions dying. Every *Jiv* has a unique experience. A *Jiv* comes into an existence, encounters unique experiences, develops *Bhav* and then perishes. What is the precursors to *Jiv*? Why every *Jiv* is presented a unique experience? If *Jiv* perishes, what continues - Who is the witness that knows after perishing of *Jiv*?? Is it an awareness, *Sukshm*, or God? In this *Prakriti* made up of three *Gunas*, what material is awareness, *Sukshm* or God made up of?
 
 
 ## References
+Wikipedia contributors. (2024, June 27). *Ultimate fate of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 15:36, July 20, 2024, from https://en.wikipedia.org/w/index.php?title=Ultimate_fate_of_the_universe&oldid=1231304126
+
+Wikipedia contributors. (2024, July 22). *Age of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 23:46, July 27, 2024, from https://en.wikipedia.org/w/index.php?title=Age_of_the_universe&oldid=1236032234
+
+Aniruddha. Vritti; Vijñanabhiksu, fl. 1550. Bhasya; Mahadeva Vedantin. Vritti-sara; Translated by: Nandlal Sinha (1915). *The samkhya philosophy*. Available at: https://archive.org/details/thesamkhyaphilos00sinhuoft.
+
 Mora C, Tittensor DP, Adl S, Simpson AGB, Worm B (2011) *How Many Species Are There on Earth and in the Ocean?.* PLOS Biology 9(8): e1001127. https://doi.org/10.1371/journal.pbio.1001127
 
 Wikipedia contributors. (2024, July 10). Hindu units of time. In Wikipedia, The Free Encyclopedia. Retrieved 18:17, July 22, 2024, from https://en.wikipedia.org/w/index.php?title=Hindu_units_of_time&oldid=1233715670
@@ -109,7 +120,6 @@ Ed by K B Cowell With Commentary By Rama Tirtha (1935), *Maitrayaniya Upanishad*
 DiscoverSikhism (2013), *Sri Guru Granth Sahib Ji*,  https://archive.org/details/SriGuruGranthSahibJi-InGurmukhiRomanisedEnglish/page/n185/mode/2up
 
 Wikipedia contributors. (2024, July 22). *Age of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 23:46, July 27, 2024, from https://en.wikipedia.org/w/index.php?title=Age_of_the_universe&oldid=1236032234
-
 
 [## Resource Reference Style
 - https://guides.libraries.psu.edu/apaquickguide/overview; https://apastyle.apa.org/learn/faqs/index
