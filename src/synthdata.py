@@ -23,8 +23,10 @@ amount_of_knowledge_df = pd.DataFrame(
     amount_of_knowledge, columns=["knowledge", "knowledge_weight"]
 )
 amount_of_knowledge_df["knowledge_scaled_weight"] = scale(
-    amount_of_knowledge_df["knowledge_weight"]
+    amount_of_knowledge_df["knowledge_weight"].astype(str)
 )
+
+# amount_of_knowledge_df['knowledge'] = amount_of_knowledge_df['knowledge'].astype(str)
 
 
 disciplines = [
@@ -162,4 +164,4 @@ chunk_size = 1440000
 num_chunks = len(df) // chunk_size + 1
 
 for i, chunk in enumerate(np.array_split(df, num_chunks)):
-    chunk.to_csv(f"resources/kc3_synthout_chunk_{i}.csv", index=False)
+    chunk.to_csv(f".tmp/kc3_synthout_chunk_{i}.csv", index=False)
