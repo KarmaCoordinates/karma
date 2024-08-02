@@ -23,10 +23,8 @@ amount_of_knowledge_df = pd.DataFrame(
     amount_of_knowledge, columns=["knowledge", "knowledge_weight"]
 )
 amount_of_knowledge_df["knowledge_scaled_weight"] = scale(
-    amount_of_knowledge_df["knowledge_weight"].astype(str)
+    amount_of_knowledge_df["knowledge_weight"]
 )
-
-# amount_of_knowledge_df['knowledge'] = amount_of_knowledge_df['knowledge'].astype(str)
 
 
 disciplines = [

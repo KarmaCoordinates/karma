@@ -7,3 +7,5 @@ Wikipedia contributors. (2024, July 22). *Age of the universe*. In Wikipedia, Th
 Wikipedia contributors. (2024, June 27). *Ultimate fate of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 15:36, July 20, 2024, from https://en.wikipedia.org/w/index.php?title=Ultimate_fate_of_the_universe&oldid=1231304126
 
 Sandeep Dixit, 2024. *Calculating Karma Coordinates*, https://karmacoordinates.s3.us-east-2.amazonaws.com/calculating_karma_coordinates.html
+
+Sandeep Dixit, 2024, *Sankhya Karika AI Public Dataset*, https://www.kaggle.com/datasets/sandeepdixit1/sankhya-karika
