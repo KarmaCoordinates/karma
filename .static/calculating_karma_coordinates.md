@@ -121,7 +121,7 @@ DiscoverSikhism (2013), *Sri Guru Granth Sahib Ji*,  https://archive.org/details
 
 Wikipedia contributors. (2024, July 22). *Age of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 23:46, July 27, 2024, from https://en.wikipedia.org/w/index.php?title=Age_of_the_universe&oldid=1236032234
 
-Sandeep Dixit, 2024, *Sankhya Karika AI Public Dataset*, https://www.kaggle.com/datasets/sandeepdixit1/sankhya-karika
+Sandeep Dixit, 2024, *Sankhya Karika AI Public Dataset*, https://www.kaggle.com/datasets/sandeepdixit1/sankhya-karika or https://huggingface.co/datasets/sdixit/sankhya-karika
 
 [## Resource Reference Style
 - https://guides.libraries.psu.edu/apaquickguide/overview; https://apastyle.apa.org/learn/faqs/index
