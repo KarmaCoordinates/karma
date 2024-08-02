@@ -8,4 +8,4 @@ Wikipedia contributors. (2024, June 27). *Ultimate fate of the universe*. In Wik
 
 Sandeep Dixit, 2024. *Calculating Karma Coordinates*, https://karmacoordinates.s3.us-east-2.amazonaws.com/calculating_karma_coordinates.html
 
-Sandeep Dixit, 2024, *Sankhya Karika AI Public Dataset*, https://www.kaggle.com/datasets/sandeepdixit1/sankhya-karika
+Sandeep Dixit, 2024, *Sankhya Karika AI Public Dataset*, https://www.kaggle.com/datasets/sandeepdixit1/sankhya-karika or https://huggingface.co/datasets/sdixit/sankhya-karika
