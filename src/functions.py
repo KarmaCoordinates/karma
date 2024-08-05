@@ -20,6 +20,7 @@ import file_functions as ff
 from streamlit_star_rating import st_star_rating
 
 page_init = False
+prediction_init = False
 # only act on one key at a time
 # don't do anything during first page loading
 # once page is loaded, reset the key remembered in session.loading
@@ -224,8 +225,11 @@ def show_prediction(prediction_label):
     lives_remaining = calculate_karma_coordinates(prediction_label[0])
     st.subheader('AI prediction')
     # all not rating clicks are assumed to be selectbox on_clicks
-    if 'loading' in st.session_state and st.session_state.loading.startswith('kk_inputs_'):
-        st.markdown(f'>## Your Karma Coordinates: **{lives_remaining}** lives to Moksha.')
+    global prediction_init
+    if prediction_init or ('loading' in st.session_state and st.session_state.loading.startswith('kk_inputs_')):
+        if not prediction_init: prediction_init = True
+        prediction = f'''>## Your Karma Coordinates: :green[**{lives_remaining}**] lives to Moksha.'''
+        st.markdown(prediction)
 
 # Make prediction
 def make_prediction(model, label_encoder, input_df):
@@ -235,17 +239,20 @@ def make_prediction(model, label_encoder, input_df):
 
 # User feedback
 def show_user_feedback(user_input):
-    # st.subheader('Your Feedback')
-    sattva_choice = st.selectbox('What do you believe your Sattva is?', ('Dominant', 'High', 'Moderate', 'Low'), key='sattva_feedback', on_change=update_ui_status, args=('sattva_feedback', True))
-    rajas_choice = st.selectbox('What do you believe your Rajas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='rajas_feedback', on_change=update_ui_status, args=('rajas_feedback', True))
-    tamas_choice = st.selectbox('What do you believe your Tamas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback', on_change=update_ui_status, args=('tamas_feedback', True))
-    stars = st_star_rating("Please rate you experience", maxValue=5, defaultValue=3, key="rating", on_click=update_ui_status('rating', True))
-    return {'rating': stars, 'sattva':sattva_choice, 'rajas': rajas_choice, 'tamas':tamas_choice}
+    global prediction_init
+    if prediction_init:    
+        sattva_choice = st.selectbox('What do you believe your Sattva is?', ('Dominant', 'High', 'Moderate', 'Low'), key='sattva_feedback', on_change=update_ui_status, args=('sattva_feedback', True))
+        rajas_choice = st.selectbox('What do you believe your Rajas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='rajas_feedback', on_change=update_ui_status, args=('rajas_feedback', True))
+        tamas_choice = st.selectbox('What do you believe your Tamas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback', on_change=update_ui_status, args=('tamas_feedback', True))
+        stars = st_star_rating("Do you like the concept?", maxValue=5, defaultValue=3, key="rating", on_click=update_ui_status('rating', True))
+        return {'rating': stars, 'sattva':sattva_choice, 'rajas': rajas_choice, 'tamas':tamas_choice}
+    else: return {}
 
 def save_user_feedback(user_input):
     if 'loading' in st.session_state and st.session_state['loading'] == 'rating':
         df = pd.DataFrame(user_input, index=[0])
         df.to_csv('.tmp/user_feedback.csv', mode='a', index=False, header=False)
+        st.markdown(''':gold[Your feedback is recorded.]''')
 
 def horoscope_calculation():
     st.subheader('Include your zodiac sign and horoscope in calculations')
