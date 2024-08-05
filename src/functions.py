@@ -33,7 +33,7 @@ def update_ui_status(key, value):
     else: 
         global page_init
         if page_init:
-            if 'loading' not in st.session_state:            
+            if 'loading' not in st.session_state:  
                 st.session_state['loading'] = key
         else:
             page_init = True
@@ -236,10 +236,11 @@ def make_prediction(model, label_encoder, input_df):
 # User feedback
 def show_user_feedback(user_input):
     # st.subheader('Your Feedback')
-    satva_choice = st.selectbox('What do you believe your Satva is?', ('Dominant', 'High', 'Moderate', 'Low'), key='satva_feedback')
-    tamas_choice = st.selectbox('What do you believe your Tamas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback')
+    sattva_choice = st.selectbox('What do you believe your Sattva is?', ('Dominant', 'High', 'Moderate', 'Low'), key='sattva_feedback', on_change=update_ui_status, args=('sattva_feedback', True))
+    rajas_choice = st.selectbox('What do you believe your Rajas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='rajas_feedback', on_change=update_ui_status, args=('rajas_feedback', True))
+    tamas_choice = st.selectbox('What do you believe your Tamas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback', on_change=update_ui_status, args=('tamas_feedback', True))
     stars = st_star_rating("Please rate you experience", maxValue=5, defaultValue=3, key="rating", on_click=update_ui_status('rating', True))
-    return stars
+    return {'rating': stars, 'sattva':sattva_choice, 'rajas': rajas_choice, 'tamas':tamas_choice}
 
 def save_user_feedback(user_input):
     if 'loading' in st.session_state and st.session_state['loading'] == 'rating':

@@ -47,9 +47,9 @@ def run_app():
     functions.download_pdf(pdf, user_input, prediction_label)
 
     web_content.request_feedback_note()
-    stars = functions.show_user_feedback(user_input)
+    feedback = functions.show_user_feedback(user_input)
 
-    user_input['rating'] = stars
+    user_input.update(feedback)
     functions.save_user_feedback(user_input)
 
     web_content.sankhya_references(static_files_folder)
