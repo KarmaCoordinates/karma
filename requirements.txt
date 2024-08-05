@@ -10,3 +10,4 @@ boto3
 fsspec
 s3fs
 markdown
+st-star-rating

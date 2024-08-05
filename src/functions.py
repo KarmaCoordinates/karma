@@ -17,13 +17,31 @@ import matplotlib.pyplot as plt
 from fpdf import FPDF
 import base64
 import file_functions as ff
+from streamlit_star_rating import st_star_rating
+
+page_init = False
+# only act on one key at a time
+# don't do anything during first page loading
+# once page is loaded, reset the key remembered in session.loading
+def update_ui_status(key, value):
+    if key == 'loading':
+        if value == 'Complete':
+            if 'loading' in st.session_state: 
+                del st.session_state['loading'] 
+        else:
+            return
+    else: 
+        global page_init
+        if page_init:
+            if 'loading' not in st.session_state:            
+                st.session_state['loading'] = key
+        else:
+            page_init = True
 
 
 
 # Load the data
 def read_features(df):
-    # s3file = ff.read_from_s3('karmacoordinates', 'kc3_synthout_chunk_0.csv')
-    # df = pd.read_csv(f'{resources_folder}/kc3_synthout_chunk_0.csv')
     df = df.drop(columns=['scaled_level'])
     df['knowledge'] = df['knowledge'].astype(str)
 
@@ -134,20 +152,16 @@ def show_user_input(data_dictionary_array, df, columns, categorical_cols):
         hint = row[2]
         #hint =  column_hints()[col].iloc[0]
         if col in categorical_cols:
-            user_input[col] = st.selectbox(f'{display_name}', df[col].unique(), help=f'Answer the question: {hint}', key=f'kk_inputs_{col}')
+            key1 = f'kk_inputs_{col}'
+            user_input[col] = st.selectbox(f'{display_name}', df[col].unique(), help=f'Answer the question: {hint}', key=key1, on_change=update_ui_status, args=(key1, True))
         else:
-            user_input[col] = st.number_input(f'{display_name}', float(df[col].min()), float(df[col].max()), float(df[col].mean()), help=f'Answer the question: {hint}')
+            user_input[col] = st.number_input(f'{display_name}', float(df[col].min()), float(df[col].max()), float(df[col].mean()), help=f'Answer the question: {hint}', key=key1, on_change=update_ui_status, args=(key1, True))
 
-    # Convert user input to DataFrame
+    # Convert user input dict to DataFrame
     input_df = pd.DataFrame(user_input, index=[0])
 
     return input_df, user_input
 
-# Make prediction
-def make_prediction(model, label_encoder, input_df):
-    prediction = model.predict(input_df)
-    prediction_label = label_encoder.inverse_transform(prediction)
-    return prediction, prediction_label
 
 def calculate_karma_coordinates(prediction_label):
     # 5 billion years, prediction_lables are from 5-13 (in billion years)
@@ -209,13 +223,28 @@ def explain_prediction(prediction_label):
 def show_prediction(prediction_label):
     lives_remaining = calculate_karma_coordinates(prediction_label[0])
     st.subheader('AI prediction')
-    st.markdown(f'>## Your Karma Coordinates: **{lives_remaining}** lives to Moksha.')
+    # all not rating clicks are assumed to be selectbox on_clicks
+    if 'loading' in st.session_state and st.session_state.loading.startswith('kk_inputs_'):
+        st.markdown(f'>## Your Karma Coordinates: **{lives_remaining}** lives to Moksha.')
+
+# Make prediction
+def make_prediction(model, label_encoder, input_df):
+    prediction = model.predict(input_df)
+    prediction_label = label_encoder.inverse_transform(prediction)
+    return prediction, prediction_label
 
 # User feedback
-def show_user_feedback():
+def show_user_feedback(user_input):
     # st.subheader('Your Feedback')
     satva_choice = st.selectbox('What do you believe your Satva is?', ('Dominant', 'High', 'Moderate', 'Low'), key='satva_feedback')
     tamas_choice = st.selectbox('What do you believe your Tamas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback')
+    stars = st_star_rating("Please rate you experience", maxValue=5, defaultValue=3, key="rating", on_click=update_ui_status('rating', True))
+    return stars
+
+def save_user_feedback(user_input):
+    if 'loading' in st.session_state and st.session_state['loading'] == 'rating':
+        df = pd.DataFrame(user_input, index=[0])
+        df.to_csv('.tmp/user_feedback.csv', mode='a', index=False, header=False)
 
 def horoscope_calculation():
     st.subheader('Include your zodiac sign and horoscope in calculations')
@@ -249,6 +278,3 @@ def download_pdf(pdf, user_input, prediction_label):
         b64 = base64.b64encode(pdf_output).decode('latin1')
         href = f'<a href="data:application/octet-stream;base64,{b64}" download="prediction_report.pdf">Download PDF Report</a>'
         st.markdown(href, unsafe_allow_html=True)
-
-def end_process():
-    st.stop()
