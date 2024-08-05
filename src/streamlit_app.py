@@ -3,6 +3,7 @@ import web_content
 import streamlit as st
 import file_functions as ff
 
+
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
     data_dictionary_file = 'data_dictionary.csv'
@@ -20,17 +21,16 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
 
 
 def run_app():
-    bucket_name = 'karmacoordinates'
-    features_data_file = 'kc3_synthout_chunk_0.csv'
-    pickled_model_data_file = 'kc_model_finalized.sav'
 
-
+    # functions.refresh_ui('loading_complete', False)
 
     static_files_folder = '.static'
     web_content.brief(static_files_folder)
 
     model_choice = 'RandomForest'
-
+    bucket_name = 'karmacoordinates'
+    features_data_file = 'kc3_synthout_chunk_0.csv'
+    pickled_model_data_file = 'kc_model_finalized.sav'
     data_dictionary_array, df, columns, categorical_cols, model, label_encoder = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
@@ -46,10 +46,15 @@ def run_app():
     pdf = functions.create_pdf(input_df, prediction)
     functions.download_pdf(pdf, user_input, prediction_label)
 
-    # web_content.request_feedback_note()
-    # functions.show_user_feedback()
+    web_content.request_feedback_note()
+    stars = functions.show_user_feedback(user_input)
+
+    user_input['rating'] = stars
+    functions.save_user_feedback(user_input)
 
     web_content.sankhya_references(static_files_folder)
+
+    functions.update_ui_status('loading', 'Complete')
 
 run_app()
 
