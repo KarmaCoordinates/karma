@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 def brief(static_files_folder):
     st.set_page_config(
         page_title='Karma Coordinates',
