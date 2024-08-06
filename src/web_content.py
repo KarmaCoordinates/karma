@@ -1,12 +1,12 @@
 import streamlit as st
-from pathlib import Path
-from subprocess import check_output
-import markdown
-import webbrowser
 
 
 def brief(static_files_folder):
-    st.set_page_config(page_title="Karma Coordinates")
+    st.set_page_config(
+        page_title='Karma Coordinates',
+        page_icon=f'{static_files_folder}/favicon.ico',
+        layout='wide'
+    )    
 
     # title
     st.title('Karma Coordinates Calculator App')
