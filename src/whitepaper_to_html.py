@@ -16,7 +16,7 @@ def md_to_html(static_files_folder, md_filename, html_filename):
     with open(html_filename_path, 'w') as modified:
         modified.write('<meta http-equiv="Content-Type" content="text/html;charset=utf-8">\n' + data)    
 
-    ff.save_file_to_s3(html_filename_path, bucket_name, object_key)
+    ff.save_html_to_s3(html_filename_path, bucket_name, object_key)
 
     os.remove(html_filename_path)
 
