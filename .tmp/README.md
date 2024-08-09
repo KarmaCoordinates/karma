@@ -1,1 +1,1 @@
-# This directory will store trained model, log files, etc.
+# This directory will cache trained model, log files, etc.
