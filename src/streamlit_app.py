@@ -8,7 +8,7 @@ import file_functions as ff
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
     data_dictionary_file = 'data_dictionary.csv'
     data_dictionary_df = ff.cache_csv_from_s3(bucket_name, data_dictionary_file)
-    data_dictionary_df = data_dictionary_df.iloc[1:9, 0:3] # first row is headers, get first 8 rows and first three columns only
+    data_dictionary_df = data_dictionary_df.iloc[1:9, 0:4] # first row is headers, get first 8 rows and first three columns only
     data_dictionary_array = data_dictionary_df.to_numpy()
 
 

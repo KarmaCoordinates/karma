@@ -148,15 +148,15 @@ def show_user_input(data_dictionary_array, df, columns, categorical_cols):
     st.subheader('Calculate my Karma Coordinates')
     user_input = {}
     for row in data_dictionary_array:
-        col = row[0]
+        feature_name = row[0]
         display_name = row[1]
         hint = row[2]
         #hint =  column_hints()[col].iloc[0]
-        if col in categorical_cols:
-            key1 = f'kk_inputs_{col}'
-            user_input[col] = st.selectbox(f'{display_name}', df[col].unique(), help=f'Answer the question: {hint}', key=key1, on_change=update_ui_status, args=(key1, True))
+        if feature_name in categorical_cols:
+            key1 = f'kk_inputs_{feature_name}'
+            user_input[feature_name] = st.selectbox(f'{display_name}', df[feature_name].unique(), help=f'Answer the question: {hint}', key=key1, on_change=update_ui_status, args=(key1, True))
         else:
-            user_input[col] = st.number_input(f'{display_name}', float(df[col].min()), float(df[col].max()), float(df[col].mean()), help=f'Answer the question: {hint}', key=key1, on_change=update_ui_status, args=(key1, True))
+            user_input[feature_name] = st.number_input(f'{display_name}', float(df[feature_name].min()), float(df[feature_name].max()), float(df[feature_name].mean()), help=f'Answer the question: {hint}', key=key1, on_change=update_ui_status, args=(key1, True))
 
     # Convert user input dict to DataFrame
     input_df = pd.DataFrame(user_input, index=[0])
