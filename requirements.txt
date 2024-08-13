@@ -11,3 +11,6 @@ fsspec
 s3fs
 markdown
 st-star-rating
+langchain
+streamlit-pills
+time

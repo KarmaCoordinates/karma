@@ -5,8 +5,6 @@ import itertools
 import file_functions as ff
 from ast import literal_eval
 
-
-
 # weightage translates to how much it contributes to clarity of thinking
 
 bucket_name = 'karmacoordinates'
