@@ -4,7 +4,7 @@ from openai.types.beta.assistant_stream_event import ThreadMessageDelta
 from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
 import streamlit_pills as stp
 import time
-from collections import deque 
+# from collections import deque 
 
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
