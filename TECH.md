@@ -4,43 +4,103 @@ Use Amazon ACM to generate your certificate and attach this to your HTTPS listen
 ALB Target Group sending traffic unencrypted to port 80 on the instance.
 Security group for instances only allows port 80 access from your ALB.
 
+# server
+Canonical, Ubuntu, 24.04 LTS, amd64 noble image build on 2024-07-01
+ami-0862be96e41dcbf74
+
+#setup
+git clone https://github.com/KarmaCoordinates/karma.git
+
+sudo apt install python3.12-venv
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
+
+# keys
+kc-keys-sd.pem
 
 #create certbot certs
-# https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
-certonly --webroot --webroot-path=/var/www/html --email sdixit@ohioedge.com --agree-tos --no-eff-email --staging -d karmacoordinates.org  -d www.karmacoordinates.org
+sudo apt install snapd
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
 
+# https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
+
+sudo certbot --nginx -d karmacoordinates.org -d www.karmacoordinates.org
+email: sdixit@ohioedge.com
 
 # route 8051 to 80 
 # ref: https://eladnava.com/binding-nodejs-port-80-using-nginx/
 #ngix config
-sudo vi /etc/nginx/sites-enabled/streamlit
-## add to streamlit file
+sudo apt-get install nginx
+
+sudo vi /etc/nginx/sites-available/karmacoordinates.org
+## add to karmacoordinates.org file
 server {
     listen 80;
-    server_name karmacoordinates.org;
-    location / {
-        proxy_pass http://3.16.169.174:8501/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
+    if ($host = www.karmacoordinates.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = karmacoordinates.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
 }
+
+server {
+    listen 443 ssl;
+    server_name www.karmacoordinates.org;
+    ssl_certificate /etc/letsencrypt/live/karmacoordinates.org/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/karmacoordinates.org/privkey.pem; # managed by Certbot
+    #other ssl options
+    return 301 https://karmacoordinates.org$request_uri;
+
+
+}
+
+server {
+    listen 443 ssl;
+    server_name karmacoordinates.org;
+    #your root, index, etc. stuff
+    location / {
+        proxy_pass http://127.0.0.1:8501/;
+     proxy_set_header X-Real-IP $remote_addr;
+     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+     proxy_set_header X-Forwarded-Proto https;
+     proxy_set_header X-Forwarded-Port 443;
+     proxy_set_header Host $host;
+
+     # The following 5 lines you have to add for Streamlit to work with HTTPS
+     proxy_http_version 1.1;
+     proxy_set_header Upgrade $http_upgrade;
+     proxy_set_header Connection "upgrade";
+     proxy_buffering off;
+     proxy_read_timeout 86400;
+    }
+    ssl_certificate /etc/letsencrypt/live/karmacoordinates.org/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/karmacoordinates.org/privkey.pem; # managed by Certbot
+    #other ssl options
 
 sudo rm /etc/nginx/sites-enabled/default
 
-sudo ln -s /etc/nginx/sites-available/streamlit /etc/nginx/sites-enabled/streamlit
+sudo ln -s /etc/nginx/sites-available/karmacoordinates.org /etc/nginx/sites-enabled/karmacoordinates.org
 
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
+sudo nginx -t && sudo nginx -s reload
+sudo service restart nginx
+
 
 # s3 bucket - setup kc-dev access keys, security and us-east-2 default region
+-- sudo apt install awscli
+sudo snap install aws-cli --classic
+
+
 aws configure
-AWS Access Key ID [None]: kc-deve-key_id
+
+AWS Access Key ID [None]: kc-dev-key_id
 AWS Secret Access Key [None]: kc-dev-access_key
 Default region name [None]: us-east-2
 
