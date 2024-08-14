@@ -5,8 +5,6 @@ import file_functions as ff
 import openai_assistant_chat
 # import llama_chat
 
-
-
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
     data_dictionary_file = 'karma_coordinates_feature_dictionary.csv'
@@ -23,11 +21,11 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
 
 def run_app():
     static_files_folder = '.static'
-    web_content.set_page_config(static_files_folder)
+    web_content.page_config(static_files_folder)
 
     web_content.intro(static_files_folder)
 
-    openai_assistant_chat.init()
+    # openai_assistant_chat.init()
     openai_assistant_chat.prompt()
 
     web_content.brief(static_files_folder)

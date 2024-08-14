@@ -1,6 +1,6 @@
 import streamlit as st
 
-def set_page_config(static_files_folder):
+def page_config(static_files_folder):
     st.set_page_config(
         page_title='Karma Coordinates',
         page_icon=f'{static_files_folder}/favicon.ico',

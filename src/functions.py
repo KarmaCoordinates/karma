@@ -39,7 +39,9 @@ def update_ui_status(key, value):
         else:
             page_init = True
 
-
+def page_init():
+    global page_init
+    return page_init
 
 # Load the data
 def read_features(df):

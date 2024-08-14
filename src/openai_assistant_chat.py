@@ -4,23 +4,21 @@ from openai.types.beta.assistant_stream_event import ThreadMessageDelta
 from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
 import streamlit_pills as stp
 import time
-import secret_app as sa
+import secrets_app as sa
+import functions
 # from collections import deque 
 
-
-# OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-# ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
-
-OPENAI_API_KEY = sa.cache_from_s3("OPENAI_API_KEY")
-ASSISTANT_ID = sa.cache_from_s3("ASSISTANT_ID")
+user_suggestion_pills_label = "Let's get started:"
+user_suggestion_pills = ['What is Karma Coordinates calculator app?', 'How does Karma Coordinates calculate a score?', 'What activities can I do at my age and in my city to improve my score?', 'What is Karma?', 'What is Sankhya?']    
+ai_default_question = 'How can I help you?'
 
 # Initialise the OpenAI client, and retrieve the assistant
-client = OpenAI(api_key=OPENAI_API_KEY)
-assistant = client.beta.assistants.retrieve(assistant_id=ASSISTANT_ID)
+@st.cache_resource
+def config():
+    client = OpenAI(api_key=sa.cache_from_s3("OPENAI_API_KEY"))
+    assistant = client.beta.assistants.retrieve(assistant_id=sa.cache_from_s3("ASSISTANT_ID"))
+    return client, assistant
 
-user_suggestion_pills_label = "Let's get started:"
-user_suggestion_pills = ['What is Karma Coordinates?', 'What is Karma?', 'What is Sankhya?', 'How does Karma Coordinates calculate a score?', 'What activities can I do at my age and in my city to improve my score?']
-    
 def init():
     # Initialise session state to store conversation history locally to display on UI
     if "chat_history" not in st.session_state:
@@ -33,7 +31,7 @@ def init():
         st.session_state.queue = []
 
     # if "user_selected_pill" not in st.session_state:
-    st.session_state.user_selected_pill = ''
+    # st.session_state.user_selected_pill = ''
 
     # Title
     st.subheader("Your AI Assistant")
@@ -45,59 +43,52 @@ def init():
         user_selected_pill = stp.pills(user_suggestion_pills_label, st.session_state.user_suggestion_pills, clearable=True, index=None)
 
         if user_selected_pill and user_selected_pill != 'None':
-            # print(f'user_selected_pill:{user_selected_pill}')
             st.session_state.user_selected_pill = user_selected_pill
+        else:
+            st.session_state.user_selected_pill = ''
 
 def prompt():
-    process_query = False
+    client, assistant = config()
+
+    init()
+
     # Display messages in chat history
     for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
     
+    # Textbox and either pill or typed query - add to FIFO
     if st.session_state.user_selected_pill:
         st.chat_input(st.session_state.user_selected_pill)
-        process_query = True
+        st.session_state.queue.append(st.session_state.user_selected_pill)
     else: 
-        user_query = st.chat_input('How can I help you?')
-        process_query = True
-    # print(f'user_query:{user_query}')
-
-    # Textbox and streaming process
-    if process_query: #:= st.chat_input(user_query):
-
-        # add to FIFO
-        if st.session_state.user_selected_pill:
-            st.session_state.queue.append(st.session_state.user_selected_pill)
-        elif user_query:
+        user_query = st.chat_input(ai_default_question)
+        if user_query is not None:
             st.session_state.queue.append(user_query)
 
-        # if (user_query in user_suggestion_pills):
-        # print(f'queue:{st.session_state.queue}')
+    # print(f'queue: {st.session_state.queue}')
 
-        # Create a new thread if it does not exist
-        if "thread_id" not in st.session_state:
-            thread = client.beta.threads.create()
-            st.session_state.thread_id = thread.id
+    # Create a new thread if it does not exist
+    if "thread_id" not in st.session_state:
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
 
-        while len(st.session_state.queue) > 0:
-            # Wait until there is no active run
-            while check_active_run(st.session_state.thread_id):
-                # print(f"Waiting {st.session_state.queue}...")
-                time.sleep(2)  # Wait for 10 seconds before checking again      
+    while len(st.session_state.queue) > 0:
+        # Wait until there is no active run
+        while check_active_run(client, st.session_state.thread_id):
+            time.sleep(1)  # Wait for 10 seconds before checking again      
 
-            queued_user_query = st.session_state.queue.pop(0)
-            # print(f'running {queued_user_query}...')
+        queued_user_query = st.session_state.queue.pop(0)
 
-            # print(f'processing {queued_user_query}')
-            process_prompt(queued_user_query)      
+        # Streaming process
+        process_prompt(client, assistant, queued_user_query)      
 
-            if st.session_state.user_selected_pill and st.session_state.user_selected_pill in st.session_state.user_suggestion_pills:
-                # print(f'removing pill:{st.session_state.user_selected_pill}')
-                st.session_state.user_suggestion_pills.remove(st.session_state.user_selected_pill)
+        if st.session_state.user_selected_pill and st.session_state.user_selected_pill in st.session_state.user_suggestion_pills:
+            # print(f'removing pill:{st.session_state.user_selected_pill}')
+            st.session_state.user_suggestion_pills.remove(st.session_state.user_selected_pill)
 
 
-def process_prompt(user_query):    
+def process_prompt(client, assistant, user_query):    
     # Display the user's query
     with st.chat_message("user"):
         st.markdown(user_query)
@@ -118,7 +109,7 @@ def process_prompt(user_query):
         with st.chat_message("assistant"):
             stream = client.beta.threads.runs.create(
                 thread_id=st.session_state.thread_id,
-                assistant_id=ASSISTANT_ID,
+                assistant_id=assistant.id,
                 stream=True
                 )
             
@@ -151,7 +142,8 @@ def process_prompt(user_query):
 
 
 # Function to check if there is an active run
-def check_active_run(thread_id):
+def check_active_run(client, thread_id):
+    # client, assistant_id = config()
     try:
         # Fetch runs for the thread and check their status
         active_runs = client.beta.threads.runs.list(thread_id=thread_id)
