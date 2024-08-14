@@ -129,21 +129,20 @@ WantedBy=default.target
 
 # Note - make sure using .venv/bin/python3
 
+# confirm if working as a USER service
 systemctl --user daemon-reload
-
-systemctl --user enable --now kc-app.service
-
 systemctl --user start kc-app.service
-
 systemctl --user status kc-app.service
+-- systemctl --user enable --now kc-app.service
 
-# logs
-journalctl --since "1 day ago" -u streamlit-app.service
+# if all good then set it up as a SYSTEM service
+sudo cp ~/.config/systemd/user/kc-app.service /usr/lib/systemd/system
 
-See "
-systemctl --user status kc-app.service
+sudo systemctl daemon-reload
+sudo systemctl start kc-app
+sudo systemctl enable kc-app
+sudo systemctl status kc-app
 
-" and "
+# logs w/o --user
+journalctl --since "1 day ago" -u kc-app.service
 journalctl --user -xeu kc-app.service
-
-" for details.
