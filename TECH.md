@@ -8,7 +8,7 @@ Security group for instances only allows port 80 access from your ALB.
 Canonical, Ubuntu, 24.04 LTS, amd64 noble image build on 2024-07-01
 ami-0862be96e41dcbf74
 
-#setup
+# setup
 git clone https://github.com/KarmaCoordinates/karma.git
 
 sudo apt install python3.12-venv
@@ -81,9 +81,9 @@ server {
     ssl_certificate /etc/letsencrypt/live/karmacoordinates.org/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/karmacoordinates.org/privkey.pem; # managed by Certbot
     #other ssl options
+}
 
 sudo rm /etc/nginx/sites-enabled/default
-
 sudo ln -s /etc/nginx/sites-available/karmacoordinates.org /etc/nginx/sites-enabled/karmacoordinates.org
 
 sudo systemctl start nginx
@@ -96,15 +96,10 @@ sudo service restart nginx
 # s3 bucket - setup kc-dev access keys, security and us-east-2 default region
 -- sudo apt install awscli
 sudo snap install aws-cli --classic
-
-
 aws configure
-
 AWS Access Key ID [None]: kc-dev-key_id
 AWS Secret Access Key [None]: kc-dev-access_key
 Default region name [None]: us-east-2
-
-
 
 # memory profiling
 conda install memory_profiler
@@ -113,5 +108,42 @@ mprof run --attach {pid}
 
 mprof plot -o output.png
 
+mkdir -p ~/.config/systemd/user
+nano ~/.config/systemd/user/kc-app.service
+
+# ubuntu service kc-app.service
+[Unit]  
+Description=a service for the kc app  
+After=network.target  
+  
+[Service]  
+Type=simple  
+WorkingDirectory=/home/ubuntu/karma
+ExecStart=/home/ubuntu/karma/.venv/bin/python3 -m streamlit run src/streamlit_app.py  
+Restart=on-failure  
+RestartSec=2  
+  
+[Install]  
+WantedBy=default.target  
+
+
+# Note - make sure using .venv/bin/python3
+
+systemctl --user daemon-reload
+
+systemctl --user enable --now kc-app.service
+
+systemctl --user start kc-app.service
+
+systemctl --user status kc-app.service
+
 # logs
 journalctl --since "1 day ago" -u streamlit-app.service
+
+See "
+systemctl --user status kc-app.service
+
+" and "
+journalctl --user -xeu kc-app.service
+
+" for details.
