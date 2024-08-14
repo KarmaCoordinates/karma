@@ -8,14 +8,14 @@ from ast import literal_eval
 # weightage translates to how much it contributes to clarity of thinking
 
 bucket_name = 'karmacoordinates'
-data_dictionary_file = 'data_dictionary.csv'
+data_dictionary_file = 'karma_coordinates_feature_dictionary.csv'
 data_dictionary_df = ff.cache_csv_from_s3(bucket_name, data_dictionary_file)
 data_dictionary_df.columns = data_dictionary_df.iloc[0] # set first row as column names
 data_dictionary_df = data_dictionary_df.iloc[1:11, 0:4] # first row is headers, get first 8 rows and first three columns only
 data_dictionary_df['value_weight'] = data_dictionary_df['value_weight'].apply(literal_eval) # read all strings as literal (array, etc)
 
 def get_feature_df(feature_name):
-    df = data_dictionary_df.loc[data_dictionary_df['data_element'] == feature_name, 'value_weight'].values[0]
+    df = data_dictionary_df.loc[data_dictionary_df['name'] == feature_name, 'value_weight'].values[0]
     df = pd.DataFrame(df, columns=[feature_name, f'{feature_name}_weight'])
     df[f'{feature_name}_scaled_weight'] = scale(df[f'{feature_name}_weight'])
     return df

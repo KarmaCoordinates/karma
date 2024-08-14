@@ -9,7 +9,7 @@ import functions
 # from collections import deque 
 
 user_suggestion_pills_label = "Let's get started:"
-user_suggestion_pills = ['What is Karma Coordinates calculator app?', 'How does Karma Coordinates calculate a score?', 'What activities can I do at my age and in my city to improve my score?', 'What is Karma?', 'What is Sankhya?']    
+user_suggestion_pills = ['What is Karma Coordinates calculator app?', 'How does Karma Coordinates calculate a score?', 'What activities can I do at my age and in my city to improve my score?', 'What is Karma?', 'What is Sankhya?', 'What are Gunas?', 'What shloka explain sattva?', 'What are Sankhya shlokas on Purusha?']    
 ai_default_question = 'How can I help you?'
 
 # Initialise the OpenAI client, and retrieve the assistant
@@ -30,12 +30,11 @@ def init():
     if "queue" not in st.session_state:
         st.session_state.queue = []
 
-    # if "user_selected_pill" not in st.session_state:
-    # st.session_state.user_selected_pill = ''
-
     # Title
     st.subheader("Your AI Assistant")
 
+
+def chatbox():
     # 
     if not st.session_state.user_suggestion_pills:
         pass
@@ -46,11 +45,6 @@ def init():
             st.session_state.user_selected_pill = user_selected_pill
         else:
             st.session_state.user_selected_pill = ''
-
-def prompt():
-    client, assistant = config()
-
-    init()
 
     # Display messages in chat history
     for message in st.session_state.chat_history:
@@ -65,6 +59,15 @@ def prompt():
         user_query = st.chat_input(ai_default_question)
         if user_query is not None:
             st.session_state.queue.append(user_query)
+
+
+def prompt():
+    client, assistant = config()
+
+    init()
+
+    chatbox()
+    
 
     # print(f'queue: {st.session_state.queue}')
 
