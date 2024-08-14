@@ -36,7 +36,7 @@ def init():
     st.session_state.user_selected_pill = ''
 
     # Title
-    st.subheader("Karma Coordinates App AI Assistant")
+    st.subheader("Your AI Assistant")
 
     # 
     if not st.session_state.user_suggestion_pills:
