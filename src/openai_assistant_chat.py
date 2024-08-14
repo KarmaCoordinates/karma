@@ -4,11 +4,15 @@ from openai.types.beta.assistant_stream_event import ThreadMessageDelta
 from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
 import streamlit_pills as stp
 import time
+import secret_app as sa
 # from collections import deque 
 
 
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
+# OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+# ASSISTANT_ID = st.secrets["ASSISTANT_ID"]
+
+OPENAI_API_KEY = sa.cache_from_s3("OPENAI_API_KEY")
+ASSISTANT_ID = sa.cache_from_s3("ASSISTANT_ID")
 
 # Initialise the OpenAI client, and retrieve the assistant
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -17,7 +21,6 @@ assistant = client.beta.assistants.retrieve(assistant_id=ASSISTANT_ID)
 user_suggestion_pills_label = "Let's get started:"
 user_suggestion_pills = ['What is Karma Coordinates?', 'What is Karma?', 'What is Sankhya?', 'How does Karma Coordinates calculate a score?', 'What activities can I do at my age and in my city to improve my score?']
     
-
 def init():
     # Initialise session state to store conversation history locally to display on UI
     if "chat_history" not in st.session_state:
@@ -143,8 +146,8 @@ def process_prompt(user_query):
             # Once the stream is over, update chat history
             st.session_state.chat_history.append({"role": "assistant",
                                                 "content": assistant_reply})
-    except:
-        print(f'will wait till thread completes')
+    except Exception as e:
+        print(f'Failed to process_prompt {e}')
 
 
 # Function to check if there is an active run

@@ -33,7 +33,6 @@ def save_pickle_obj_to_s3(obj, bucket_name, object_key):
     s3 = boto3.client("s3")
     s3.upload_file(local_uri, bucket_name, object_key)
     
-
 def cache_pickle_obj_from_s3(bucket_name, object_key):
     logging.info('calling cache_pickle_obj_from_s3')
     local_uri = f'{temp_folder}/{object_key}.{pickle_file_extension}'

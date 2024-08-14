@@ -14,14 +14,12 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
     data_dictionary_df = data_dictionary_df.iloc[1:9, 0:4] # first row is headers, get first 8 rows and first three columns only
     data_dictionary_array = data_dictionary_df.to_numpy()
 
-
     df = ff.cache_csv_from_s3(bucket_name, features_data_file)
     df, X, y, label_encoder = functions.read_features(df)
     categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
     model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
     model = ff.cache_pickle_obj_from_s3(bucket_name, pickled_model_data_file)
     return data_dictionary_array, df, X.columns, categorical_cols, model, label_encoder
-
 
 def run_app():
     static_files_folder = '.static'
