@@ -36,27 +36,30 @@ def init():
     st.subheader("Your AI Assistant")
 
 
-def draw_chat_ui():
-    # 
-    if not st.session_state.user_suggestion_pills:
-        pass
-    else:
-        user_selected_pill = stp.pills(user_suggestion_pills_label, st.session_state.user_suggestion_pills, clearable=True, index=None)
+def draw_user_input(user_query_container):
 
-        if user_selected_pill and user_selected_pill != 'None':
-            st.session_state.user_selected_pill = user_selected_pill
+    #
+    with user_query_container:
+        if not st.session_state.user_suggestion_pills:
+            pass
         else:
-            st.session_state.user_selected_pill = ''
+            user_selected_pill = stp.pills(user_suggestion_pills_label, st.session_state.user_suggestion_pills, clearable=True, index=None)
 
-    # Textbox and either pill or typed query - add to FIFO
-    if st.session_state.user_selected_pill:
-        st.chat_input(st.session_state.user_selected_pill)
-        st.session_state.queue.append(st.session_state.user_selected_pill)
-    else: 
-        user_query = st.chat_input(ai_default_question)
-        if user_query is not None:
-            st.session_state.queue.append(user_query)
+            if user_selected_pill and user_selected_pill != 'None':
+                st.session_state.user_selected_pill = user_selected_pill
+            else:
+                st.session_state.user_selected_pill = ''
 
+        # Textbox and either pill or typed query - add to FIFO
+        if st.session_state.user_selected_pill:
+            user_query = st.chat_input(ai_default_question)
+            st.session_state.queue.append(st.session_state.user_selected_pill)
+        else: 
+            user_query = st.chat_input(ai_default_question)
+            if user_query is not None:
+                st.session_state.queue.append(user_query)
+
+    # print(f'queue: {st.session_state.queue}, user_selected_pill: {user_selected_pill}')
 
 def draw_chat_history():
     # Display messages in chat history
@@ -140,7 +143,7 @@ def process_prompt(client, assistant, user_query):
         print(f'Failed to process_prompt {e}')
 
 
-def process_queue(client, assistant):
+def process_queue(client, assistant, process_prompt_container):
     # print(f'queue: {st.session_state.queue}')
 
     # Create a new thread if it does not exist
@@ -156,15 +159,19 @@ def process_queue(client, assistant):
         queued_user_query = st.session_state.queue.pop(0)
 
         # Streaming process
-        process_prompt(client, assistant, queued_user_query)      
+        with process_prompt_container:
+            process_prompt(client, assistant, queued_user_query)      
 
 
 def prompt():
     _configs = configs.config()
     init()
     with st.container(border=True):
-        draw_chat_ui()
-        process_queue(client=_configs['openai_client'], assistant=_configs['openai_assistant'])
-        draw_chat_history()
+        user_query_container = st.container()
+        process_prompt_container = st.container() # placeholder to keep current response above history
+        draw_chat_history()        
+        draw_user_input(user_query_container=user_query_container)
+        # process and write response in process_prompt_container
+        process_queue(client=_configs['openai_client'], assistant=_configs['openai_assistant'], process_prompt_container=process_prompt_container)
     
 
