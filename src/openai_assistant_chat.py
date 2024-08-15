@@ -6,6 +6,7 @@ import streamlit_pills as stp
 import time
 import secrets_app
 import functions
+import configs
 
 # from collections import deque 
 
@@ -14,11 +15,11 @@ user_suggestion_pills = ['What is Karma Coordinates calculator app?', 'How does 
 ai_default_question = 'How can I help you?'
 
 # Initialise the OpenAI client, and retrieve the assistant
-@st.cache_resource
-def config():
-    client = OpenAI(api_key=secrets_app.cache_from_s3("OPENAI_API_KEY"))
-    assistant = client.beta.assistants.retrieve(assistant_id=secrets_app.cache_from_s3("ASSISTANT_ID"))
-    return client, assistant
+# @st.cache_resource
+# def config():
+#     client = OpenAI(api_key=secrets_app.cache_from_s3("OPENAI_API_KEY"))
+#     assistant = client.beta.assistants.retrieve(assistant_id=secrets_app.cache_from_s3("ASSISTANT_ID"))
+#     return client, assistant
 
 def init():
     # Initialise session state to store conversation history locally to display on UI
@@ -158,9 +159,9 @@ def process_queue(client, assistant):
 
 
 def prompt():
-    client, assistant = config()
+    _configs = configs.config()
     init()
     draw_chat_ui()
-    process_queue(client=client, assistant=assistant)
+    process_queue(client=_configs['openai_client'], assistant=_configs['openai_assistant'])
     
 

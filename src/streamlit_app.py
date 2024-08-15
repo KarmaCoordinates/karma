@@ -4,6 +4,7 @@ import streamlit as st
 import file_functions as ff
 import openai_assistant_chat
 # import llama_chat
+#import stripe_payment as sp
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -64,6 +65,8 @@ def run_app():
 
     # llama_chat.init()
     # llama_chat.prompt(prompt)
+
+    # st.write(sp.stripe_button)
 
 
 run_app()
