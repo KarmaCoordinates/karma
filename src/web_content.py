@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def page_config(static_files_folder):
     st.set_page_config(
         page_title='Karma Coordinates',
@@ -48,3 +49,4 @@ classification system.
         '''
     st.subheader(subheader)
     st.markdown(feedback)
+

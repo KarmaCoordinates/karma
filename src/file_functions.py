@@ -9,7 +9,7 @@ import socket
 
 temp_folder = '.tmp'
 pickle_file_extension = 'pkl'
-logging.basicConfig(filename=f'{temp_folder}/streamlit-app.log', filemode='w', level=logging.INFO)
+logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
 
 # return df
 def cache_csv_from_s3(bucket_name, object_key):

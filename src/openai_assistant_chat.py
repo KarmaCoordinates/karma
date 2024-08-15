@@ -4,8 +4,9 @@ from openai.types.beta.assistant_stream_event import ThreadMessageDelta
 from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
 import streamlit_pills as stp
 import time
-import secrets_app as sa
+import secrets_app
 import functions
+
 # from collections import deque 
 
 user_suggestion_pills_label = "Let's get started:"
@@ -15,8 +16,8 @@ ai_default_question = 'How can I help you?'
 # Initialise the OpenAI client, and retrieve the assistant
 @st.cache_resource
 def config():
-    client = OpenAI(api_key=sa.cache_from_s3("OPENAI_API_KEY"))
-    assistant = client.beta.assistants.retrieve(assistant_id=sa.cache_from_s3("ASSISTANT_ID"))
+    client = OpenAI(api_key=secrets_app.cache_from_s3("OPENAI_API_KEY"))
+    assistant = client.beta.assistants.retrieve(assistant_id=secrets_app.cache_from_s3("ASSISTANT_ID"))
     return client, assistant
 
 def init():
@@ -34,7 +35,7 @@ def init():
     st.subheader("Your AI Assistant")
 
 
-def chatbox():
+def draw_chat_ui():
     # 
     if not st.session_state.user_suggestion_pills:
         pass
@@ -61,34 +62,21 @@ def chatbox():
             st.session_state.queue.append(user_query)
 
 
-def prompt():
-    client, assistant = config()
 
-    init()
 
-    chatbox()
-    
+# Function to check if there is an active run
+def check_active_run(client, thread_id):
+    try:
+        # Fetch runs for the thread and check their status
+        active_runs = client.beta.threads.runs.list(thread_id=thread_id)
+        for run in active_runs.data:
+            if run.status in ["in_progress", "queued"]:
+                return True
+        return False
+    except OpenAIError as e:
+        print(f"Failed to check runs: {str(e)}")
+        return False
 
-    # print(f'queue: {st.session_state.queue}')
-
-    # Create a new thread if it does not exist
-    if "thread_id" not in st.session_state:
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-
-    while len(st.session_state.queue) > 0:
-        # Wait until there is no active run
-        while check_active_run(client, st.session_state.thread_id):
-            time.sleep(1)  # Wait for 10 seconds before checking again      
-
-        queued_user_query = st.session_state.queue.pop(0)
-
-        # Streaming process
-        process_prompt(client, assistant, queued_user_query)      
-
-        if st.session_state.user_selected_pill and st.session_state.user_selected_pill in st.session_state.user_suggestion_pills:
-            # print(f'removing pill:{st.session_state.user_selected_pill}')
-            st.session_state.user_suggestion_pills.remove(st.session_state.user_selected_pill)
 
 
 def process_prompt(client, assistant, user_query):    
@@ -118,6 +106,7 @@ def process_prompt(client, assistant, user_query):
             
             # Empty container to display the assistant's reply
             assistant_reply_box = st.empty()
+            assistant_reply_box.text("Retrieving...")
             
             # A blank string to store the assistant's reply
             assistant_reply = ""
@@ -140,20 +129,38 @@ def process_prompt(client, assistant, user_query):
             # Once the stream is over, update chat history
             st.session_state.chat_history.append({"role": "assistant",
                                                 "content": assistant_reply})
+            
+            if user_query in st.session_state.user_suggestion_pills:
+                print(f'removing pill:{user_query}')
+                st.session_state.user_suggestion_pills.remove(user_query)
+
     except Exception as e:
         print(f'Failed to process_prompt {e}')
 
 
-# Function to check if there is an active run
-def check_active_run(client, thread_id):
-    # client, assistant_id = config()
-    try:
-        # Fetch runs for the thread and check their status
-        active_runs = client.beta.threads.runs.list(thread_id=thread_id)
-        for run in active_runs.data:
-            if run.status in ["in_progress", "queued"]:
-                return True
-        return False
-    except OpenAIError as e:
-        print(f"Failed to check runs: {str(e)}")
-        return False
+def process_queue(client, assistant):
+    # print(f'queue: {st.session_state.queue}')
+
+    # Create a new thread if it does not exist
+    if "thread_id" not in st.session_state:
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+
+    while len(st.session_state.queue) > 0:
+        # Wait until there is no active run
+        while check_active_run(client, st.session_state.thread_id):
+            time.sleep(1)  # Wait for 10 seconds before checking again      
+
+        queued_user_query = st.session_state.queue.pop(0)
+
+        # Streaming process
+        process_prompt(client, assistant, queued_user_query)      
+
+
+def prompt():
+    client, assistant = config()
+    init()
+    draw_chat_ui()
+    process_queue(client=client, assistant=assistant)
+    
+
