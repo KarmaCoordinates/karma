@@ -48,11 +48,6 @@ def draw_chat_ui():
         else:
             st.session_state.user_selected_pill = ''
 
-    # Display messages in chat history
-    for message in st.session_state.chat_history:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-    
     # Textbox and either pill or typed query - add to FIFO
     if st.session_state.user_selected_pill:
         st.chat_input(st.session_state.user_selected_pill)
@@ -63,6 +58,12 @@ def draw_chat_ui():
             st.session_state.queue.append(user_query)
 
 
+def draw_chat_history():
+    # Display messages in chat history
+    for message in st.session_state.chat_history:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+    
 
 
 # Function to check if there is an active run
@@ -161,7 +162,9 @@ def process_queue(client, assistant):
 def prompt():
     _configs = configs.config()
     init()
-    draw_chat_ui()
-    process_queue(client=_configs['openai_client'], assistant=_configs['openai_assistant'])
+    with st.container(border=True):
+        draw_chat_ui()
+        process_queue(client=_configs['openai_client'], assistant=_configs['openai_assistant'])
+        draw_chat_history()
     
 

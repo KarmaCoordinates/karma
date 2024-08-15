@@ -57,19 +57,10 @@ def run_app():
 
     web_content.sankhya_references(static_files_folder)
 
-    functions.update_ui_status('loading', 'Complete')
-
     sp.subscribe()
     
-#     st.markdown(f'''<script async
-#   src="https://js.stripe.com/v3/buy-button.js">
-# </script>
+    functions.update_ui_status('loading', 'Complete')
 
-# <stripe-buy-button
-#   buy-button-id="buy_btn_1Po85eJTeVnJtPF3D0HBocpa"
-#   publishable-key="pk_test_z52r8l2VyWizJcRiuteweGG1"
-# >
-# </stripe-buy-button>''', unsafe_allow_html=True)
 
 run_app()
 
