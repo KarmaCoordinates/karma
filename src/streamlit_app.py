@@ -3,8 +3,7 @@ import web_content
 import streamlit as st
 import file_functions as ff
 import openai_assistant_chat
-# import llama_chat
-#import stripe_payment as sp
+import stripe_payment as sp
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -60,14 +59,17 @@ def run_app():
 
     functions.update_ui_status('loading', 'Complete')
 
-    # openai_completions_chat.init()
-    # openai_completions_chat.prompt()
+    sp.subscribe()
+    
+#     st.markdown(f'''<script async
+#   src="https://js.stripe.com/v3/buy-button.js">
+# </script>
 
-    # llama_chat.init()
-    # llama_chat.prompt(prompt)
-
-    # st.write(sp.stripe_button)
-
+# <stripe-buy-button
+#   buy-button-id="buy_btn_1Po85eJTeVnJtPF3D0HBocpa"
+#   publishable-key="pk_test_z52r8l2VyWizJcRiuteweGG1"
+# >
+# </stripe-buy-button>''', unsafe_allow_html=True)
 
 run_app()
 
