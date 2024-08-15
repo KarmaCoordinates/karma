@@ -131,7 +131,7 @@ def process_prompt(client, assistant, user_query):
                                                 "content": assistant_reply})
             
             if user_query in st.session_state.user_suggestion_pills:
-                print(f'removing pill:{user_query}')
+                # print(f'removing pill:{user_query}')
                 st.session_state.user_suggestion_pills.remove(user_query)
 
     except Exception as e:

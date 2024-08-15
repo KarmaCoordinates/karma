@@ -1,4 +1,5 @@
 import streamlit as st
+import base64
 
 
 def page_config(static_files_folder):
@@ -11,12 +12,54 @@ def page_config(static_files_folder):
 
 
 def intro(static_files_folder):
-    # title
-    st.title('Karma Coordinates Calculator App')
-    # web content
-    st.image(f'{static_files_folder}/kapil-muni-image.png', caption='Kapil Muni 5561 BCE', width=250)
+    logo = f'{static_files_folder}/kapil-muni-image.png'
     intro = '''The app's primary goal is to enhance the clarity of thinking in individuals, thus giving them the best chance of succeeding in various aspects of life. The calculated Karma Coordinates, specifically the number of lives to Moksha, serves as an incentive index to track and measure progress towards achieving mental clarity. By focusing on improving clarity of thinking and using the calculated coordinates as a metric for progress, individuals can potentially enhance their decision-making abilities, achieve personal growth, and increase their chances of success in different endeavors.'''
-    st.markdown(intro)
+
+    # title
+    st.title('Karma Coordinates Calculator')
+    st.markdown(
+        """
+        <style>
+        .container {
+            display: flex;
+        }
+        .logo-text {
+            # font-weight:700 !important;
+            # font-size:50px !important;
+            # color: #f9a01b !important;
+            # padding-top: 75px !important;
+            padding-left: 5px !important;
+            vertical-align: middle;
+            text-align:  left;
+        }
+        .logo-img {
+            object-fit: cover;
+            float:right;
+            width:auto;
+            height:250px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f"""
+        <div class="container">
+            <img class="logo-img" src="data:image/png;base64,{base64.b64encode(open(logo, "rb").read()).decode()}" alt="Kapil Muni 5561 BCE">
+            <p class="logo-text">{intro}</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )    
+
+    # col1, col2 = st.columns([1,1])
+    # with col1:
+    #     st.image(f'{static_files_folder}/kapil-muni-image.png', caption='Kapil Muni 5561 BCE', width=150)
+    # with col2:
+    #     intro = '''The app's primary goal is to enhance the clarity of thinking in individuals, thus giving them the best chance of succeeding in various aspects of life. The calculated Karma Coordinates, specifically the number of lives to Moksha, serves as an incentive index to track and measure progress towards achieving mental clarity. By focusing on improving clarity of thinking and using the calculated coordinates as a metric for progress, individuals can potentially enhance their decision-making abilities, achieve personal growth, and increase their chances of success in different endeavors.'''
+    #     st.markdown(intro)
+    # web content
 
 def brief(static_files_folder):
     st.subheader('Background')
@@ -49,4 +92,7 @@ classification system.
         '''
     st.subheader(subheader)
     st.markdown(feedback)
+
+
+
 
