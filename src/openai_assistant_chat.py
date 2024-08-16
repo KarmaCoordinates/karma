@@ -6,43 +6,33 @@ import streamlit_pills as stp
 import time
 import secrets_app
 import functions
+import file_functions as ff
 import configs
 
-# from collections import deque 
-
-user_suggestion_pills_label = "Let's get started:"
-user_suggestion_pills = ['What is Karma Coordinates calculator app?', 'How does Karma Coordinates calculate a score?', 'What activities can I do at my age and in my city to improve my score?', 'What is Karma?', 'What is Sankhya?', 'What are Gunas?', 'What shloka explain sattva?', 'What are Sankhya shlokas on Purusha?']    
-ai_default_question = 'How can I help you?'
-
-# Initialise the OpenAI client, and retrieve the assistant
-# @st.cache_resource
-# def config():
-#     client = OpenAI(api_key=secrets_app.cache_from_s3("OPENAI_API_KEY"))
-#     assistant = client.beta.assistants.retrieve(assistant_id=secrets_app.cache_from_s3("ASSISTANT_ID"))
-#     return client, assistant
-
+# Initialise session state to store conversation history locally to display on UI
 def init():
-    # Initialise session state to store conversation history locally to display on UI
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
     if "user_suggestion_pills" not in st.session_state:
-        st.session_state.user_suggestion_pills = user_suggestion_pills
+        bucket_name = 'karmacoordinates'
+        object_key = 'karma_coordinates_prompts.csv'
+        st.session_state.user_suggestion_pills = ff.cache_csv_from_s3(bucket_name, object_key).iloc[1:, 0].to_list()
 
     if "queue" not in st.session_state:
         st.session_state.queue = []
 
     # Title
     st.subheader("Your AI Assistant")
-
+    
 
 def draw_user_input(user_query_container):
-
-    #
+    ai_default_question = 'How can I help you?'
     with user_query_container:
         if not st.session_state.user_suggestion_pills:
             pass
         else:
+            user_suggestion_pills_label = "Let's get started:"
             user_selected_pill = stp.pills(user_suggestion_pills_label, st.session_state.user_suggestion_pills, clearable=True, index=None)
 
             if user_selected_pill and user_selected_pill != 'None':
@@ -61,8 +51,8 @@ def draw_user_input(user_query_container):
 
     # print(f'queue: {st.session_state.queue}, user_selected_pill: {user_selected_pill}')
 
+# Display messages in chat history
 def draw_chat_history():
-    # Display messages in chat history
     for message in st.session_state.chat_history:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
