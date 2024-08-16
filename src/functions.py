@@ -254,7 +254,7 @@ def save_user_feedback(user_input):
     if 'loading' in st.session_state and st.session_state['loading'] == 'rating':
         df = pd.DataFrame(user_input, index=[0])
         df.to_csv('.tmp/user_feedback.csv', mode='a', index=False, header=False)
-        st.markdown(''':gold[Your feedback is recorded.]''')
+        st.markdown('''Your feedback is recorded.''')
 
 def horoscope_calculation():
     st.subheader('Include your zodiac sign and horoscope in calculations')

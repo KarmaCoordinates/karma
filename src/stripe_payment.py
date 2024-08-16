@@ -26,6 +26,7 @@ stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 payment_link = 'test_bIY9D4dZ94oc2mk288'
 
 def subscribe():
+    st.subheader('Donate to support this open source community initiative')
     col1, col2 = st.columns([1,1])
     with col1:
         st.markdown('[Subscribe](https://buy.stripe.com/14keWy5LffpzeKkaEE) for unlimited AI (ChatGPT) queries into Indian epics and spiritual content such as Sankhya, Yoga, Vedas, Upanishad, Ramayan, Mahabharat, etc.')
