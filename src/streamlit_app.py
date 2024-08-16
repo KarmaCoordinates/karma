@@ -38,13 +38,12 @@ def run_app():
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
-    input_df, user_input = functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   
+    with st.container(border=True):
+        input_df, user_input = functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   
 
     prediction, prediction_label = functions.make_prediction(model, label_encoder, input_df)  
     functions.show_prediction(prediction_label)
     functions.explain_prediction(prediction_label)
-
-    # web_content.write_paper(static_files_folder)
 
     pdf = functions.create_pdf(input_df, prediction)
     functions.download_pdf(pdf, user_input, prediction_label)

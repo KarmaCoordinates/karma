@@ -8,48 +8,60 @@ import secrets_app
 import functions
 import file_functions as ff
 import configs
+import pandas as pd
+import numpy
 
 # Initialise session state to store conversation history locally to display on UI
 def init():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
+    if "query_history" not in st.session_state:
+        st.session_state.query_history = []
+
     if "user_suggestion_pills" not in st.session_state:
         bucket_name = 'karmacoordinates'
         object_key = 'karma_coordinates_prompts.csv'
         st.session_state.user_suggestion_pills = ff.cache_csv_from_s3(bucket_name, object_key).iloc[1:, 0].to_list()
 
-    if "queue" not in st.session_state:
-        st.session_state.queue = []
+    if "query_queue" not in st.session_state:
+        st.session_state.query_queue = []
 
     # Title
     st.subheader("Your AI Assistant")
-    
+
 
 def draw_user_input(user_query_container):
     ai_default_question = 'How can I help you?'
     with user_query_container:
+        # draw user input box
+        user_query = st.chat_input(ai_default_question)
+
+        # draw pills
+        # Textbox and either pill or typed query - add to FIFO
         if not st.session_state.user_suggestion_pills:
+            # print(f'1')
             pass
-        else:
+        elif st.session_state.user_suggestion_pills:
+            # print(f'2')
             user_suggestion_pills_label = "Let's get started:"
             user_selected_pill = stp.pills(user_suggestion_pills_label, st.session_state.user_suggestion_pills, clearable=True, index=None)
 
-            if user_selected_pill and user_selected_pill != 'None':
-                st.session_state.user_selected_pill = user_selected_pill
-            else:
-                st.session_state.user_selected_pill = ''
+            if user_selected_pill and not (user_selected_pill == 'None') and not (user_selected_pill in st.session_state.query_history):
+                # st.session_state.user_selected_pill = user_selected_pill
+                st.session_state.query_queue.append(user_selected_pill)
+                st.session_state.query_history.append(user_selected_pill)
 
-        # Textbox and either pill or typed query - add to FIFO
-        if st.session_state.user_selected_pill:
-            user_query = st.chat_input(ai_default_question)
-            st.session_state.queue.append(st.session_state.user_selected_pill)
-        else: 
-            user_query = st.chat_input(ai_default_question)
-            if user_query is not None:
-                st.session_state.queue.append(user_query)
+            # return
 
-    # print(f'queue: {st.session_state.queue}, user_selected_pill: {user_selected_pill}')
+        # print(f'3. user_query : {user_query}')
+        # user_query = st.chat_input(ai_default_question)
+        if (user_query is not None) and not (user_query in st.session_state.query_history):
+            st.session_state.query_queue.append(user_query)
+            st.session_state.query_history.append(user_query)
+
+        # print(f'added query: {user_selected_pill}')
+        # st.session_state.queue = list(set(st.session_state.queue)) # remove dups
 
 # Display messages in chat history
 def draw_chat_history():
@@ -141,12 +153,13 @@ def process_queue(client, assistant, process_prompt_container):
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
 
-    while len(st.session_state.queue) > 0:
+    while st.session_state.query_queue and len(st.session_state.query_queue) > 0:
         # Wait until there is no active run
         while check_active_run(client, st.session_state.thread_id):
             time.sleep(1)  # Wait for 10 seconds before checking again      
 
-        queued_user_query = st.session_state.queue.pop(0)
+        queued_user_query = st.session_state.query_queue.pop(0)
+        # print(f'processing queued_user_query:{queued_user_query}')
 
         # Streaming process
         with process_prompt_container:
@@ -157,11 +170,15 @@ def prompt():
     _configs = configs.config()
     init()
     with st.container(border=True):
+        # print(f'1. queue at start: {st.session_state.query_queue}')
         user_query_container = st.container()
         process_prompt_container = st.container() # placeholder to keep current response above history
+        st.divider()
         draw_chat_history()        
+        # print(f'2. queue after history: {st.session_state.query_queue}')
         draw_user_input(user_query_container=user_query_container)
         # process and write response in process_prompt_container
+        # print(f'3. queue after user input: {st.session_state.query_queue}')
         process_queue(client=_configs['openai_client'], assistant=_configs['openai_assistant'], process_prompt_container=process_prompt_container)
     
 
