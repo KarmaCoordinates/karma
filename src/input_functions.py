@@ -23,6 +23,14 @@ def render_buttons(on_click_callback):
                 }
                 div[data-testid="column"] * {
                     width: fit-content !important;
+                    padding: -1px -1px !important;
+                    margin: -1px -1px !important;
+                    color: white !important;
+                    # background-color: green !important;
+                    # border: -20px !important;
+                    # font-size: 16px;
+                    height: auto !important;
+                    border-radius: 12px !important;
                 }
             </style>
             """, unsafe_allow_html=True)    
