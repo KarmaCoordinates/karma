@@ -1,4 +1,4 @@
-import functions
+import model_functions
 import web_content 
 import streamlit as st
 import file_functions as ff
@@ -13,9 +13,9 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
     data_dictionary_array = data_dictionary_df.to_numpy()
 
     df = ff.cache_csv_from_s3(bucket_name, features_data_file)
-    df, X, y, label_encoder = functions.read_features(df)
-    categorical_cols, numeric_cols, preprocessor = functions.encode_features(X)
-    model, X_train, X_test, y_train, y_test = functions.define_model(X, y, model_choice, preprocessor)
+    df, X, y, label_encoder = model_functions.read_features(df)
+    categorical_cols, numeric_cols, preprocessor = model_functions.encode_features(X)
+    model, X_train, X_test, y_train, y_test = model_functions.define_model(X, y, model_choice, preprocessor)
     model = ff.cache_pickle_obj_from_s3(bucket_name, pickled_model_data_file)
     return data_dictionary_array, df, X.columns, categorical_cols, model, label_encoder
 
@@ -39,26 +39,26 @@ def run_app():
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
     with st.container(border=True):
-        input_df, user_input = functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   
+        input_df, user_input = model_functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   
 
-    prediction, prediction_label = functions.make_prediction(model, label_encoder, input_df)  
-    functions.show_prediction(prediction_label)
-    functions.explain_prediction(prediction_label)
+    prediction, prediction_label = model_functions.make_prediction(model, label_encoder, input_df)  
+    model_functions.show_prediction(prediction_label)
+    model_functions.explain_prediction(prediction_label)
 
-    pdf = functions.create_pdf(input_df, prediction)
-    functions.download_pdf(pdf, user_input, prediction_label)
+    pdf = model_functions.create_pdf(input_df, prediction)
+    model_functions.download_pdf(pdf, user_input, prediction_label)
 
     web_content.request_feedback_note()
-    feedback = functions.show_user_feedback(user_input)
+    feedback = model_functions.show_user_feedback(user_input)
 
     user_input.update(feedback)
-    functions.save_user_feedback(user_input)
+    model_functions.save_user_feedback(user_input)
 
     web_content.sankhya_references(static_files_folder)
 
     sp.subscribe()
     
-    functions.update_ui_status('loading', 'Complete')
+    model_functions.update_ui_status('loading', 'Complete')
 
 
 run_app()

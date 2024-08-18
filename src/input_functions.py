@@ -1,16 +1,15 @@
 import streamlit as st
 
-def init_buttons(button_list):
-    if 'button_list' not in st.session_state:
-        st.session_state.button_list = button_list
-    return st.session_state.button_list
+def init_buttons(button_list, button_list_name):
+    if button_list_name and button_list_name not in st.session_state:
+        st.session_state[button_list_name] = button_list
+    return st.session_state[button_list_name]
 
-def remove_button(key):
-    if 'button_list' in st.session_state:
-        st.session_state.button_list.remove(key)
+def render_buttons(on_click_callback, button_list_name):
+    if not button_list_name or button_list_name not in st.session_state:
+        return
 
-def render_buttons(on_click_callback):
-    button_list = st.session_state.button_list
+    button_list = st.session_state[button_list_name]
 
     if not button_list:
         return

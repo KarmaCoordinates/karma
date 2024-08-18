@@ -41,7 +41,7 @@ We scale the above factors and calculate the clarity of thinking score as: knowl
 The calculated clarity of thinking score is scaled to 0 to 1. It is then transposed into *number of lives* based on 1) duration of universe, and 2) a concept that every *Sukshm* transmigrate through every species - and average duration of each life/existence.
 
 ### Duration of *Prakriti*
-Duration of *Prakriti*, i.e. the age of the universe is an evolving number. Varying from about 7 billion years old to 13.8 billion years old. For Karma Coordiates calculation currently we have used The Friedmann Equation model. As per the open model with omega of 6, universe is about 7 billion years old and it will end when it is about 18 billion years old - that is in another 11 billion years (Wikipedia contributors. (2024, June 27); Ultimate fate of the universe).
+Duration of *Prakriti*, i.e. the age of the universe is an evolving number. Varying from about 7 billion years old to 13.8 billion years old. For Karma Coordiates calculation currently we have used The Friedmann Equation model. As per the open model with omega of 5, universe is about 13.8 billion years old and it will end when it is about 27.6 billion years old - that is in another 13.8 billion years (Wikipedia contributors. (2024, June 27); *Ultimate fate of the universe*).
 
 In physical cosmology, the age of the universe is the time elapsed since the Big Bang. Astronomers have derived two different measurements of the age of the universe: a measurement based on direct observations of an early state of the universe, which indicate an age of 13.787±0.020 billion years as interpreted with the Lambda-CDM concordance model as of 2021; and a measurement based on the observations of the local, modern universe, which suggest a younger age. (Wikipedia contributors. (2024, July 22). *Age of the universe*.)
 
@@ -95,7 +95,9 @@ The wise ones, whose mind is immersed in wisdom and intelligence, detach themsel
 
 
 ## Scientific Inquiry
-Everyday we witness millions of *Jiv* being born around us in form of various species and millions dying. Every *Jiv* has a unique experience. A *Jiv* comes into an existence, encounters unique experiences, develops *Bhav* and then perishes. What is the precursors to *Jiv*? Why every *Jiv* is presented a unique experience? If *Jiv* perishes, what continues - Who is the witness that knows after perishing of *Jiv*?? Is it an awareness, *Sukshm*, or God? In this *Prakriti* made up of three *Gunas*, what material is awareness, *Sukshm* or God made up of?
+Everyday we witness millions of *Jiv* being born around us in form of various species and millions dying. Every *Jiv* has a unique experience. A *Jiv* comes into an existence, encounters unique experiences, develops *Bhav* and then perishes. What is the precursors to *Jiv*? Why every *Jiv* is presented a unique experience? If *Jiv* perishes, what continues - Who is the witness that knows after perishing of *Jiv*?? Is it an awareness, *Sukshm*, or God? In this *Prakriti* made up of three *Gunas*, what material is awareness, *Sukshm* or God made up of? 
+
+*Sankhya* means numeric/quantifiable and has laid down a foundation for logical articulation of the construct of our universe. KarmaCoordinates builds upon this foundation and proposes a framework to calculate number of lives till *Moksha*.  
 
 
 ## References
@@ -122,6 +124,13 @@ DiscoverSikhism (2013), *Sri Guru Granth Sahib Ji*,  https://archive.org/details
 Wikipedia contributors. (2024, July 22). *Age of the universe*. In Wikipedia, The Free Encyclopedia. Retrieved 23:46, July 27, 2024, from https://en.wikipedia.org/w/index.php?title=Age_of_the_universe&oldid=1236032234
 
 Sandeep Dixit, 2024, *Sankhya Karika AI Public Dataset*, https://www.kaggle.com/datasets/sandeepdixit1/sankhya-karika or https://huggingface.co/datasets/sdixit/sankhya-karika
+
+Wikipedia contributors. (2024, August 18). Hindu cosmology. In Wikipedia, The Free Encyclopedia. Retrieved 14:31, August 18, 2024, from https://en.wikipedia.org/w/index.php?title=Hindu_cosmology&oldid=1240938718
+
+Wikipedia contributors. (2024, April 5). Kalpa (time). In Wikipedia, The Free Encyclopedia. Retrieved 14:33, August 18, 2024, from https://en.wikipedia.org/w/index.php?title=Kalpa_(time)&oldid=1217425029
+
+WMAP Science Team, Cosmology: (June 6, 2011). The Study of the Universe, NASA's Wilkinson Microwave Anisotropy Probe,last modified June 6, 2011, https://wmap.gsfc.nasa.gov/universe/WMAP_Universe.pdf 
+or https://map.gsfc.nasa.gov/universe/
 
 [## Resource Reference Style
 - https://guides.libraries.psu.edu/apaquickguide/overview; https://apastyle.apa.org/learn/faqs/index
