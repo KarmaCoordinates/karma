@@ -15,33 +15,10 @@ import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
 import s3_functions as s3f
-from streamlit_star_rating import st_star_rating
-from datetime import datetime, timezone, timedelta
+import status_functions as sf
 
 
-page_init = False
 prediction_init = False
-# only act on one key at a time
-# don't do anything during first page loading
-# once page is loaded, reset the key remembered in session.loading
-def update_ui_status(key, value):
-    if key == 'loading':
-        if value == 'Complete':
-            if 'loading' in st.session_state: 
-                del st.session_state['loading'] 
-        else:
-            return
-    else: 
-        global page_init
-        if page_init:
-            if 'loading' not in st.session_state:  
-                st.session_state['loading'] = key
-        else:
-            page_init = True
-
-def page_init():
-    global page_init
-    return page_init
 
 # Load the data
 def read_features(df):
@@ -156,9 +133,9 @@ def show_user_input(data_dictionary_array, df, columns, categorical_cols):
         #hint =  column_hints()[col].iloc[0]
         if feature_name in categorical_cols:
             key1 = f'kk_inputs_{feature_name}'
-            user_input[feature_name] = st.selectbox(f'{display_name}', df[feature_name].unique(), help=f'Answer the question: {hint}', key=key1, on_change=update_ui_status, args=(key1, True))
+            user_input[feature_name] = st.selectbox(f'{display_name}', df[feature_name].unique(), help=f'Answer the question: {hint}', key=key1, on_change=sf.update_ui_status, args=(key1, True))
         else:
-            user_input[feature_name] = st.number_input(f'{display_name}', float(df[feature_name].min()), float(df[feature_name].max()), float(df[feature_name].mean()), help=f'Answer the question: {hint}', key=key1, on_change=update_ui_status, args=(key1, True))
+            user_input[feature_name] = st.number_input(f'{display_name}', float(df[feature_name].min()), float(df[feature_name].max()), float(df[feature_name].mean()), help=f'Answer the question: {hint}', key=key1, on_change=sf.update_ui_status, args=(key1, True))
 
     # Convert user input dict to DataFrame
     input_df = pd.DataFrame(user_input, index=[0])

@@ -7,6 +7,7 @@ import stripe_payment as sp
 import questionnaire_pratyay_sargah as qps
 import feedback_functions as ff
 import pdf_functions as pf
+import status_functions as sf
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -41,6 +42,7 @@ def run_app():
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
+
     st.subheader('Calculate my Karma Coordinates')
     with st.container(border=True):
         input_df, user_input, prediction, prediction_label = qps.process_questions()
@@ -52,8 +54,7 @@ def run_app():
         if clicked:
             # plh.markdown('clicked and here')
             openai_assistant_chat.prompt_specific(qps.get_score(), plh)    
-            global prediction_init
-            prediction_init = True    
+            st.session_state['analysis_done'] = True
 
         # score_md = qps.show_score()
         # openai_assistant_chat.prompt_specific(str(score_md))
@@ -66,19 +67,22 @@ def run_app():
     # model_functions.show_prediction(prediction_label)
     # model_functions.explain_prediction(prediction_label)
 
-    pdf = pf.create_pdf(input_df, prediction)
-    pf.download_pdf(pdf, user_input, [prediction_label])
+        if 'analysis_done' in st.session_state and st.session_state.analysis_done:
+            pdf = pf.create_pdf(input_df, prediction)
+            pf.download_pdf(pdf, user_input, [prediction_label])
 
-    # web_content.request_feedback_note()
-    # feedback = model_functions.show_user_feedback(user_input)
-    # user_input.update(feedback)
-    # model_functions.save_user_feedback(user_input)
+            web_content.request_feedback_note()
+            feedback = ff.show_user_feedback(user_input)
+            # print(f'before {user_input}')
+            user_input.update(feedback)
+            # print(f'after {user_input}')
+            ff.save_user_feedback(user_input)
 
     web_content.sankhya_references(static_files_folder)
 
     sp.subscribe()
     
-    model_functions.update_ui_status('loading', 'Complete')
+    sf.update_ui_status('loading', 'Complete')
 
 
 run_app()

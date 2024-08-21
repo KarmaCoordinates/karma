@@ -155,6 +155,9 @@ def process_queue(client, assistant, process_prompt_container):
 
 def prompt():
     _configs = configs.config()
+    if not _configs:
+        return
+    
     _init()
     st.subheader("Your AI Assistant")
     with st.container(border=True):
@@ -167,6 +170,9 @@ def prompt():
 
 def prompt_specific(query, plh):
     _configs = configs.config()
+    if not _configs:
+        return
+
     _init()
     # process_prompt_container = st.container() # placeholder to keep current response above history
     st.session_state.query_queue.append(query)
