@@ -1,23 +1,24 @@
 import model_functions
 import web_content 
 import streamlit as st
-import s3_functions as ff
+import s3_functions as s3f
 import openai_assistant_chat
 import stripe_payment as sp
 import questionnaire_pratyay_sargah as qps
+import feedback_functions as ff
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
     data_dictionary_file = 'karma_coordinates_feature_dictionary.csv'
-    data_dictionary_df = ff.cache_csv_from_s3(bucket_name, data_dictionary_file)
+    data_dictionary_df = s3f.cache_csv_from_s3(bucket_name, data_dictionary_file)
     data_dictionary_df = data_dictionary_df.iloc[1:9, 0:4] # first row is headers, get first 8 rows and first three columns only
     data_dictionary_array = data_dictionary_df.to_numpy()
 
-    df = ff.cache_csv_from_s3(bucket_name, features_data_file)
+    df = s3f.cache_csv_from_s3(bucket_name, features_data_file)
     df, X, y, label_encoder = model_functions.read_features(df)
     categorical_cols, numeric_cols, preprocessor = model_functions.encode_features(X)
     model, X_train, X_test, y_train, y_test = model_functions.define_model(X, y, model_choice, preprocessor)
-    model = ff.cache_pickle_obj_from_s3(bucket_name, pickled_model_data_file)
+    model = s3f.cache_pickle_obj_from_s3(bucket_name, pickled_model_data_file)
     return data_dictionary_array, df, X.columns, categorical_cols, model, label_encoder
 
 def run_app():

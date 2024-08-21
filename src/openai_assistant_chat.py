@@ -6,7 +6,7 @@ import streamlit_pills as stp
 import time
 import secrets_app
 import model_functions
-import s3_functions as ff
+import s3_functions as s3f
 import configs
 import pandas as pd
 import numpy
@@ -18,7 +18,7 @@ import streamlit_button_list as ifunc
 def cache_button_list_from_s3():
     bucket_name = 'karmacoordinates'
     object_key = 'karma_coordinates_prompts.csv'
-    return ff.cache_csv_from_s3(bucket_name, object_key).iloc[1:, 0].to_list()        
+    return s3f.cache_csv_from_s3(bucket_name, object_key).iloc[1:, 0].to_list()        
 
 
 # Initialise session state to store conversation history locally to display on UI

@@ -1,5 +1,5 @@
 import model_functions
-import s3_functions as ff
+import s3_functions as s3f
 
 
 def run_app():
@@ -10,7 +10,7 @@ def run_app():
     # web_content.write_content(resources_folder)
 
     model_choice = 'RandomForest'
-    df = ff.cache_csv_from_s3(bucket_name, features_data_file)
+    df = s3f.cache_csv_from_s3(bucket_name, features_data_file)
     df, X, y, label_encoder = model_functions.read_features(df)
     categorical_cols, numeric_cols, preprocessor = model_functions.encode_features(X)
 
@@ -22,7 +22,7 @@ def run_app():
     model = model_functions.train_model(model, X_train, y_train)
 
     print('Saving model')
-    ff.save_pickle_obj_to_s3(model, bucket_name, model_data_file)
+    s3f.save_pickle_obj_to_s3(model, bucket_name, model_data_file)
 
     print('Model trained and saved. You can exit now!')
 
