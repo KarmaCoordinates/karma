@@ -19,26 +19,53 @@ When one remembers a thing, what is actually happening? We know, the brain *phys
 - Complacency: Complacency is a state where not much modifications are happening. You go to office, nothing new happens. You sit in front of TV, nothing new is seen. No new information is being registered. Such stagnation is not conducive to achieving clarity of thinking.
 - True knowledge: True knowledge is a state where the above three are missing. It is a state of physical modification where a brain holds only the true and real information. Visualize this state, all decisions in this state will be right. One will have complete clarity of things observed by the five sensory faculties.
 
-## Calculating the clarity of thinking score
-The clarity of one's thinking is thus the fundamental aspect of Karma Coordinates computation. Below are the positive and negative factors used in computing Karma Coordinates. Positive factors help develop clarity and negative factors make thinking foggy.
+*Sankhya* has described these states in this karika:
+एष प्रत्ययसर्गो विपर्ययाशक्तितुष्टिसिद्ध्याख्यः । गुणवैषम्यविमर्द्देन तस्य भेदास्तु पञ्चाशत् ॥ ४६ ॥
+This is the creation of Buddhi, termed ignorance, incapacity, complacency, and perfection. And from the conflict of the Gunas in unequal degree of strength, its sorts, again, are fifty.
 
-### Positive factors
-- Knowledge: This is measured in terms of years of education and/or equivalent experience.
-- Discipline: Certain disciplines develop natural inclination to rationalization and proensity to achieving clarity.
-- Diet: Our diet supports our activities. One of the activities to grow clarity is our ability to think. Excessively lithargic diet thus will not help. Whereas diet that are stimulating will help.
-- Workout: Regular workout is essential to remain healthy and create necessary vital forces. In poor health most likely time will be spent on taking care of the physical needs. There won't be any time left for dedicated effort in growing clarity of thoughts.
-- Philosophy/Spirituality: Sprituality or thinking about questions such as what is the purpose of this universe, why are life forms created, what is our purpose, is an essential activity to trigger the process of developing clarity. 
-- Fasting: Fasting is a tools for developing control over one's impulses. It is a tool to achieve good health as well.
-### Negative factors
-- Drink: Drinking/smoking, etc muddies one's thinking. And works against the process of clarity development.
-- Positive or negative emotions: Both positive and negative emotions take over / dominates one's thinking and thus deviating one from the path of achieving clarity.
-- Use of swear words: Use of swear words is a state where one lacks the vocabulary to articulate the state of mind. Right vocabulary is a must tool so when one thinks there can be right formulation of reasoning.
+Further it quantifies the factors associated with the clarity of thinking in this karika:
+पञ्च विपर्ययभेदा भवन्त्यशक्तिश्च करणवैकल्यात् । अष्टाविंशतिभेदा तुष्टिर्नवधाऽष्टधा सिद्धिः ॥ ४७ ॥
+Five are the divisions of ignorance; and according to the impairment of the instruments, incapacity has twenty-eight varieties; while complacency is ninefold; perfection, eightfold.
+
+## Calculating the clarity of thinking score
+The clarity of one's thinking is thus the fundamental aspect of Karma Coordinates computation. *Sankhya* describes fifty positive and negative factors contributing to the clarity in these karikas:  
+
+### Ignorance
+भेदस्तमसोऽष्टविधो मोहस्य च, दशविधो महामोहः । तामिस्रोऽष्टादशधा, तथा भवत्यन्धतामिस्रः ॥ ४८ ॥
+The distinctions of Avidya are eightfold, as also of Asmita; tenfold is Raga; Dvesa is eighteenfold; so also is Abhinivesa.
+
+Karma Coordinates currently uses these factors below in computing the Ingorance/*Viparyayah* score:
+Misunderstanding of reality and the nature of existence, a false sense of identity or self, attachment to pleasurable experiences, aversion to certain situations or experiences that are perceived as painful, and a deep-seated fear of death and an unexamined attachment to life itself.
+
+
+### Inability or Incapacity
+एकादशेन्द्रियवधाः सह बुद्धिवधैरशक्तिरुद्दिष्टा । सप्तदश वधा बुद्धेर्विपर्ययात् तुष्टिसिद्धीनाम् ॥ ४९ ॥
+Injuries of the eleven Indriyas, together with injuries of Buddhi, are pronounced to be Incapacity. The injuries of Buddhi are seventeen, through inversion of complacencies and perfections.
+
+Karma Coordinates currently uses these factors below in computing the Incapacity/*Ashakti* score:
+Lack of Knowledge, Confusion Regarding Identity, Attachment to Objects, Inability to Manage Suffering, Impairment of Perception, Cognitive Delays, Misinterpretation, Sensory Overload, Dissociation, Physical Impairment, Emotional Instability, Intellectual Limitations, Social Anxiety, Repetitive Habits, Conflicting Intentions, Distraction, Resistance to Change, Lack of Motivation, Social Withdrawal, Unrealistic Expectations, Negative Self-Comparison, Dependence on Others, Communication Barriers, Indulgence, Analysis Paralysis, Poor Self-Image, Emotional Dysregulation, and Inability to Embrace Change.
+
+### Complecency
+आध्यात्मिकाश्चतस्रः प्रकृत्युपादानकालभाग्याख्याः । बाह्या विषयोपरमात् पञ्च, नव तुष्टयोऽभिहिताः ॥ ५० ॥
+The nine Complacencies are propounded : the four Self-regarding ones called after Prakriti, Material, Time, and Luck ; the external five, through abstinence from objects.
+
+Karma Coordinates currently uses these factors below in computing the Complecency/*Tushti* score:
+Satisfaction achieved through detachment and abstaining from sensory pleasures, a sense of satisfaction from making extensive sacrifices or offerings, Satisfaction from achieving a state of equilibrium and balance in life, Satisfaction from selflessly serving others or contributing to their well-being, and Satisfaction found in social cooperation, harmony, and communal living.
+
+### True and Real Knowledge
+ऊहः शब्दोऽध्ययनं दुःखविघातास्त्रयः सुहृत्प्राप्तिः । दानं च सिद्धयोऽष्टौ सिद्धेः पूर्वोऽङ्कुशस्त्रिविधः ॥ ५१ ॥
+Argumentation, Word, Study, the three Preventions of Pain, Acquisition of friends, Charity or Purity are the eight Perfections. Those mentioned before Perfec tion are the threefold goad to (Ignorance and suffering).
+
+Karma Coordinates currently uses these factors below in computing the Knowledge/*Siddhi* score:
+Ability to reason, Mastery of vocabulary, Ability to do dedicated studies/efforts, Knowledge of technology to overcome sorrows, Knowledge of technolgoy/medical sciences/psychology/philosophy to overcome physical pain/disease and mental pain, Acquisition of good people, and Giving time, money for benefit of all
+
+Positive factors help develop clarity and negative factors make thinking foggy.
 
 ### Formula
-We scale the above factors and calculate the clarity of thinking score as: knowledge + discipline + diet + workout - drink + spirituality -  positive emotions - negative_emotion + fasting - swear_words
+We scale the above factors and calculate the clarity of thinking score as: *Siddhi (-2:2)* + *Viparyayah (-4:0)* + *Ashakti (-4:0)* + *Tushti (-4:0)* 
 
 ## Calculating number of lives 
-The calculated clarity of thinking score is scaled to 0 to 1. It is then transposed into *number of lives* based on 1) duration of universe, and 2) a concept that every *Sukshm* transmigrate through every species - and average duration of each life/existence.
+The calculated clarity of thinking score is scaled to -1 to 1. It is then transposed into *number of lives* based on 1) duration of universe, and 2) a concept that every *Sukshm* transmigrate through every species - and average duration of each life/existence.
 
 ### Duration of *Prakriti*
 Duration of *Prakriti*, i.e. the age of the universe is an evolving number. Varying from about 7 billion years old to 13.8 billion years old. For Karma Coordiates calculation currently we have used The Friedmann Equation model. As per the open model with omega of 5, universe is about 13.8 billion years old and it will end when it is about 27.6 billion years old - that is in another 13.8 billion years (Wikipedia contributors. (2024, June 27); *Ultimate fate of the universe*).
