@@ -1,5 +1,5 @@
 import markdown
-import file_functions as ff
+import s3_functions as ff
 import os
 
 def md_to_html(static_files_folder, md_filename, html_filename):

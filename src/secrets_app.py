@@ -1,5 +1,5 @@
 import model_functions
-import file_functions as ff
+import s3_functions as ff
 import pandas as pd
 
 secrets_data_file = 'kc_secrets.txt'

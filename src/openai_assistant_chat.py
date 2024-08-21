@@ -6,7 +6,7 @@ import streamlit_pills as stp
 import time
 import secrets_app
 import model_functions
-import file_functions as ff
+import s3_functions as ff
 import configs
 import pandas as pd
 import numpy
