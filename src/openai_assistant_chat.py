@@ -52,7 +52,7 @@ def _render_user_input(user_query_container):
 
 # Display messages in chat history
 def _render_chat_history():
-    for message in st.session_state.chat_history:
+    for message in (st.session_state.chat_history):
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
     
@@ -79,7 +79,8 @@ def _process_prompt(client, assistant, user_query):
     # Store the user's query into the history
     st.session_state.chat_history.append({"role": "user",
                                         "content": user_query})
-    
+
+
     try:
         # Add user query to the thread
         client.beta.threads.messages.create(
