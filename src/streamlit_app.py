@@ -6,6 +6,7 @@ import openai_assistant_chat
 import stripe_payment as sp
 import questionnaire_pratyay_sargah as qps
 import feedback_functions as ff
+import pdf_functions as pf
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -65,8 +66,8 @@ def run_app():
     # model_functions.show_prediction(prediction_label)
     # model_functions.explain_prediction(prediction_label)
 
-    pdf = model_functions.create_pdf(input_df, prediction)
-    model_functions.download_pdf(pdf, user_input, [prediction_label])
+    pdf = pf.create_pdf(input_df, prediction)
+    pf.download_pdf(pdf, user_input, [prediction_label])
 
     # web_content.request_feedback_note()
     # feedback = model_functions.show_user_feedback(user_input)

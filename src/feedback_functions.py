@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_star_rating import st_star_rating
 
 # User feedback
 def show_user_feedback(user_input):
