@@ -31,16 +31,10 @@ def _init():
 
     if "query_queue" not in st.session_state:
         st.session_state.query_queue = []
-        # bucket_name = 'karmacoordinates'
-        # object_key = 'karma_coordinates_prompts.csv'
-        # ifunc.init_buttons(ff.cache_csv_from_s3(bucket_name, object_key).iloc[1:, 0].to_list(), button_list_name)        
 
 def _callback_button_on_click(key):
-    # print(f'key:{key}')
     st.session_state.query_queue.append(key)
     st.session_state.query_history.append(key)
-    # if key in st.session_state.my_button_list:
-    #     st.session_state.my_button_list.remove(key)
 
 def _render_user_input(user_query_container):
     ai_default_question = 'How can I help you?'
@@ -48,7 +42,7 @@ def _render_user_input(user_query_container):
 
         st.markdown('FAQs')
         # show suggested options
-        ifunc.render_buttons(button_list=[item for item in cache_button_list_from_s3() if item not in st.session_state.query_history], on_click_callback=_callback_button_on_click, button_list_name='button_list_name')
+        ifunc.render_buttons(button_list=[item for item in cache_button_list_from_s3() if item not in st.session_state.query_history], on_click_callback=_callback_button_on_click)
 
         # draw user input box
         user_query = st.chat_input(ai_default_question)        

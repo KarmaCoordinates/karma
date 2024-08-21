@@ -1,6 +1,6 @@
 import streamlit as st
 
-def render_buttons(button_list, on_click_callback, button_list_name, style_css = None):
+def render_buttons(button_list, on_click_callback, button_list_name = None, style_css = None):
     if not button_list:
         return
     
