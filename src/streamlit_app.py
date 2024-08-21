@@ -4,6 +4,7 @@ import streamlit as st
 import file_functions as ff
 import openai_assistant_chat
 import stripe_payment as sp
+import questionnaire_pratyay_sargah as qps
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -38,21 +39,38 @@ def run_app():
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
+    st.subheader('Calculate my Karma Coordinates')
     with st.container(border=True):
-        input_df, user_input = model_functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   
+        input_df, user_input, prediction, prediction_label = qps.process_questions()
+        st.divider()
+        st.subheader('AI analysis')
+        plh = st.container()
+        # clicked = st.button('Show and explain my score', on_click=openai_assistant_chat.prompt_specific, args=(qps.get_score(), plh))
+        clicked = st.button('Show and explain my score')
+        if clicked:
+            # plh.markdown('clicked and here')
+            openai_assistant_chat.prompt_specific(qps.get_score(), plh)    
+            global prediction_init
+            prediction_init = True    
 
-    prediction, prediction_label = model_functions.make_prediction(model, label_encoder, input_df)  
-    model_functions.show_prediction(prediction_label)
-    model_functions.explain_prediction(prediction_label)
+        # score_md = qps.show_score()
+        # openai_assistant_chat.prompt_specific(str(score_md))
+
+
+    # with st.container(border=True):
+    #     input_df, user_input = model_functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   
+
+    # prediction, prediction_label = model_functions.make_prediction(model, label_encoder, input_df)  
+    # model_functions.show_prediction(prediction_label)
+    # model_functions.explain_prediction(prediction_label)
 
     pdf = model_functions.create_pdf(input_df, prediction)
-    model_functions.download_pdf(pdf, user_input, prediction_label)
+    model_functions.download_pdf(pdf, user_input, [prediction_label])
 
-    web_content.request_feedback_note()
-    feedback = model_functions.show_user_feedback(user_input)
-
-    user_input.update(feedback)
-    model_functions.save_user_feedback(user_input)
+    # web_content.request_feedback_note()
+    # feedback = model_functions.show_user_feedback(user_input)
+    # user_input.update(feedback)
+    # model_functions.save_user_feedback(user_input)
 
     web_content.sankhya_references(static_files_folder)
 

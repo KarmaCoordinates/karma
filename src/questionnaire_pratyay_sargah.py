@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 
 categories = {
     'Viparyayah (विपर्यय)' : '''This term refers to wrong perception or misunderstanding. It denotes a state of error or ignorance where one misapprehends reality, often due to an inversion of the true understanding. In a more detailed context within Samkhya, it can relate to the various forms of ignorance that distort one's understanding of the self and the world''',
@@ -324,33 +325,54 @@ questions = {
 # Streamlit application
 # st.title("Self-Assessment Questionnaire")
 
-total_scores = {}
+def _init():
+    if 'user_input' not in st.session_state:
+        st.session_state['user_input'] = {}
 
+def cache_user_input(user_selection):
+    # print(f'question: {user_selection}, user selected from session: {st.session_state[user_selection]}')
+    # if 'user_input' not in st.session_state:
+    #     st.session_state['user_input'] = {}
+    st.session_state.user_input[user_selection] = st.session_state[user_selection]
+
+total_scores = {}
 # Function to process each category of questions
 def calc_scores(category, questions):
     score = 0
     total_scores[category] = 0
-    st.markdown(f'{category} - {categories.get(category)}')
+    st.markdown(f'{category} Assessment - {categories.get(category)}')
     for q in questions:
+        key = q["question"]
         qnp = np.array(q['options'])        
-        selected_option = st.radio(q["question"], qnp[:, 0], key=q["question"])
-        selected_option_score = int(qnp[qnp[:, 0] == selected_option, 1])
+        selected_option = st.radio(q["question"], qnp[:, 0], key=key, on_change=cache_user_input, args={key})
+        selected_option_score = int(qnp[qnp[:, 0] == selected_option, 1][0])
         total_scores[category] += selected_option_score   # Update the score based on selection
 
 def process_questions():
+    _init()
+
     # Process each category of questions
     for category, qs in questions.items():
         calc_scores(category, qs)
 
-def show_score():
-    # Display total scores and calculate total clarity of thinking index
-    st.subheader("Total Scores Summary:")
-    clarity_of_thinking_index = sum(total_scores.values())
-    for category, score in total_scores.items():
-        st.write(f"{category} Score: {score}")
+    input_df = pd.DataFrame(st.session_state.user_input, index=[0])
 
-    # Display clarity of thinking index
-    st.write(f"Your Clarity of Thinking Index: {clarity_of_thinking_index}")
+    return input_df, st.session_state.user_input, sum(total_scores.values()), sum(total_scores.values())
+
+# def show_score():
+#     # Display total scores and calculate total clarity of thinking index
+#     st.subheader("Total Scores Summary:")
+#     clarity_of_thinking_index = sum(total_scores.values())
+#     score_md = ''
+#     for category, score in total_scores.items():
+#         score_md = score_md + f'{category} Score: {score}'
+#         st.write(f"{category} Score: {score}")
+
+#     # Display clarity of thinking index
+#     st.write(f"Your Clarity of Thinking Index: {clarity_of_thinking_index}")
+#     score_md = score_md + f"Your Clarity of Thinking Index: {clarity_of_thinking_index}"
+
+#     return score_md
 
     # Providing interpretation of the scores
     # if clarity_of_thinking_index < 0:
@@ -360,5 +382,17 @@ def show_score():
     # else:
     #     st.write("You have a good level of clarity of thinking and insight!")
 
+def get_score():
+    clarity_of_thinking_index = sum(total_scores.values())
+    score_md = ''
+    for category, score in total_scores.items():
+        score_md = score_md + f'''{category}:{score}, '''
+
+    # Display clarity of thinking index
+    score_md = f'''Your **Clarity of Thinking** score: **{clarity_of_thinking_index}** [{score_md}] '''
+
+    return score_md
+
+# _init()
 # process_questions()
 # show_score()        

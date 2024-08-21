@@ -164,3 +164,9 @@ def prompt():
         _render_user_input(user_query_container=user_query_container)
         process_queue(client=_configs['openai_client'], assistant=_configs['openai_assistant'], process_prompt_container=process_prompt_container)
 
+def prompt_specific(query, plh):
+    _configs = configs.config()
+    _init()
+    # process_prompt_container = st.container() # placeholder to keep current response above history
+    st.session_state.query_queue.append(query)
+    process_queue(client=_configs['openai_client'], assistant=_configs['openai_assistant'], process_prompt_container=plh)
