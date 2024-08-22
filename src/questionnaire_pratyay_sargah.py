@@ -29,21 +29,20 @@ def cache_user_input(user_selection):
     st.session_state.user_input[user_selection] = st.session_state[user_selection]
 
 total_scores = {}
+
 # Function to process each category of questions
 def _calc_scores():
     score = 0
-    # total_scores[category] = 0
-
     features_df, categories_df = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    for category_tuple in categories_df.itertuples():
-        total_scores[category_tuple.category_name] = 0
-        st.markdown(f'{category_tuple.category_name} Assessment - {category_tuple.category_description}')
-        for feature_tuple in features_df.loc[features_df['Category'] == category_tuple.category_name].itertuples():
-            option_names = [x for x in [feature_tuple.Option_1, feature_tuple.Option_2, feature_tuple.Option_3, feature_tuple.Option_4] if str(x) != 'nan']
-            options_value = [x for x in [feature_tuple.Value_1, feature_tuple.Value_2, feature_tuple.Value_3, feature_tuple.Value_4] if str(x) != 'nan']
-            selected_option = st.radio(feature_tuple.Question, option_names, key=feature_tuple.Question, on_change=cache_user_input, args={feature_tuple.Question})
+    for category_tpl in categories_df.itertuples():
+        total_scores[category_tpl.category_name] = 0
+        st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
+        for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
+            option_names = [x for x in [feature_tpl.Option_1, feature_tpl.Option_2, feature_tpl.Option_3, feature_tpl.Option_4] if str(x) != 'nan']
+            options_value = [x for x in [feature_tpl.Value_1, feature_tpl.Value_2, feature_tpl.Value_3, feature_tpl.Value_4] if str(x) != 'nan']
+            selected_option = st.radio(feature_tpl.Question, option_names, key=feature_tpl.Question, on_change=cache_user_input, args={feature_tpl.Question})
             selected_option_score = options_value[option_names.index(selected_option)] 
-            total_scores[category_tuple.category_name] += selected_option_score  
+            total_scores[category_tpl.category_name] += selected_option_score  
 
 def process_questions():
     _init()
