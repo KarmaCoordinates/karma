@@ -10,6 +10,7 @@ def show_user_feedback(user_input):
     # tamas_choice = st.selectbox('What do you believe your Tamas is?', ('Low', 'Moderate', 'High', 'Dominant'), key='tamas_feedback', on_change=update_ui_status, args=('tamas_feedback', True))    
     comments = st.text_input("Comments/suggestions:", on_change=None)
     stars = st_star_rating("Did you find it useful?", maxValue=5, defaultValue=3, key="rating", on_click=sf.update_ui_status('rating', True))
+    phl = st.empty()
     return {'rating': stars, 'comments':comments}
 
 def save_user_feedback(user_input):

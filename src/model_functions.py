@@ -205,7 +205,7 @@ def show_prediction(prediction_label):
     st.subheader('AI prediction')
     # all not rating clicks are assumed to be selectbox on_clicks
     global prediction_init
-    if prediction_init or ('loading' in st.session_state and st.session_state.loading.startswith('kk_inputs_')):
+    if prediction_init or sf.is_loading('kk_inputs_'):
         if not prediction_init: prediction_init = True
         prediction = f'''>## Your Karma Coordinates: :green[**{lives_remaining}**] lives to Moksha.'''
         st.markdown(prediction)

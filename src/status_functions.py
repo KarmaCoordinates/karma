@@ -22,3 +22,6 @@ def update_ui_status(key, value):
 def page_init():
     global page_init
     return page_init
+
+def is_loading(key_startswith_str):
+    return 'loading' in st.session_state and st.session_state.loading.startswith('key_startswith_str')
