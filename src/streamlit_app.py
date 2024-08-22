@@ -67,7 +67,7 @@ def run_app():
     # model_functions.show_prediction(prediction_label)
     # model_functions.explain_prediction(prediction_label)
 
-        if  True: #'analysis_done' in st.session_state and st.session_state.analysis_done:
+        if 'analysis_done' in st.session_state and st.session_state.analysis_done:
             pdf = pf.create_pdf(user_input, qps.get_score())
             pf.download_pdf(pdf)
 
