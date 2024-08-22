@@ -34,11 +34,11 @@ def run_app():
 
     web_content.brief(static_files_folder)
 
-    model_choice = 'RandomForest'
-    bucket_name = 'karmacoordinates'
-    features_data_file = 'kc3_synthout_chunk_0.csv'
-    pickled_model_data_file = 'kc_model_finalized.sav'
-    data_dictionary_array, df, columns, categorical_cols, model, label_encoder = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
+    # model_choice = 'RandomForest'
+    # bucket_name = 'karmacoordinates'
+    # features_data_file = 'kc3_synthout_chunk_0.csv'
+    # pickled_model_data_file = 'kc_model_finalized.sav'
+    # data_dictionary_array, df, columns, categorical_cols, model, label_encoder = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
@@ -67,7 +67,7 @@ def run_app():
     # model_functions.show_prediction(prediction_label)
     # model_functions.explain_prediction(prediction_label)
 
-        if 'analysis_done' in st.session_state and st.session_state.analysis_done:
+        if  'analysis_done' in st.session_state and st.session_state.analysis_done:
             pdf = pf.create_pdf(input_df, prediction)
             pf.download_pdf(pdf, user_input, [prediction_label])
 
