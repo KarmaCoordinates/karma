@@ -18,7 +18,7 @@ def create_pdf(data, prediction):
     # pdf.set_font("Arial", size=12)
     # pdf.add_font(family='gargi', fname='.static/gargi.ttf', uni=True)
     # pdf.add_font(family='Devanagari', fname='.static/Devanagari.ttf', uni=True)
-    pdf.add_font(family='Arial Unicode MS', fname='.static/ARIALUNI.ttf', uni=True)
+    pdf.add_font(family='Arial Unicode MS', fname='.static/arialuni.ttf', uni=True)
     pdf.set_font("Arial Unicode MS", size=12)
     # pdf.add_font(family='DejaVu', fname='.static/DejaVuSansCondensed.ttf', uni=True)
     # pdf.set_font("DejaVu", size=12)
