@@ -7,7 +7,8 @@ import s3_functions as s3f
 def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
     features_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=features_data_dict_object_key)
     features_df['options_dict'] = features_df.apply(lambda row: {**{row['Option_1'] : row['Value_1']}, **{row['Option_2'] : row['Value_2']}, **{row['Option_3'] : row['Value_3']}, **{row['Option_4'] : row['Value_4']}}, axis=1)
-    features_df['options_list'] = [list(item) for item in zip(features_df['Option_1'], features_df['Option_2'], features_df['Option_3'], features_df['Option_4']) ]
+    key_columns = ['Option_1', 'Option_2', 'Option_3', 'Option_4']
+    features_df['options_list'] = [list(filter(pd.notna, item)) for item in zip(*features_df[key_columns].values.T)]
     categories_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=categories_data_dict_object_key)
     return features_df, categories_df
 
@@ -29,8 +30,7 @@ def _calc_scores():
         total_scores[category_tpl.category_name] = 0
         st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
         for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
-            options_list = pd.Series(feature_tpl.options_list).dropna().to_list()
-            selected_option = st.radio(feature_tpl.Question, options_list, key=feature_tpl.Question, on_change=cache_user_input, args={feature_tpl.Question})
+            selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, key=feature_tpl.Question, on_change=cache_user_input, args={feature_tpl.Question})
             selected_option_score = feature_tpl.options_dict.get(selected_option) 
             total_scores[category_tpl.category_name] += selected_option_score  
 
