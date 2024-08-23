@@ -28,9 +28,6 @@ def run_app():
     static_files_folder = '.static'
     web_content.page_config(static_files_folder)
 
-    sf.update_ui_status('page_init', True)
-
-
     web_content.intro(static_files_folder)
 
     # openai_assistant_chat.init()
@@ -86,8 +83,6 @@ def run_app():
 
     sp.subscribe()
     
-    sf.update_ui_status('page_loaded', True)
-
 
 
 run_app()
