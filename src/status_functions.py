@@ -1,27 +1,32 @@
 import streamlit as st
+import pandas as pd
 
-page_init = False
+# page_init = False
+# statuses = ("page_init", "page_loaded")
 # only act on one key at a time
 # don't do anything during first page loading
 # once page is loaded, reset the key remembered in session.loading
-def update_ui_status(key, value):
-    if key == 'loading':
-        if value == 'Complete':
-            if 'loading' in st.session_state: 
-                del st.session_state['loading'] 
-        else:
-            return
+def update_ui_status(key, value=None):
+    # st.markdown(f'update_ui_status: {key}')
+    if key == "page_init":
+        if not 'loading' in st.session_state: 
+            # print(f'page_init')
+            st.session_state['loading'] = None
+        st.session_state['loading'] == "page_init" 
+    elif key == "page_loaded":
+        if 'loading' in st.session_state: 
+            del st.session_state['loading'] 
     else: 
-        global page_init
-        if page_init:
-            if 'loading' not in st.session_state:  
-                st.session_state['loading'] = key
-        else:
-            page_init = True
+        if not 'loading' in st.session_state or st.session_state.loading is None: 
+            # print(f'key_init')
+            st.session_state['loading'] = None
+        st.session_state['loading'] = key
 
-def page_init():
-    global page_init
-    return page_init
 
-def is_loading(key_startswith_str):
-    return 'loading' in st.session_state and st.session_state.loading.startswith('key_startswith_str')
+def is_loading(key_startswith_str = None):
+    # print(f'key_startswith_str: {key_startswith_str}')
+    if key_startswith_str is None:
+        return 'loading' in st.session_state
+    else:
+        # print(f'is_loading: {st.session_state.loading}, key_startswith_str: {key_startswith_str}')
+        return 'loading' in st.session_state and not st.session_state.loading is None and st.session_state.loading.startswith(key_startswith_str)

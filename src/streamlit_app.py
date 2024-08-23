@@ -27,6 +27,9 @@ def run_app():
     static_files_folder = '.static'
     web_content.page_config(static_files_folder)
 
+    sf.update_ui_status('page_init', True)
+
+
     web_content.intro(static_files_folder)
 
     # openai_assistant_chat.init()
@@ -67,22 +70,20 @@ def run_app():
     # model_functions.show_prediction(prediction_label)
     # model_functions.explain_prediction(prediction_label)
 
-        if  'analysis_done' in st.session_state and st.session_state.analysis_done:
-            pdf = pf.create_pdf(user_input, qps.get_score())
-            pf.download_pdf(pdf)
+    if  'analysis_done' in st.session_state and st.session_state.analysis_done:
+        pdf = pf.create_pdf(user_input, qps.get_score())
+        pf.download_pdf(pdf)
 
-            web_content.request_feedback_note()
-            feedback = ff.show_user_feedback(user_input)
-            # print(f'before {user_input}')
-            user_input.update(feedback)
-            # print(f'after {user_input}')
-            ff.save_user_feedback(user_input)
+    st.subheader('Your feedback')
+    with st.container(border=True):
+        web_content.request_feedback_note()
+        ff.user_feedback(user_input)
 
     web_content.sankhya_references(static_files_folder)
 
     sp.subscribe()
     
-    sf.update_ui_status('loading', 'Complete')
+    sf.update_ui_status('page_loaded', True)
 
 
 run_app()
