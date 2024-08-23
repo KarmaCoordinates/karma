@@ -6,7 +6,8 @@ import s3_functions as s3f
 @st.cache_data
 def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
     features_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=features_data_dict_object_key)
-    features_df['options_dict'] = features_df.apply(lambda row: {**{row['Option_1'] : row['Value_1']}, **{row['Option_2'] : row['Value_2']}, **{row['Option_3'] : row['Value_3']}, **{row['Option_4'] : row['Value_4']}}, axis=1)
+    key_value_columns = ['Option_1', 'Value_1', 'Option_2', 'Value_2', 'Option_3', 'Value_3', 'Option_4', 'Value_4']
+    features_df['options_dict'] = [{ k: v for k, v in zip(row[::2], row[1::2]) if pd.notna(k) and pd.notna(v) } for row in features_df[key_value_columns].values]
     key_columns = ['Option_1', 'Option_2', 'Option_3', 'Option_4']
     features_df['options_list'] = [list(filter(pd.notna, item)) for item in zip(*features_df[key_columns].values.T)]
     categories_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=categories_data_dict_object_key)
