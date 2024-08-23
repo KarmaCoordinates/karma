@@ -8,6 +8,7 @@ import questionnaire_pratyay_sargah as qps
 import feedback_functions as ff
 import pdf_functions as pf
 import status_functions as sf
+import auth_functions as af
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -79,11 +80,14 @@ def run_app():
         web_content.request_feedback_note()
         ff.user_feedback(user_input)
 
+    # af.do_2fa()
+
     web_content.sankhya_references(static_files_folder)
 
     sp.subscribe()
     
     sf.update_ui_status('page_loaded', True)
+
 
 
 run_app()
