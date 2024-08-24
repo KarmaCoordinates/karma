@@ -67,3 +67,8 @@ if st.button("Submit"):
         st.write("Your Sattva levels are very high. You have excellent clarity and peace of mind!")
 
 # Run the app using the command: streamlit run your_script_name.py
+
+def main():
+    pass
+
+if __name__ == '__main__': main()

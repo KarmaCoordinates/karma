@@ -197,3 +197,7 @@ def horoscope_calculation():
 def improving_karma_coordinates():
     st.subheader('Improve Karma Coordinates')
 
+def main():
+    pass
+
+if __name__ == '__main__': main()

@@ -74,16 +74,18 @@ def run_app():
 
     st.subheader('Your feedback')
     with st.container(border=True):
+        af.do_2fa()
         web_content.request_feedback_note()
         ff.user_feedback(user_input)
 
-    # af.do_2fa()
 
     web_content.sankhya_references(static_files_folder)
 
     sp.subscribe()
     
 
+def main():
+    run_app()
 
-run_app()
+if __name__ == '__main__': main()
 

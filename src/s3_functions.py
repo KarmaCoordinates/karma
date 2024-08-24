@@ -51,3 +51,9 @@ def save_html_to_s3(filename, bucket_name, object_key):
     logging.info('calling save_file_to_s3')
     s3 = boto3.client("s3")
     s3.upload_file(filename, bucket_name, object_key, ExtraArgs={'ContentType': 'text/html', "ContentEncoding" : "utf-8"})
+
+
+def main():
+    pass
+
+if __name__ == '__main__': main()

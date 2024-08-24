@@ -26,3 +26,8 @@ def calculate_karma_coordinates(prediction_label):
     remaining_lives = (possible_human_existences / slope)
     return f'{math.trunc(remaining_lives):,}'
     #return remaining_lives
+
+def main():
+    pass
+
+if __name__ == '__main__': main()

@@ -46,40 +46,45 @@ def calculate_level_of_clarity(row):
         # + row.swear_words_scaled_weight
     )
 
-# load features
-knowledge_df = get_feature_df('knowledge')
-discipline_df = get_feature_df('discipline')
-diet_df = get_feature_df('diet')
-workout_df = get_feature_df('workout')
-drink_df = get_feature_df('drink')
-spirituality_df = get_feature_df('spirituality')
-positive_emotion_df = get_feature_df('positive_emotion')
-negative_emotion_df = get_feature_df('negative_emotion')
-fasting_df = get_feature_df('fasting')
-swear_words_df = get_feature_df('swear_words')
+
+def main():
+
+    # load features
+    knowledge_df = get_feature_df('knowledge')
+    discipline_df = get_feature_df('discipline')
+    diet_df = get_feature_df('diet')
+    workout_df = get_feature_df('workout')
+    drink_df = get_feature_df('drink')
+    spirituality_df = get_feature_df('spirituality')
+    positive_emotion_df = get_feature_df('positive_emotion')
+    negative_emotion_df = get_feature_df('negative_emotion')
+    fasting_df = get_feature_df('fasting')
+    swear_words_df = get_feature_df('swear_words')
 
 
-# Perform the Cartesian product using merge
-df = pd.merge(
-    negative_emotion_df,
-    pd.merge(
-        positive_emotion_df,
+    # Perform the Cartesian product using merge
+    df = pd.merge(
+        negative_emotion_df,
         pd.merge(
-            spirituality_df,
+            positive_emotion_df,
             pd.merge(
-                drink_df,
+                spirituality_df,
                 pd.merge(
-                    workout_df,
+                    drink_df,
                     pd.merge(
-                        diet_df,
+                        workout_df,
                         pd.merge(
-                            knowledge_df,
-                            discipline_df,
-                            # pd.merge(
-                            #     discipline_df,
-                            #     pd.merge(fasting_df, swear_words_df, how="cross"),
-                            #     how="cross",
-                            # ),
+                            diet_df,
+                            pd.merge(
+                                knowledge_df,
+                                discipline_df,
+                                # pd.merge(
+                                #     discipline_df,
+                                #     pd.merge(fasting_df, swear_words_df, how="cross"),
+                                #     how="cross",
+                                # ),
+                                how="cross",
+                            ),
                             how="cross",
                         ),
                         how="cross",
@@ -91,27 +96,29 @@ df = pd.merge(
             how="cross",
         ),
         how="cross",
-    ),
-    how="cross",
-)
+    )
 
-# Scale the calculated level
-df["scaled_level"] = df.apply(calculate_level_of_clarity, axis=1)
+    # Scale the calculated level
+    df["scaled_level"] = df.apply(calculate_level_of_clarity, axis=1)
 
-# Transform scale to 1-13 billion year or 1-13 million human lives
-df = df.loc[:, ~df.columns.str.match(".*_weight")]
-minkc = 1
-maxkc = 13
-df["karma_coordinates"] = (df["scaled_level"] - df["scaled_level"].min()) / (
-    df["scaled_level"].max() - df["scaled_level"].min()
-) * (maxkc - minkc) + minkc
-# df['karma_coordinates_label'] = df.apply(karma_coordinates_label, axis=1)
+    # Transform scale to 1-13 billion year or 1-13 million human lives
+    df = df.loc[:, ~df.columns.str.match(".*_weight")]
+    minkc = 1
+    maxkc = 13
+    df["karma_coordinates"] = (df["scaled_level"] - df["scaled_level"].min()) / (
+        df["scaled_level"].max() - df["scaled_level"].min()
+    ) * (maxkc - minkc) + minkc
+    # df['karma_coordinates_label'] = df.apply(karma_coordinates_label, axis=1)
 
-# exit()
+    # exit()
 
-# 5.3 Writing Data to CSV in Chunks
-chunk_size = 1440000
-num_chunks = len(df) // chunk_size + 1
+    # 5.3 Writing Data to CSV in Chunks
+    chunk_size = 1440000
+    num_chunks = len(df) // chunk_size + 1
 
-for i, chunk in enumerate(np.array_split(df, num_chunks)):
-    chunk.to_csv(f".tmp/kc3_synthout_chunk_{i}.csv", index=False)
+    for i, chunk in enumerate(np.array_split(df, num_chunks)):
+        chunk.to_csv(f".tmp/kc3_synthout_chunk_{i}.csv", index=False)
+
+
+
+if __name__ == '__main__': main()

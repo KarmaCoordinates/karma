@@ -60,3 +60,9 @@ def download_pdf(pdf):
         b64 = base64.b64encode(pdf_output).decode('utf-8')
         href = f'<a href="data:application/octet-stream;base64,{b64}" download="prediction_report.pdf">Download PDF Report</a>'
         st.markdown(href, unsafe_allow_html=True)
+
+
+def main():
+    pass
+
+if __name__ == '__main__': main()

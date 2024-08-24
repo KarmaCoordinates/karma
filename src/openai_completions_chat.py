@@ -41,3 +41,8 @@ def prompt():
             )
             response = st.write_stream(stream)
         st.session_state.messages.append({"role": "assistant", "content": response})
+
+def main():
+    pass
+
+if __name__ == '__main__': main()

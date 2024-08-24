@@ -42,5 +42,7 @@ def run_app():
     model_functions.download_pdf(pdf, user_input, prediction_label)
 
 
-run_app()
+def main():
+    run_app()
 
+if __name__ == '__main__': main()

@@ -38,7 +38,13 @@ def render_buttons(button_list, on_click_callback, button_list_name = None, styl
 
     st.markdown(style_css, unsafe_allow_html=True)    
 
-    plh = plh = st.empty()
+    plh = st.empty()
     for text, col in list(map(list, zip(button_list, plh.columns(len(button_list))))):
         with col:
             col.button(label=text, key=text, on_click=on_click_callback, args={text})
+
+def main():
+    pass
+
+if __name__ == '__main__': main()
+

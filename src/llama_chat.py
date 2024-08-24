@@ -76,3 +76,9 @@ def init():
                 placeholder.markdown(full_response)
         message = {"role": "assistant", "content": full_response}
         st.session_state.messages.append(message)
+
+
+def main():
+    pass
+
+if __name__ == '__main__': main()

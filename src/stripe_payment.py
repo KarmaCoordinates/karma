@@ -38,3 +38,9 @@ def subscribe():
     # html(stripe_button)
     # st.write("3")
     # st.html(stripe_button)
+
+
+def main():
+    pass
+
+if __name__ == '__main__': main()

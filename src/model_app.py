@@ -26,5 +26,8 @@ def run_app():
 
     print('Model trained and saved. You can exit now!')
 
-run_app()
+def main():
+    run_app()
+
+if __name__ == '__main__': main()
 

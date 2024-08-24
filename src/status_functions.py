@@ -30,3 +30,9 @@ def is_loading(key_startswith_str = None):
     else:
         # print(f'is_loading: {st.session_state.loading}, key_startswith_str: {key_startswith_str}')
         return 'loading' in st.session_state and not st.session_state.loading is None and st.session_state.loading.startswith(key_startswith_str)
+    
+
+def main():
+    pass
+
+if __name__ == '__main__': main()
