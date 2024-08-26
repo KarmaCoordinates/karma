@@ -27,7 +27,7 @@ def _save_user_feedback(user_answers, percent_completed):
         if (('rating' in st.session_state and not st.session_state.rating is None) and ('feedback' in st.session_state and not st.session_state.feedback is None)) and (not st.session_state.rating == user_answers['rating'] or not st.session_state.feedback == user_answers['feedback']):
             user_answers.update({'email': st.session_state.email, 'rating': st.session_state.rating, 'feedback':st.session_state.feedback})
             # Create a single string holding key-value pairs
-            key_value_pairs = "; ".join(f"{key}={str(value).replace(';', '\\;')}" for key, value in user_answers.items())
+            key_value_pairs = "; ".join(f"{key}={str(value).replace(';', ';\\')}" for key, value in user_answers.items())
             df = pd.DataFrame({"key_value_pairs": [key_value_pairs]}, index=[0])            
             df.to_csv('.tmp/user_feedback.csv', mode='a', index=False, header=False)
             phl.success('''Your feedback is recorded.''')
