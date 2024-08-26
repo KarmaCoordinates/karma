@@ -7,8 +7,8 @@ import stripe_payment as sp
 import questionnaire_pratyay_sargah as qps
 import feedback_functions as ff
 import pdf_functions as pf
-import status_functions as sf
 import auth_functions as af
+import score_functions as sf
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -43,19 +43,25 @@ def run_app():
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
-
     st.subheader('Calculate my Karma Coordinates')
     with st.container(border=True):
-        input_df, user_input, prediction, prediction_label = qps.process_questions()
+        input_df, user_input, category_scores, total_score, score_ai_analysis_query, score_range = qps.process_questions()
         st.divider()
+        plh_kc = st.empty()
         st.subheader('AI analysis')
         plh = st.container()
         # clicked = st.button('Show and explain my score', on_click=openai_assistant_chat.prompt_specific, args=(qps.get_score(), plh))
         clicked = st.button('Show and explain my score')
         if clicked:
             # plh.markdown('clicked and here')
-            openai_assistant_chat.prompt_specific(qps.get_score(), plh)    
-            st.session_state['analysis_done'] = True
+            st.session_state['ai_analysis_requested'] = True
+            st.session_state['karma_coordinates'] = category_scores
+            live_to_moksha = sf.calculate_karma_coordinates(category_scores, score_range)
+            css_style = '''
+                <style>
+            '''
+            plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {live_to_moksha} $$]')
+            openai_assistant_chat.prompt_specific(score_ai_analysis_query, plh)                
 
         # score_md = qps.show_score()
         # openai_assistant_chat.prompt_specific(str(score_md))
@@ -68,8 +74,8 @@ def run_app():
     # model_functions.show_prediction(prediction_label)
     # model_functions.explain_prediction(prediction_label)
 
-    if  'analysis_done' in st.session_state and st.session_state.analysis_done:
-        pdf = pf.create_pdf(user_input, qps.get_score())
+    if  'ai_analysis_requested' in st.session_state and st.session_state.ai_analysis_requested and 'karma_coordinates' in st.session_state:
+        pdf = pf.create_pdf(user_input, st.session_state.karma_coordinates)
         pf.download_pdf(pdf)
 
     st.subheader('Your feedback')
