@@ -11,6 +11,9 @@ import configs
 import pandas as pd
 import numpy
 import streamlit_button_list as ifunc
+import random
+import string
+import unicodedata
 
 # button_list_name = 'my_button_list'
 
@@ -19,7 +22,6 @@ def cache_button_list_from_s3():
     bucket_name = 'karmacoordinates'
     object_key = 'karma_coordinates_prompts.csv'
     return s3f.cache_csv_from_s3(bucket_name, object_key).iloc[1:, 0].to_list()        
-
 
 # Initialise session state to store conversation history locally to display on UI
 def _init():
@@ -31,6 +33,18 @@ def _init():
 
     if "query_queue" not in st.session_state:
         st.session_state.query_queue = []
+
+def generate_random_string(length=8):
+    # Create a pool of characters: lowercase + uppercase + digits
+    characters = string.ascii_letters + string.digits
+    # Generate a random string
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    return random_string
+
+def normalize_text(text):
+    """Normalize text to NFC format."""
+    return unicodedata.normalize('NFC', text)
+
 
 def _callback_button_on_click(key):
     st.session_state.query_queue.append(key)
@@ -72,15 +86,16 @@ def _check_active_run(client, thread_id):
         return False
 
 
-def _process_prompt(client, assistant, user_query):    
+def _process_prompt(client, assistant, user_query, random_key=generate_random_string()):    
+    # print(f'random_key@user:{random_key}')
     # Display the user's query
     with st.chat_message("user"):
         st.markdown(user_query)
-
+    
     # Store the user's query into the history
     st.session_state.chat_history.append({"role": "user",
-                                        "content": user_query})
-
+                                        "content": user_query,
+                                        "key":random_key})
 
     try:
         # Add user query to the thread
@@ -121,18 +136,22 @@ def _process_prompt(client, assistant, user_query):
                         assistant_reply_box.markdown(assistant_reply)
             
             # Once the stream is over, update chat history
+            # print(f'random_key@assistant:{random_key}')
             st.session_state.chat_history.append({"role": "assistant",
-                                                "content": assistant_reply})
+                                                "content": assistant_reply,
+                                                "key": random_key})
             
             # if user_query in st.session_state.button_list:
             #     # print(f'removing pill:{user_query}')
             #     st.session_state.button_list.remove(user_query)
 
+        # return random_key
+    
     except Exception as e:
         print(f'Failed to process_prompt {e}')
 
 
-def process_queue(client, assistant, process_prompt_container):
+def _process_queue(client, assistant, process_prompt_container):
     # print(f'queue: {st.session_state.queue}')
 
     # Create a new thread if it does not exist
@@ -166,7 +185,7 @@ def prompt():
         st.divider()
         _render_chat_history()        
         _render_user_input(user_query_container=user_query_container)
-        process_queue(client=_configs.openai_client, assistant=_configs.openai_assistant, process_prompt_container=process_prompt_container)
+        _process_queue(client=_configs.openai_client, assistant=_configs.openai_assistant, process_prompt_container=process_prompt_container)
 
 def prompt_specific(query, plh):
     _configs = configs.get_config()
@@ -176,7 +195,18 @@ def prompt_specific(query, plh):
     _init()
     # process_prompt_container = st.container() # placeholder to keep current response above history
     st.session_state.query_queue.append(query)
-    process_queue(client=_configs.openai_client, assistant=_configs.openai_assistant, process_prompt_container=plh)
+    _process_queue(client=_configs.openai_client, assistant=_configs.openai_assistant, process_prompt_container=plh)
+
+def get_assistant_answer_from_cache(content):
+    df = pd.DataFrame(st.session_state.chat_history, columns=['role', 'content', 'key'])
+    df['normalized_content'] = df['content'].apply(normalize_text)
+    try:
+        key = df.loc[df['normalized_content'] == normalize_text(content), 'key'].values[0]
+        return df.loc[(df['key'] == key) & (df['role'] == 'assistant'), 'content'].values[0]
+    except:
+        # print(f'ai analysis query={content} not found in cache.')
+        pass
+        
 
 def main():
     pass

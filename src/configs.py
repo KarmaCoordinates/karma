@@ -5,7 +5,9 @@ from openai import OpenAI
 import secrets_app
 
 class Configuration:
-    def __init__(self, openai_client, openai_assistant, stripe_api_key, smtp_server, smtp_port, smtp_username, smtp_password, sender_email):
+    def __init__(self, openai_client, openai_assistant, stripe_api_key, 
+                 smtp_server, smtp_port, smtp_username, smtp_password, sender_email,
+                 minimum_assessment_completion_percent=5):
         self.openai_client = openai_client
         self.openai_assistant = openai_assistant
         self.stripe_api_key = stripe_api_key
@@ -14,6 +16,7 @@ class Configuration:
         self.smtp_username = smtp_username
         self.smtp_password = smtp_password
         self.sender_email = sender_email
+        self.minimum_assessment_completion_percent = minimum_assessment_completion_percent
 
 # Initialise the OpenAI client, and retrieve the assistant
 @st.cache_resource
@@ -29,7 +32,7 @@ def get_config():
         sender_email = secrets_app.get_value('SENDER_EMAIL')
 
         return Configuration(openai_client=client, openai_assistant=assistant, stripe_api_key=stripe_api_key,
-                smtp_server=smtp_server, smtp_port=smtp_port, smtp_username=smtp_username, smtp_password=smtp_password, sender_email=sender_email )
+                smtp_server=smtp_server, smtp_port=smtp_port, smtp_username=smtp_username, smtp_password=smtp_password, sender_email=sender_email)
     except Exception as e:
         print(f'error: {e}. Check if data exists!')
         return False

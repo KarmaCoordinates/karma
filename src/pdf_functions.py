@@ -7,7 +7,7 @@ import fpdf
 from fpdf import FPDF
 
 # Option to download the result as PDF
-def create_pdf(data, prediction):
+def create_pdf(data_dict, score, analysis):
     # pdf = pyp.PdfWriter()
 
     # pdf = FPDF()
@@ -35,7 +35,7 @@ def create_pdf(data, prediction):
     pdf.ln(10)
     
     pdf.cell(col_width, 10, txt="Your inputs:", ln=True)
-    for key, value in data.items():
+    for key, value in data_dict.items():
         pdf.multi_cell(w=col_width, txt=f'{key} - {value}', border=1, align='L', padding=2)
         pdf.ln(0.1)
 
@@ -45,21 +45,25 @@ def create_pdf(data, prediction):
     pdf.ln(10)
     pdf.cell(col_width, 10, txt="Your Karma Coordinates:", ln=True)
     # pdf.multi_cell(col_width, 10, txt=f"{prediction}".encode('utf-8').decode('latin-1'), border=1, align='L')
-    pdf.multi_cell(col_width, 10, txt=f"{prediction}", border=1, align='L', )
-    
-    # pdf.output('.tmp/deleteme.pdf')
+    pdf.multi_cell(col_width, 10, txt=f"{score}", border=1, align='L', )
 
+    if analysis:
+        pdf.ln(10)
+        pdf.cell(col_width, txt=f"AI analysis:", ln=True)
+        pdf.multi_cell(col_width, 10, txt=f"{analysis}", border=1, align='L', )
+    
     return pdf
 
-def download_pdf(pdf):
+def download_pdf(data_dict, score, analysis=None):
     st.subheader('Download Prediction as PDF')
-    if st.button('Generate PDF Report'):
-        # pdf_output = pdf.output(dest='S').encode('latin-1')
-        # b64 = base64.b64encode(pdf_output).decode('latin-1')
-        pdf_output = pdf.output(dest='S')
-        b64 = base64.b64encode(pdf_output).decode('utf-8')
-        href = f'<a href="data:application/octet-stream;base64,{b64}" download="prediction_report.pdf">Download PDF Report</a>'
-        st.markdown(href, unsafe_allow_html=True)
+    # if st.button('Generate PDF Report'):
+    # pdf_output = pdf.output(dest='S').encode('latin-1')
+    # b64 = base64.b64encode(pdf_output).decode('latin-1')
+    pdf = create_pdf(data_dict=data_dict, score=score, analysis=analysis)
+    pdf_output = pdf.output(dest='S')
+    b64 = base64.b64encode(pdf_output).decode('utf-8')
+    href = f'<a href="data:application/octet-stream;base64,{b64}" download="prediction_report.pdf">Download PDF Report</a>'
+    st.markdown(href, unsafe_allow_html=True)
 
 
 def main():
