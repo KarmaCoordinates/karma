@@ -38,7 +38,7 @@ def _save_user_feedback(user_answers, percent_completed):
                 # df.to_csv('.tmp/user_feedback.csv', mode='a', index=False, header=False)            
                 phl.success('''Your feedback is recorded.''')
             except Exception as e:
-                phl.error('''Feedback not recorded. Error{e}''')
+                phl.error(f'''Feedback not recorded. Error{e}''')
             
         else:
             phl = st.empty()
