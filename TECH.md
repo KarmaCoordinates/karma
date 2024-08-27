@@ -108,6 +108,14 @@ mprof run --attach {pid}
 
 mprof plot -o output.png
 
+# create env file to be loaded for kc-app.service via EnvironmentFile=
+## ref: https://serverfault.com/questions/413397/how-to-set-environment-variable-in-systemd-service?answertab=modifieddesc#tab-top
+vi ~/.config/systemd/user/kc-env.conf
+AWS_ACCESS_KEY_ID=access_key_id
+AWS_SECRET_ACCESS_KEY=access_key
+AWS_DEFAULT_REGION=us-east-2
+
+# create service file under user config
 mkdir -p ~/.config/systemd/user
 nano ~/.config/systemd/user/kc-app.service
 
@@ -119,6 +127,7 @@ After=network.target
 [Service]  
 Type=simple  
 WorkingDirectory=/home/ubuntu/karma
+EnvironmentFile=/home/ubuntu/.config/systemd/user/kc-env.conf
 ExecStart=/home/ubuntu/karma/.venv/bin/python3 -m streamlit run src/streamlit_app.py  
 Restart=on-failure  
 RestartSec=2  
@@ -146,3 +155,5 @@ sudo systemctl status kc-app
 # logs w/o --user
 journalctl --since "1 day ago" -u kc-app.service
 journalctl --user -xeu kc-app.service
+
+
