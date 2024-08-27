@@ -20,7 +20,7 @@ def send_email(recipient, token):
 
         # Create the email content
         subject = "KarmaCoordinates 2FA Token"
-        body = f"Your 2FA token is: {token}"
+        body = f"Your token is {token}"
         msg = f"Subject: {subject}\n\n{body}"
 
         # Connect to the SMTP server
