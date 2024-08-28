@@ -1,6 +1,15 @@
 import streamlit as st
 import pandas as pd
 
+class SessionVariables:
+    def __init__(self):
+        self._enter_email = '_enter_email'
+
+        # if not '_enter_email' in st.session_state:
+        #     st.session_state['_enter_email'] = None
+
+def get_session_vars():
+    return SessionVariables()
 # page_init = False
 # statuses = ("page_init", "page_loaded")
 # only act on one key at a time

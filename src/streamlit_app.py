@@ -10,6 +10,7 @@ import pdf_functions as pf
 import auth_functions as af
 import score_functions as sf
 import journal_functions as jf
+import plot_functions as pf
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -52,6 +53,11 @@ def run_app():
     st.subheader('Calculate my Karma Coordinates')
     user_answers, score_ai_analysis_query, percent_completed = qps.assessment()
 
+    st.subheader('My progress')
+    if st.session_state.auth:
+        pf.progress_chart()
+
+
     # with st.container(border=True):
     #     input_df, user_input = model_functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   
 
@@ -77,11 +83,10 @@ def run_app():
         web_content.request_feedback_note()
         ff.user_feedback(user_answers, percent_completed)
 
-
     web_content.sankhya_references(static_files_folder)
-
     sp.subscribe()
     
+
 
 def main():
     run_app()

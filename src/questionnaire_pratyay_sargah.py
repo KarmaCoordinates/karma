@@ -81,12 +81,12 @@ def assessment():
         percent_completed = len(st.session_state.user_answers) * 100 / score_range['number_of_questions']
         if percent_completed > st.session_state.minimum_required_completion_percent:
             st.session_state['karma_coordinates'] = category_scores
-            live_to_moksha = sf.calculate_karma_coordinates(category_scores, score_range)
-            plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {live_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
+            lives_to_moksha = sf.calculate_karma_coordinates(category_scores, score_range)
+            plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
             # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
             try:
                 if st.session_state.auth:     
-                    user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'live_to_moksha':live_to_moksha})           
+                    user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
                     db.insert(user_activity_data=user_answers)
             except:
                 st.error("Failed to record assessment")

@@ -1,16 +1,44 @@
 import boto3
+from boto3.dynamodb.conditions import Key
 import logging
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
 
+class Columns:
+    def __init__(self):
+        self.email = 'email'
+        self.partition_key_name = 'email'
+        self.date = 'date'
+        self.sort_key_name = 'date'
+        self.lives_to_moksha = 'lives_to_moksha'
+
+resource_name = 'dynamodb'
+table_name = 'kc_user_activity'
+partition_key_name = 'email'
+sort_key_name = 'date'
+
 def insert(user_activity_data):
-    session = boto3.Session()  # This uses the default profile
-    dynamodb = session.resource('dynamodb')
-    table = dynamodb.Table('kc_user_activity')
+    # session = boto3.Session()
+    dynamodb = boto3.resource(resource_name)
+    table = dynamodb.Table(table_name)
     response = table.put_item(
         Item=user_activity_data
     )
+
+def query(partition_key_value, sort_key_prefix=17):
+    dynamodb = boto3.resource(resource_name)
+    table = dynamodb.Table(table_name)
+    response = table.query(
+        KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).begins_with(str(sort_key_prefix))
+    )
+    return response['Items']
+
+def get_columns():
+    return Columns()
+# # Get the items
+# items = response['Items']
+    
 
 def main():
     insert()

@@ -6,6 +6,8 @@ import unicodedata
 import secrets_app as sa
 import configs as cfg
 import smtplib
+import matplotlib.pyplot as plt
+
 
 def test1(token):
 
@@ -54,7 +56,30 @@ def test2():
         #     st.write("Input cleared, please enter new text:")
         #     st.text_input("Enter some text:", "")    
 
+def test3():
+
+    # Sample data
+    x = [1, 2, 3, 4, 5]    # X-axis data
+    y = [2, 3, 5, 7, 11]   # Y-axis data
+
+    # Create the plot
+    plt.plot(x, y, marker='o')
+
+    # Add title and labels
+    plt.title("My progress")
+    plt.xlabel("Timeline")
+    plt.ylabel("Karma-coordinates")
+
+    # Show grid
+    plt.grid()
+
+    # Show the plot
+    # plt.show()    
+    st.pyplot(plt)
+
+
+
 def main():
-    test2()
+    test3()
 
 if __name__ == '__main__': main()
