@@ -13,7 +13,7 @@ def page_config(static_files_folder):
 
 def intro(static_files_folder):
     logo = f'{static_files_folder}/kapil-muni-image.png'
-    intro = '''The app's primary goal is to enhance the clarity of thinking in individuals, thus giving them the best chance of succeeding in various aspects of life. The calculated Karma Coordinates, specifically the number of lives to Moksha, serves as an incentive index to track and measure progress towards achieving mental clarity. By focusing on improving clarity of thinking and using the calculated coordinates as a metric for progress, individuals can potentially enhance their decision-making abilities, achieve personal growth, and increase their chances of success in different endeavors.'''
+    intro = '''The app enhances clarity of thought, improving individuals' chances of success. Karma Coordinates, specifically lives to Moksha, serve as an index to track progress towards mental clarity. By focusing on clarity and using these coordinates as a metric, individuals can improve decision-making, foster personal growth, and increase success.'''
     style = '''
         <style>
         .container {
@@ -30,7 +30,7 @@ def intro(static_files_folder):
             object-fit: cover;
             float: left;
             width: auto;
-            height: 250px;
+            height: 150px;
             padding-right: 15px !important;
         }
         </style>
