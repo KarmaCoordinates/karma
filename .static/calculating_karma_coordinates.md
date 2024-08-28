@@ -62,7 +62,7 @@ Ability to reason, Mastery of vocabulary, Ability to do dedicated studies/effort
 Positive factors help develop clarity and negative factors make thinking foggy.
 
 ### Formula
-We scale the above factors and calculate the clarity of thinking score as: *Siddhi (-2:2)* + *Viparyayah (-4:0)* + *Ashakti (-4:0)* + *Tushti (-4:0)* 
+We scale the above factors and calculate the clarity of thinking score as: *Siddhi (-2:2)* + *Viparyayah (-4:0)* + *Ashakti (-4:0)* + *Tushti (-4:0) + *Lifestyle (-1:1)* 
 
 ## Calculating number of lives 
 The calculated clarity of thinking score is scaled to -1 to 1. It is then transposed into *number of lives* based on 1) duration of universe, and 2) a concept that every *Sukshm* transmigrate through every species - and average duration of each life/existence.

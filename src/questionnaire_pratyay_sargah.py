@@ -81,7 +81,8 @@ def assessment():
         if percent_completed > st.session_state.minimum_required_completion_percent:
             st.session_state['karma_coordinates'] = category_scores
             live_to_moksha = sf.calculate_karma_coordinates(category_scores, score_range)
-            plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {live_to_moksha} $$] $$\\small (Based\\space on\\space {round(percent_completed)}\\% \\space assessment.)$$')
+            plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {live_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
+            # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
         else:
             st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
     return user_answers, score_ai_analysis_query, percent_completed

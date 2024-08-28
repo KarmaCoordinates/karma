@@ -3,7 +3,7 @@ import s3_functions as s3f
 import os
 
 def md_to_html(static_files_folder, md_filename, html_filename):
-    bucket_name = 'karmacoordinates'
+    bucket_name = 'karmacoordinates-public'
     object_key = html_filename
 
     md_filename_path = f'{static_files_folder}/{md_filename}'

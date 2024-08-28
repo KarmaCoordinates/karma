@@ -1,12 +1,24 @@
 import streamlit as st
 import smtplib
 import secrets
-import os
 import configs
+import re
 
+def is_valid_email(email):
+    # """Check if the email is a valid format."""
+    # Regular expression for validating an Email
+    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
+    # If the string matches the regex, it is a valid email
+    if re.match(regex, email):
+        return True
+    else:
+        return False
+    
 # Function to send email
 def send_email(recipient, token):
-    sending_email_bar = st.progress(0, 'Sending...')
+    # sending_email_bar = st.progress(0, 'Sending...')
+    if not is_valid_email(recipient):
+        return False
 
     try:
         # Setup the SMTP server
@@ -29,28 +41,63 @@ def send_email(recipient, token):
             server.login(smtp_username, smtp_password)
             server.sendmail(sender_email, recipient, msg)
 
-        sending_email_bar.success("Emailed!")
+        # sending_email_bar.success("Emailed!")
+
+        return True
 
     except Exception as e:
-        sending_email_bar.error(f"Error: {e}")
+        # sending_email_bar.error(f"Error: {e}")
+        return False
+
+
+def _init():
+    if '_enter_email' not in st.session_state:
+        st.session_state['_enter_email'] = ''
+
+    if 'token' not in st.session_state:
+        st.session_state['token'] = ''
+
+    if 'auth' not in st.session_state:
+        st.session_state['auth'] = ''
+
+
+def send_token():
+    b_email = False
+        
+    if 'enter_email' not in st.session_state:
+        st.session_state.enter_email = ''
+    # if ('send_token_button' in st.session_state and st.session_state.send_token_button) or ('enter_email' in st.session_state and not st.session_state.enter_email is None):        
+        # Generate a 2FA token
+
+    if not st.session_state._enter_email == st.session_state.enter_email and not st.session_state.enter_email is None:
+        sending_email_bar = st.warning('Emailing token...')
+
+        token = secrets.token_hex(4)  # Generates a secure token
+        # st.session_state.email = email  # Store the email in session state
+        b_email = send_email(st.session_state.enter_email, token)
+
+        if b_email:
+            st.session_state.token = token
+            st.session_state._enter_email = st.session_state.enter_email
+            sending_email_bar.success("Emailed!")
+        else:
+            sending_email_bar.error("Failed.")
+
+    return b_email
+
 
 # Streamlit app
 def do_2fa():
-    st.markdown("Confirm your identity:")
-
-    if 'auth' in st.session_state and st.session_state.auth:
+    _init()
+    phl = st.empty()
+    if st.session_state.auth:
         reset_data()
-        st.markdown(f'You [*{st.session_state.email}*] are authenticated!')
+        phl.markdown(f'Identity: You [*{st.session_state.email}*] are authenticated!')
     else:
-        show_2fa()
+        st.markdown("Confirm your identity:")
+        show_2fa(phl)
 
-def show_2fa():
-    # ele_list = [{'key':'enter_email', 'label':'Enter your email:', 'type':'text_input', 'callback': on_click_callback, 'args': {'ele1'}, 'max-width': '280px'}, 
-    #             {'key':'ti_2', 'label':'Send Token', 'type':'button', 'callback': on_click_callback, 'args': {'ele2'}}, 
-    #             {'key':'ti_3', 'label':'ele3', 'type':'text_input', 'callback': on_click_callback, 'args': {'ele3'}, 'max-width': '70px'}, 
-    #             {'key':'ti_4', 'label':'Verify Token', 'type':'button', 'callback': on_click_callback, 'args': {'ele4'}}]
-    # render_elements(ele_list)
-
+def show_2fa(placeholder):
     col1, col2, col3, col4 = st.columns([4,1,2,1])
     with col1:
         # User input for email
@@ -65,19 +112,13 @@ def show_2fa():
             unsafe_allow_html=True
         )            
         email = col1.text_input("Enter your email:", key='enter_email')
-    with col2:
-        if 'enter_email' in st.session_state and st.session_state.enter_email:
-            send_token = col2.button(label="Send Token", key='send_token_button', use_container_width=True)
 
-        if 'send_token_button' in st.session_state and st.session_state.send_token_button:
-            # Generate a 2FA token
-            token = secrets.token_hex(4)  # Generates a secure token
-            st.session_state.token = token
-            st.session_state.email = email  # Store the email in session state
-            send_email(email, token)
+        b_email = False
+        if email:
+            b_email = send_token()
 
     with col3:        
-        if 'token' in st.session_state:
+        if st.session_state._enter_email and st.session_state.token:
             col3.markdown(
                 """
                 <style>
@@ -90,19 +131,20 @@ def show_2fa():
             )            
             user_token = col3.text_input("Enter token:", key='enter_token', max_chars=8)
 
-    with col4:
-        if 'enter_token' in st.session_state and st.session_state.enter_token:
-            verify_token = col4.button("Verify Token", key='verify_token_button', use_container_width=True)
-            if verify_token:
+            if user_token:
                 if user_token == st.session_state.token:
                     st.session_state['auth']=True
                     st.success("Verified!")
+                    st.session_state['email'] = st.session_state._enter_email
+                    # reset_data()
+                    # placeholder.markdown(f'Identity: You [*{st.session_state.email}*] are authenticated!')
                 else:
                     st.error("Failed.")
 
 
 def reset_data():
     if 'enter_email' in st.session_state: del st.session_state.enter_email 
+    if '_enter_email' in st.session_state: del st.session_state._enter_email 
     if 'send_token_button' in st.session_state: del st.session_state.send_token_button
     if 'token' in st.session_state: del st.session_state.token
     if 'enter_token' in st.session_state: del st.session_state.enter_token
