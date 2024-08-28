@@ -1,4 +1,5 @@
 import streamlit as st
+import state_mgmt_functions as smf
 
 def _init():    
     if 'user_answers' not in st.session_state:
@@ -9,5 +10,6 @@ def journal_entry():
     entry = st.text_area("Journal entries are used in calculating your scores.", key="make_journal_entry")
     if entry:
         st.session_state.user_answers.update({'journal_entry' : entry})
-        
+        smf.save()
+
 

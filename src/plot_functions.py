@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import dynamodb_functions as db
 import pandas as pd
 import streamlit as st
-import status_functions as sf
+import state_mgmt_functions as sf
 
 def progress_chart():    
     email=st.session_state[sf.get_session_vars()._enter_email]

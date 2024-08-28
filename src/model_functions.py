@@ -14,7 +14,7 @@ import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
 import s3_functions as s3f
-import status_functions as sf
+import state_mgmt_functions as sf
 import score_functions as scf
 
 

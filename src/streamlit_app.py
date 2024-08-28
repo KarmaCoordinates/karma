@@ -6,7 +6,7 @@ import openai_assistant_chat
 import stripe_payment as sp
 import questionnaire_pratyay_sargah as qps
 import feedback_functions as ff
-import pdf_functions as pf
+import pdf_functions as pdf
 import auth_functions as af
 import score_functions as sf
 import journal_functions as jf
@@ -53,8 +53,8 @@ def run_app():
     st.subheader('Calculate my Karma Coordinates')
     user_answers, score_ai_analysis_query, percent_completed = qps.assessment()
 
-    st.subheader('My progress')
     if st.session_state.auth:
+        st.subheader('My progress')
         pf.progress_chart()
 
 
@@ -75,7 +75,7 @@ def run_app():
                 openai_assistant_chat.prompt_specific(score_ai_analysis_query, plh)                
 
         analysis = openai_assistant_chat.get_assistant_answer_from_cache(score_ai_analysis_query)
-        pf.download_pdf(user_answers, st.session_state.karma_coordinates, analysis)
+        pdf.download_pdf(user_answers, st.session_state.karma_coordinates, analysis)
 
     st.subheader('Your feedback')
     with st.container(border=True):

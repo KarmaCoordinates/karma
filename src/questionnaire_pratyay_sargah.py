@@ -6,6 +6,7 @@ import score_functions as sf
 import configs
 import random
 import dynamodb_functions as db
+import state_mgmt_functions as smf
 
 @st.cache_data
 def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
@@ -77,19 +78,14 @@ def assessment():
         input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range = _process_questions()
         st.divider()
         plh_kc = st.empty()
-        plh = st.container()
         percent_completed = len(st.session_state.user_answers) * 100 / score_range['number_of_questions']
         if percent_completed > st.session_state.minimum_required_completion_percent:
             st.session_state['karma_coordinates'] = category_scores
             lives_to_moksha = sf.calculate_karma_coordinates(category_scores, score_range)
             plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
             # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
-            try:
-                if st.session_state.auth:     
-                    user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
-                    db.insert(user_activity_data=user_answers)
-            except:
-                st.error("Failed to record assessment")
+            user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
+            smf.save(None, 'assessment')
         else:
             st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
     return user_answers, score_ai_analysis_query, percent_completed

@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import dynamodb_functions as df
+import time
 
 class SessionVariables:
     def __init__(self):
@@ -40,6 +42,17 @@ def is_loading(key_startswith_str = None):
         # print(f'is_loading: {st.session_state.loading}, key_startswith_str: {key_startswith_str}')
         return 'loading' in st.session_state and not st.session_state.loading is None and st.session_state.loading.startswith(key_startswith_str)
     
+def save(placeholder=None, msg='activity'):
+    if st.session_state.auth:
+        try:
+            df.insert(user_activity_data=st.session_state.user_answers)
+            if placeholder:
+                placeholder.success(f'''Your {msg} is saved.''')
+        except Exception as e:
+            if placeholder:
+                placeholder.error(f'''Error{e} saving {msg}.''')
+
+        return True
 
 def main():
     pass
