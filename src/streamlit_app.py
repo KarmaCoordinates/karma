@@ -9,6 +9,7 @@ import feedback_functions as ff
 import pdf_functions as pf
 import auth_functions as af
 import score_functions as sf
+import journal_functions as jf
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -44,6 +45,9 @@ def run_app():
     # data_dictionary_array, df, columns, categorical_cols, model, label_encoder = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
 
     # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
+
+    st.subheader('Make a journal entry')
+    jf.journal_entry()
 
     st.subheader('Calculate my Karma Coordinates')
     user_answers, score_ai_analysis_query, percent_completed = qps.assessment()

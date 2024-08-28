@@ -7,7 +7,7 @@ import secrets_app
 class Configuration:
     def __init__(self, openai_client, openai_assistant, stripe_api_key, 
                  smtp_server, smtp_port, smtp_username, smtp_password, sender_email,
-                 minimum_assessment_completion_percent=50):
+                 minimum_assessment_completion_percent=5):
         self.openai_client = openai_client
         self.openai_assistant = openai_assistant
         self.stripe_api_key = stripe_api_key

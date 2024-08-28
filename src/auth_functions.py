@@ -3,6 +3,21 @@ import smtplib
 import secrets
 import configs
 import re
+import time
+
+def _init():
+    if '_enter_email' not in st.session_state:
+        st.session_state['_enter_email'] = ''
+
+    if 'token' not in st.session_state:
+        st.session_state['token'] = ''
+
+    if 'auth' not in st.session_state:
+        st.session_state['auth'] = ''
+
+    if 'user_answers' not in st.session_state:
+        st.session_state['user_answers'] = {}
+    
 
 def is_valid_email(email):
     # """Check if the email is a valid format."""
@@ -50,17 +65,6 @@ def send_email(recipient, token):
         return False
 
 
-def _init():
-    if '_enter_email' not in st.session_state:
-        st.session_state['_enter_email'] = ''
-
-    if 'token' not in st.session_state:
-        st.session_state['token'] = ''
-
-    if 'auth' not in st.session_state:
-        st.session_state['auth'] = ''
-
-
 def _send_token():
     b_email = False
         
@@ -84,21 +88,20 @@ def _send_token():
     return b_email
 
 def identity_msg():    
+    _init()
     phl = st.empty()
     checked = phl.checkbox(f''':green-background[Check to confirm your identity to track progress. (Note: This website does not collect any data unless you explicitly confirm your identity.)]''')
     if checked:
-        do_2fa(phl)
+        _do_2fa(phl)
 
-# Streamlit app
-def do_2fa(placeholder):
-    _init()
+def _do_2fa(placeholder):
     if st.session_state.auth:
         reset_data()
-        placeholder.success(f'Your identity [*{st.session_state.email}*] is confirmed!')
+        placeholder.success(f'Your identity [*{st.session_state._enter_email}*] is confirmed!')
     else:
-        show_2fa(placeholder)
+        _show_2fa(placeholder)
 
-def show_2fa(placeholder):
+def _show_2fa(placeholder):
     with placeholder.container():
         col1, col2, col3, col4 = st.columns([4,1,2,1])
         with col1:
@@ -121,7 +124,7 @@ def show_2fa(placeholder):
             st.empty()
 
         with col3:        
-            if st.session_state._enter_email and st.session_state.token:
+            if st.session_state._enter_email:
                 col3.markdown(
                     """
                     <style>
@@ -138,22 +141,19 @@ def show_2fa(placeholder):
                 if user_token:
                     if user_token == st.session_state.token:
                         st.session_state.auth=True
-                        st.session_state['email'] = st.session_state._enter_email
-                        st.success(f'Your identity [*{st.session_state.email}*] is confirmed!')
+                        st.session_state.user_answers.update({'email': st.session_state._enter_email, 'date' : str(time.time())})
+                        st.success(f'Your identity [*{st.session_state._enter_email}*] is confirmed!')
                     else:
                         st.error("Failed.")
 
         with col4:
-            # print(f'at 4...')
             st.empty()
 
         if st.session_state.auth:
-            # print(f'at 5...')
-            placeholder.success(f'Your identity [*{st.session_state.email}*] is confirmed!')
+            placeholder.success(f'Your identity [*{st.session_state.enter_email}*] is confirmed!')
 
 
 def reset_data():
-    if '_enter_email' in st.session_state: st.session_state._enter_email=None
     if 'token' in st.session_state: st.session_state.token=None
     if 'enter_email' in st.session_state: st.session_state.enter_email=None
     if 'enter_token' in st.session_state: st.session_state.enter_token=None

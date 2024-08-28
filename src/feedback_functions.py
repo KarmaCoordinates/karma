@@ -28,7 +28,7 @@ def _save_user_feedback(user_answers, percent_completed):
     if len(st.session_state.feedback) > 20 and percent_completed > st.session_state.minimum_required_completion_percent and 'auth' in st.session_state and st.session_state.auth:
         if (('rating' in st.session_state and not st.session_state.rating is None) and ('feedback' in st.session_state and not st.session_state.feedback is None)) and (not st.session_state.rating == user_answers['rating'] or not st.session_state.feedback == user_answers['feedback']):
             try:
-                user_answers.update({'email': st.session_state.email, 'date' : str(time.time()), 'rating': st.session_state.rating, 'feedback':st.session_state.feedback})
+                user_answers.update({'rating': st.session_state.rating, 'feedback':st.session_state.feedback})
                 db.insert(user_activity_data=user_answers)
                 # st.session_state.feedback = None
                 # Create a single string holding key-value pairs
