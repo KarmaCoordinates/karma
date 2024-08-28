@@ -85,7 +85,8 @@ def assessment():
             plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {live_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
             # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
             try:
-                if st.session_state.auth:                
+                if st.session_state.auth:     
+                    user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'live_to_moksha':live_to_moksha})           
                     db.insert(user_activity_data=user_answers)
             except:
                 st.error("Failed to record assessment")
