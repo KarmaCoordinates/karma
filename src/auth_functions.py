@@ -61,19 +61,17 @@ def _init():
         st.session_state['auth'] = ''
 
 
-def send_token():
+def _send_token():
     b_email = False
         
     if 'enter_email' not in st.session_state:
         st.session_state.enter_email = ''
-    # if ('send_token_button' in st.session_state and st.session_state.send_token_button) or ('enter_email' in st.session_state and not st.session_state.enter_email is None):        
-        # Generate a 2FA token
 
-    if not st.session_state._enter_email == st.session_state.enter_email and not st.session_state.enter_email is None:
+    if not st.session_state._enter_email == st.session_state.enter_email and st.session_state.enter_email:
         sending_email_bar = st.warning('Emailing token...')
 
-        token = secrets.token_hex(4)  # Generates a secure token
-        # st.session_state.email = email  # Store the email in session state
+        st.session_state._enter_email = None       
+        token = secrets.token_hex(4)  
         b_email = send_email(st.session_state.enter_email, token)
 
         if b_email:
@@ -85,70 +83,80 @@ def send_token():
 
     return b_email
 
+def identity_msg():    
+    phl = st.empty()
+    checked = phl.checkbox(f''':green-background[Check to confirm your identity to track progress. (Note: This website does not collect any data unless you explicitly confirm your identity.)]''')
+    if checked:
+        do_2fa(phl)
 
 # Streamlit app
-def do_2fa():
+def do_2fa(placeholder):
     _init()
-    phl = st.empty()
     if st.session_state.auth:
         reset_data()
-        phl.markdown(f'Identity: You [*{st.session_state.email}*] are authenticated!')
+        placeholder.success(f'Your identity [*{st.session_state.email}*] is confirmed!')
     else:
-        st.markdown("Confirm your identity:")
-        show_2fa(phl)
+        show_2fa(placeholder)
 
 def show_2fa(placeholder):
-    col1, col2, col3, col4 = st.columns([4,1,2,1])
-    with col1:
-        # User input for email
-        col1.markdown(
-            """
-            <style>
-                [aria-label="Enter your email:"] {
-                        max-width: 150px !important;
-                }  
-            </style>
-            """,
-            unsafe_allow_html=True
-        )            
-        email = col1.text_input("Enter your email:", key='enter_email')
-
-        b_email = False
-        if email:
-            b_email = send_token()
-
-    with col3:        
-        if st.session_state._enter_email and st.session_state.token:
-            col3.markdown(
+    with placeholder.container():
+        col1, col2, col3, col4 = st.columns([4,1,2,1])
+        with col1:
+            col1.markdown(
                 """
                 <style>
-                    [aria-label="Enter token:"] {
-                            max-width: 70px !important;
+                    [aria-label="Enter your email:"] {
+                            max-width: 150px !important;
+                            background-color: #023020;
                     }  
                 </style>
                 """,
                 unsafe_allow_html=True
             )            
-            user_token = col3.text_input("Enter token:", key='enter_token', max_chars=8)
+            email = col1.text_input("Enter your email:", key='enter_email')
+            if email: 
+                _send_token()
 
-            if user_token:
-                if user_token == st.session_state.token:
-                    st.session_state['auth']=True
-                    st.success("Verified!")
-                    st.session_state['email'] = st.session_state._enter_email
-                    # reset_data()
-                    # placeholder.markdown(f'Identity: You [*{st.session_state.email}*] are authenticated!')
-                else:
-                    st.error("Failed.")
+        with col2:
+            st.empty()
+
+        with col3:        
+            if st.session_state._enter_email and st.session_state.token:
+                col3.markdown(
+                    """
+                    <style>
+                        [aria-label="Enter token:"] {
+                            max-width: 70px !important;
+                            background-color: #023020;
+                        }  
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )            
+                user_token = col3.text_input("Enter token:", key='enter_token', max_chars=8)
+
+                if user_token:
+                    if user_token == st.session_state.token:
+                        st.session_state.auth=True
+                        st.session_state['email'] = st.session_state._enter_email
+                        st.success(f'Your identity [*{st.session_state.email}*] is confirmed!')
+                    else:
+                        st.error("Failed.")
+
+        with col4:
+            # print(f'at 4...')
+            st.empty()
+
+        if st.session_state.auth:
+            # print(f'at 5...')
+            placeholder.success(f'Your identity [*{st.session_state.email}*] is confirmed!')
 
 
 def reset_data():
-    if 'enter_email' in st.session_state: del st.session_state.enter_email 
-    if '_enter_email' in st.session_state: del st.session_state._enter_email 
-    if 'send_token_button' in st.session_state: del st.session_state.send_token_button
-    if 'token' in st.session_state: del st.session_state.token
-    if 'enter_token' in st.session_state: del st.session_state.enter_token
-    if 'verify_token_button' in st.session_state: del st.session_state.verify_token_button
+    if '_enter_email' in st.session_state: st.session_state._enter_email=None
+    if 'token' in st.session_state: st.session_state.token=None
+    if 'enter_email' in st.session_state: st.session_state.enter_email=None
+    if 'enter_token' in st.session_state: st.session_state.enter_token=None
 
 def main():
     pass

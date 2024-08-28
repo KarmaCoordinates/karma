@@ -9,3 +9,8 @@
     - Load assessment from the previous session
 - Explain relationship between Number of lives to Moksha and Assessment categories
 
+08.28.24.rel
+- Track progress
+    - Establish identity for the session
+
+

@@ -9,7 +9,7 @@ def page_config(static_files_folder):
         layout='wide'
     )    
     # return
-
+        
 
 def intro(static_files_folder):
     logo = f'{static_files_folder}/kapil-muni-image.png'

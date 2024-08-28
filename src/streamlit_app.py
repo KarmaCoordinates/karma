@@ -28,6 +28,8 @@ def run_app():
     static_files_folder = '.static'
     web_content.page_config(static_files_folder)
 
+    af.identity_msg()
+
     web_content.intro(static_files_folder)
 
     # openai_assistant_chat.init()
@@ -67,7 +69,7 @@ def run_app():
 
     st.subheader('Your feedback')
     with st.container(border=True):
-        af.do_2fa()
+        # af.do_2fa()
         web_content.request_feedback_note()
         ff.user_feedback(user_answers, percent_completed)
 
