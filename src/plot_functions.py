@@ -57,7 +57,7 @@ def bell_curve():
         histnorm='probability density',
         name='Score histogram',
         nbinsx=15,
-        opacity=0.75,
+        opacity=0.75
     )
 
     mean = np.mean(data)
@@ -73,7 +73,7 @@ def bell_curve():
         y=y_values,
         mode='lines',
         name='Bell Curve',
-        line=dict(color='red')
+        line=dict(color='gold')
     )
 
 
@@ -82,7 +82,7 @@ def bell_curve():
     # Create the figure
     fig = go.Figure(data=[histogram, bell_curve])
 
-    fig.add_vline(x=mean, line_width=3, line_dash="dash", line_color="green")
+    fig.add_vline(x=mean, line_width=1, line_dash="dash", line_color="gold")
 
 
     # Update the layout
