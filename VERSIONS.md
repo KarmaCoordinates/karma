@@ -13,4 +13,9 @@
 - Track progress
     - Establish identity for the session
 
+08.29.24.rel
+- Journal functionality
+- Track progress
+    - Show graphs
+        - journal - score relationship
 
