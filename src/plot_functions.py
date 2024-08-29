@@ -56,6 +56,7 @@ def bell_curve():
         x=data,
         histnorm='probability density',
         name='Score histogram',
+        nbinsx=15,
         opacity=0.75,
     )
 
@@ -75,13 +76,20 @@ def bell_curve():
         line=dict(color='red')
     )
 
+
+    # vline = go.scatter.Line([mean], width=3, dash="dash", color="green")
+
     # Create the figure
     fig = go.Figure(data=[histogram, bell_curve])
 
+    fig.add_vline(x=mean, line_width=3, line_dash="dash", line_color="green")
+
+
     # Update the layout
-    fig.update_layout(title='Histogram with Bell Curve',
-                    xaxis_title='lives_to_moksha',
+    fig.update_layout(title=f'Histogram with Bell Curve (based on {len(data)} assessments) ',
+                    xaxis_title=f'Lives to Moksha',
                     yaxis_title='Probability Density')
+        
 
     st.plotly_chart(fig, use_container_width=True)
 
