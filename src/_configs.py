@@ -1,7 +1,6 @@
 import streamlit as st
 import openai
 from openai import OpenAI
-# import stripe
 import secrets_app
 
 class Configuration:
@@ -38,7 +37,7 @@ def get_config():
         return False
 
 def main():
-    _config = get_config()
-    print(f'sender_email: {_config.sender_email}')
+    cfg = get_config()
+    print(f'sender_email: {cfg.sender_email}')
 
 if __name__ == '__main__': main()

@@ -3,8 +3,10 @@ import dynamodb_functions as db
 import pandas as pd
 import streamlit as st
 import state_mgmt_functions as sf
+import statsmodels as sm
 import plotly.express as px
 from streamlit_plotly_events import plotly_events
+import _utils
 
 def progress_chart():    
     email=st.session_state[sf.get_session_vars()._enter_email]
@@ -25,7 +27,16 @@ def clickable_progress_chart():
     df = pd.DataFrame(rows)
     df = df[[db.get_column_names().date, db.get_column_names().lives_to_moksha, db.get_column_names().journal_entry]]
     df['Timeline'] = pd.to_datetime(df['date'], unit='s')
-    fig = px.scatter(df, x='Timeline', y=db.get_column_names().lives_to_moksha, title="My progress", hover_data=df[[db.get_column_names().journal_entry]])
+    df['Journal'] = df[db.get_column_names().journal_entry].apply(lambda x: _utils.hard_wrap_string_vectorized(x, 15))
+
+    fig = px.scatter(df, x='Timeline', y=db.get_column_names().lives_to_moksha, title="My progress", 
+                     hover_data=df[['Journal']], trendline="ols")
+    
+    fig.update_layout(
+        plot_bgcolor='white'
+    )    
+    fig.data[1].line.color = 'gold'
+
     selected_points = plotly_events(fig, click_event=True, hover_event=False, key="my_progress_chart")
     # if selected_points:
     #     print(f'selected: {selected_points[0]['pointIndex']}')

@@ -16,5 +16,6 @@ stripe
 pymongo
 fpdf2
 openai
+statsmodels
 plotly
 streamlit_plotly_events

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import s3_functions as s3f
 import score_functions as sf
-import configs
+import _configs
 import random
 import dynamodb_functions as db
 import state_mgmt_functions as smf
@@ -29,7 +29,7 @@ def _init():
         st.session_state['user_answers'] = {}
 
     if  'minimum_required_completion_percent' not in st.session_state:
-        st.session_state['minimum_required_completion_percent'] = configs.get_config().minimum_assessment_completion_percent
+        st.session_state['minimum_required_completion_percent'] = _configs.get_config().minimum_assessment_completion_percent
 
     if 'ai_analysis_requested' not in st.session_state:
         st.session_state['ai_analysis_requested'] = False

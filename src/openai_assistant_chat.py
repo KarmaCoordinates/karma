@@ -7,7 +7,7 @@ import time
 import secrets_app
 import model_functions
 import s3_functions as s3f
-import configs
+import _configs
 import pandas as pd
 import numpy
 import streamlit_button_list as ifunc
@@ -173,8 +173,7 @@ def _process_queue(client, assistant, process_prompt_container):
 
 
 def prompt():
-    _configs = configs.get_config()
-    if not _configs:
+    if not _configs.get_config():
         return
     
     _init()
@@ -185,17 +184,16 @@ def prompt():
         st.divider()
         _render_chat_history()        
         _render_user_input(user_query_container=user_query_container)
-        _process_queue(client=_configs.openai_client, assistant=_configs.openai_assistant, process_prompt_container=process_prompt_container)
+        _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=process_prompt_container)
 
 def prompt_specific(query, plh):
-    _configs = configs.get_config()
-    if not _configs:
+    if not _configs.get_config():
         return
 
     _init()
     # process_prompt_container = st.container() # placeholder to keep current response above history
     st.session_state.query_queue.append(query)
-    _process_queue(client=_configs.openai_client, assistant=_configs.openai_assistant, process_prompt_container=plh)
+    _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=plh)
 
 def get_assistant_answer_from_cache(content):
     df = pd.DataFrame(st.session_state.chat_history, columns=['role', 'content', 'key'])

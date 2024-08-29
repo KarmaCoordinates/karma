@@ -1,7 +1,7 @@
 import streamlit as st
 import smtplib
 import secrets
-import configs
+import _configs
 import re
 import time
 
@@ -37,13 +37,11 @@ def send_email(recipient, token):
 
     try:
         # Setup the SMTP server
-        _configs = configs.get_config()
-
-        smtp_server = _configs.smtp_server
-        smtp_port = _configs.smtp_port
-        smtp_username = _configs.smtp_username
-        sender_email = _configs.sender_email
-        smtp_password = _configs.smtp_password
+        smtp_server = _configs.get_config().smtp_server
+        smtp_port = _configs.get_config().smtp_port
+        smtp_username = _configs.get_config().smtp_username
+        sender_email = _configs.get_config().sender_email
+        smtp_password = _configs.get_config().smtp_password
 
         # Create the email content
         subject = "KarmaCoordinates 2FA Token"
