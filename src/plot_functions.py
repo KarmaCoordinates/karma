@@ -26,14 +26,17 @@ def clickable_progress_chart():
     rows = db.query(partition_key_value=email)
     df = pd.DataFrame(rows)
     df = df[[db.get_column_names().date, db.get_column_names().lives_to_moksha, db.get_column_names().journal_entry]]
-    df['Timeline'] = pd.to_datetime(df['date'], unit='s')
-    df['Journal'] = df[db.get_column_names().journal_entry].apply(lambda x: _utils.hard_wrap_string_vectorized(x, 15))
+    # df['Timeline'] = pd.to_datetime(df['date'].astype(float))
+    # df['Timeline'] = pd.to_datetime( df['date'].astype(float) ).dt.strftime('%Y-%m-%d %H:%M:%S')    
+    df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
+    df['Journal'] = df[db.get_column_names().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
 
     fig = px.scatter(df, x='Timeline', y=db.get_column_names().lives_to_moksha, title="My progress", 
                      hover_data=df[['Journal']], trendline="ols")
     
-    fig.update_layout(
-        plot_bgcolor='white'
+    fig.update_layout({
+        'plot_bgcolor':'white',
+        'hoverlabel.align':'left'}
     )    
     fig.data[1].line.color = 'gold'
 

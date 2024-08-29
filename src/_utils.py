@@ -32,6 +32,31 @@ def hard_wrap_string_vectorized(s, width):
 
     return ''.join(wrapped_lines)
 
+
+def insert_line_breaks(text, max_length=50):
+    if not text:
+        return
+    
+    words = str(text).split()  # Split the text into words
+    result = []  # Initialize the result list
+    current_line = ""  # Initialize an empty line
+
+    for word in words:
+        # Check if adding the next word would exceed the max_length
+        if len(current_line) + len(word) + 1 > max_length:
+            # If it does exceed, append current line to result and reset
+            result.append(current_line.strip())
+            current_line = word + " "  # Start a new line with the current word
+        else:
+            current_line += word + " "  # Add word to the current line
+
+    # Don't forget to add the last line
+    if current_line:
+        result.append(current_line.strip())
+
+    # Join the lines with <BR> tags
+    return "<BR>".join(result)
+
 # # Example DataFrame with a text column
 # data = {
 #     'text_column': [
