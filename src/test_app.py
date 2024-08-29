@@ -1,85 +1,20 @@
 import streamlit as st
-import questionnaire_pratyay_sargah as qps
-import s3_functions as s3f
-import pandas as pd
-import unicodedata
-import secrets_app as sa
-import configs as cfg
-import smtplib
-import matplotlib.pyplot as plt
+
+import plotly.express as px
+from streamlit_plotly_events import plotly_events
 
 
-def test1(token):
+# # Writes a component similar to st.write()
+# fig = px.line(x=[1], y=[1])
+# selected_points = plotly_events(fig, key="1")
 
-    # Create a placeholder
-    placeholder = st.empty()
+# # Can write inside of things using with!
+# with st.expander('Plot'):
+#     fig = px.line(x=[1,2], y=[1,2])
+#     selected_points = plotly_events(fig, key="2")
 
-    # Use the placeholder to create input elements
-    with placeholder.container():
-        user_input = st.text_input("Enter something:")
-        submit_button = st.button("Submit")
-
-    # Logic for clearing the input
-    if submit_button:
-        # Perform some action with the input
-        st.write(f'You entered: {user_input}')
-
-        # Clear the placeholder
-        placeholder.empty()
-        # Optional: Repopulate or handle the presence of input elements again if requir
-
-def test2():
-
-    # Create a layout with 2 columns
-    col1, col2 = st.columns(2)
-
-    # Add elements to the first column (col1)
-    with col1:
-        input_text = st.text_input("Enter some text:", "")
-        submit_button = st.button("Submit")
-
-    # Add some static text to the second column (col2)
-    with col2:
-        st.write("This is a static text in column 2.")
-
-    # Logic to handle what happens when the button is pressed
-    if submit_button:
-        # If the button is pressed, display the input in column 2
-        col2.write(f"You entered: {input_text}")
-
-        # Clear the input elements in col1
-        col1.empty()
-        with col1:
-            st.markdown('')
-        # Optionally, you can re-add elements to col1 if needed
-        # with col1:
-        #     st.write("Input cleared, please enter new text:")
-        #     st.text_input("Enter some text:", "")    
-
-def test3():
-
-    # Sample data
-    x = [1, 2, 3, 4, 5]    # X-axis data
-    y = [2, 3, 5, 7, 11]   # Y-axis data
-
-    # Create the plot
-    plt.plot(x, y, marker='o')
-
-    # Add title and labels
-    plt.title("My progress")
-    plt.xlabel("Timeline")
-    plt.ylabel("Karma-coordinates")
-
-    # Show grid
-    plt.grid()
-
-    # Show the plot
-    # plt.show()    
-    st.pyplot(plt)
-
-
-
-def main():
-    test3()
-
-if __name__ == '__main__': main()
+# Select other Plotly events by specifying kwargs
+fig = px.line(x=[1,2], y=[1,2])
+selected_points = plotly_events(fig, click_event=True, hover_event=False, key="three")
+if selected_points:
+    print(f'selected: {selected_points}')
