@@ -1,12 +1,15 @@
 import matplotlib.pyplot as plt
 import dynamodb_functions as db
 import pandas as pd
+import numpy as np
 import streamlit as st
 import state_mgmt_functions as sf
 import statsmodels as sm
 import plotly.express as px
 from streamlit_plotly_events import plotly_events
 import _utils
+import scipy.stats as stats
+import plotly.graph_objects as go
 
 def progress_chart():    
     email=st.session_state[sf.get_session_vars()._enter_email]
@@ -43,3 +46,42 @@ def clickable_progress_chart():
     selected_points = plotly_events(fig, click_event=True, hover_event=False, key="my_progress_chart")
     # if selected_points:
     #     print(f'selected: {selected_points[0]['pointIndex']}')
+
+
+def bell_curve():
+    data = pd.to_numeric(db.query_columns()['lives_to_moksha'].dropna()).to_list()
+
+    # Create the histogram
+    histogram = go.Histogram(
+        x=data,
+        histnorm='probability density',
+        name='Score histogram',
+        opacity=0.75,
+    )
+
+    mean = np.mean(data)
+    std_dev = np.std(data)
+    # Create a range for the x values
+    x_values = np.linspace(mean - 4*std_dev, mean + 4*std_dev, 100)
+    # Calculate the corresponding y values for the normal distribution
+    y_values = stats.norm.pdf(x_values, mean, std_dev)
+
+    # Create a line for the bell curve
+    bell_curve = go.Scatter(
+        x=x_values,
+        y=y_values,
+        mode='lines',
+        name='Bell Curve',
+        line=dict(color='red')
+    )
+
+    # Create the figure
+    fig = go.Figure(data=[histogram, bell_curve])
+
+    # Update the layout
+    fig.update_layout(title='Histogram with Bell Curve',
+                    xaxis_title='lives_to_moksha',
+                    yaxis_title='Probability Density')
+
+    st.plotly_chart(fig, use_container_width=True)
+

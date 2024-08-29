@@ -57,6 +57,7 @@ def run_app():
         st.subheader('My progress')
         # pf.progress_chart()
         pf.clickable_progress_chart()
+    pf.bell_curve()        
 
     # with st.container(border=True):
     #     input_df, user_input = model_functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   

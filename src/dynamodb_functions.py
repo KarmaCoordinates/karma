@@ -1,6 +1,7 @@
 import boto3
 from boto3.dynamodb.conditions import Key
 import logging
+import pandas as pd
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
@@ -34,6 +35,13 @@ def query(partition_key_value, sort_key_prefix=17):
         KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).begins_with(str(sort_key_prefix))
     )
     return response['Items']
+
+def query_columns(columns_to_fetch=['lives_to_moksha']):
+    dynamodb = boto3.resource(resource_name)
+    table = dynamodb.Table(table_name)
+    response = table.scan()
+    return pd.DataFrame(response['Items'], columns=columns_to_fetch)
+
 
 def get_column_names():
     return Columns()
