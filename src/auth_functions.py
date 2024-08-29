@@ -2,8 +2,9 @@ import streamlit as st
 import smtplib
 import secrets
 import _configs
-import re
 import time
+
+from _utils import is_valid_email
 
 def _init():
     if '_enter_email' not in st.session_state:
@@ -19,16 +20,6 @@ def _init():
         st.session_state['user_answers'] = {}
     
 
-def is_valid_email(email):
-    # """Check if the email is a valid format."""
-    # Regular expression for validating an Email
-    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
-    # If the string matches the regex, it is a valid email
-    if re.match(regex, email):
-        return True
-    else:
-        return False
-    
 # Function to send email
 def send_email(recipient, token):
     # sending_email_bar = st.progress(0, 'Sending...')

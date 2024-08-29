@@ -1,6 +1,16 @@
+import re
 import pandas as pd
 import numpy as np
 
+from urllib import request
+
+def internet_on():
+    try:
+        request.urlopen('http://216.58.192.142', timeout=1)
+        return True
+    except request.URLError as err: 
+        return False
+    
 def hard_wrap_string_vectorized(s, width):
     """Wrap a string into lines with a maximum width and returns a single string with <br> for line breaks."""
     if not s:
@@ -79,3 +89,14 @@ def main():
     pass
 
 if __name__ == '__main__': main()
+
+
+def is_valid_email(email):
+    # """Check if the email is a valid format."""
+    # Regular expression for validating an Email
+    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
+    # If the string matches the regex, it is a valid email
+    if re.match(regex, email):
+        return True
+    else:
+        return False
