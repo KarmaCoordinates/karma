@@ -14,6 +14,7 @@ class Columns:
         self.sort_key_name = 'date'
         self.lives_to_moksha = 'lives_to_moksha'
         self.journal_entry = 'journal_entry'
+        self.score_ai_analysis_query = 'score_ai_analysis_query'
 
 resource_name = 'dynamodb'
 table_name = 'kc_user_activity'
@@ -26,6 +27,11 @@ def insert(user_activity_data):
     table = dynamodb.Table(table_name)
     response = table.put_item(
         Item=user_activity_data
+    )
+    latest_dict = dict(user_activity_data)
+    latest_dict.update({'date': 'latest'})
+    table.put_item(
+        Item=latest_dict
     )
 
 def query(partition_key_value, sort_key_prefix=17):

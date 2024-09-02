@@ -82,10 +82,12 @@ def identity_msg():
     checked = phl.checkbox(f''':green-background[Check to confirm your identity to track progress. (Note: This website does not collect any data unless you explicitly confirm your identity.)]''')
     if checked:
         _do_2fa(phl)
+        
+    return st.session_state.auth
 
 def _do_2fa(placeholder):
     if st.session_state.auth:
-        reset_data()
+        _reset_data()
         placeholder.success(f'Your identity [*{st.session_state._enter_email}*] is confirmed!')
     else:
         _show_2fa(placeholder)
@@ -142,7 +144,7 @@ def _show_2fa(placeholder):
             placeholder.success(f'Your identity [*{st.session_state.enter_email}*] is confirmed!')
 
 
-def reset_data():
+def _reset_data():
     if 'token' in st.session_state: st.session_state.token=None
     if 'enter_email' in st.session_state: st.session_state.enter_email=None
     if 'enter_token' in st.session_state: st.session_state.enter_token=None

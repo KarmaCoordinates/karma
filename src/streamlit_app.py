@@ -11,6 +11,7 @@ import auth_functions as af
 import score_functions as sf
 import journal_functions as jf
 import plot_functions as pf
+import dynamodb_functions as db
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -27,10 +28,20 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
     return data_dictionary_array, df, X.columns, categorical_cols, model, label_encoder
 
 def run_app():
+    initial_assessment = True
+
     static_files_folder = '.static'
     web_content.page_config(static_files_folder)
 
     af.identity_msg()
+
+    latest_user_answers = {}
+    if st.session_state.auth:
+        # fetch latest record if any
+        response = db.query(st.session_state.user_answers['email'], 'latest')
+        if response and len(response) > 0:
+            st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
+            initial_assessment = False
 
     web_content.intro(static_files_folder)
 
@@ -51,6 +62,7 @@ def run_app():
     jf.journal_entry()
 
     st.subheader('Calculate my Karma Coordinates')
+    # if initial_assessment:
     user_answers, score_ai_analysis_query, percent_completed = qps.assessment()
 
     if st.session_state.auth:
@@ -67,15 +79,16 @@ def run_app():
     # model_functions.explain_prediction(prediction_label)
 
     if  'karma_coordinates' in st.session_state:
+        query = f'''Given: {score_ai_analysis_query} and today's journal entry {st.session_state.user_answers['journal_entry']}, calculate my new karma coordinates'''
         st.subheader('AI analysis')
         plh = st.container(border=True)
         with plh:
             clicked = st.button('Show and explain my score')
-            if clicked:
+            if clicked or not initial_assessment:
                 # st.session_state['ai_analysis_requested'] = True
-                openai_assistant_chat.prompt_specific(score_ai_analysis_query, plh)                
+                openai_assistant_chat.prompt_specific(query, plh)                
 
-        analysis = openai_assistant_chat.get_assistant_answer_from_cache(score_ai_analysis_query)
+        analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
         pdf.download_pdf(user_answers, st.session_state.karma_coordinates, analysis)
 
     st.subheader('Your feedback')

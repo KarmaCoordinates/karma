@@ -5,6 +5,7 @@ import state_mgmt_functions as sf
 import dynamodb_functions as db
 import time
 import state_mgmt_functions as smf
+import _configs
 
 def _init(user_input):
     if not user_input:
@@ -17,7 +18,7 @@ def _init(user_input):
         user_input['feedback'] = '' 
 
     if  'minimum_required_completion_percent' not in st.session_state:
-        st.session_state['minimum_required_completion_percent'] = configs.get_config().minimum_assessment_completion_percent
+        st.session_state['minimum_required_completion_percent'] = _configs.get_config().minimum_assessment_completion_percent
 
 
 # # IMP: Reading the data back that is saved by this method

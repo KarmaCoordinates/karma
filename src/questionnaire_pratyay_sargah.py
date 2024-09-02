@@ -50,7 +50,10 @@ def _calc_scores():
         category_scores[category_tpl.category_name] = 0
         st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
         for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
-            selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, key=feature_tpl.Question, on_change=_cache_user_answer, args={feature_tpl.Question})
+            default_index = 0
+            if feature_tpl.Question in st.session_state.user_answers:
+                default_index = feature_tpl.options_list.index(st.session_state.user_answers[feature_tpl.Question])
+            selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, index=default_index, key=feature_tpl.Question, on_change=_cache_user_answer, args={feature_tpl.Question})
             selected_option_score = feature_tpl.options_dict.get(selected_option) 
             category_scores[category_tpl.category_name] += selected_option_score  
 
