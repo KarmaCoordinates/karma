@@ -50,27 +50,39 @@ def _calc_scores(plh_questionnaire=st.empty(), show_assessment_questionnaire=Tru
     if not show_assessment_questionnaire:
         plh_questionnaire.markdown(f'Using previous assessment and current journal entry to perform differential AI analysis!')
 
-    for category_tpl in categories_df.itertuples():
-        category_scores[category_tpl.category_name] = 0
-        if show_assessment_questionnaire:
-            st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
+        for category_tpl in categories_df.itertuples():
+            category_scores[category_tpl.category_name] = 0
+            for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
+                default_index = 0
+                default_selected_option = None
+                if feature_tpl.Question in st.session_state.user_answers:
+                    default_selected_option = st.session_state.user_answers[feature_tpl.Question]
+                else:
+                    default_selected_option = feature_tpl.options_list[default_index]
 
-        for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
-            default_index = 0
-            default_selected_option = None
-            if feature_tpl.Question in st.session_state.user_answers:
-                default_index = feature_tpl.options_list.index(st.session_state.user_answers[feature_tpl.Question])
-                default_selected_option = st.session_state.user_answers[feature_tpl.Question]
-            else:
-                default_selected_option = feature_tpl.options_list[default_index]
+                selected_option_score = feature_tpl.options_dict.get(default_selected_option) 
+                category_scores[category_tpl.category_name] += selected_option_score  
 
-            if show_assessment_questionnaire:
-                selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, index=default_index, key=feature_tpl.Question, on_change=_cache_user_answer, args={feature_tpl.Question})
-            else: 
-                selected_option = default_selected_option
+    else:
 
-            selected_option_score = feature_tpl.options_dict.get(selected_option) 
-            category_scores[category_tpl.category_name] += selected_option_score  
+        with plh_questionnaire.container():
+            for category_tpl in categories_df.itertuples():
+                category_scores[category_tpl.category_name] = 0
+                st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
+
+                for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
+                    default_index = 0
+                    default_selected_option = None
+                    if feature_tpl.Question in st.session_state.user_answers:
+                        default_index = feature_tpl.options_list.index(st.session_state.user_answers[feature_tpl.Question])
+                        default_selected_option = st.session_state.user_answers[feature_tpl.Question]
+                    else:
+                        default_selected_option = feature_tpl.options_list[default_index]
+
+                    selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, index=default_index, key=feature_tpl.Question, on_change=_cache_user_answer, args={feature_tpl.Question})
+
+                    selected_option_score = feature_tpl.options_dict.get(selected_option) 
+                    category_scores[category_tpl.category_name] += selected_option_score  
 
     return category_scores, score_range
 
