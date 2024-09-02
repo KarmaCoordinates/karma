@@ -10,6 +10,15 @@ class SessionVariables:
         # if not '_enter_email' in st.session_state:
         #     st.session_state['_enter_email'] = None
 
+
+def init():
+    if 'user_answers' not in st.session_state:
+        st.session_state['user_answers'] = {}
+
+    if 'journal_entry' not in st.session_state.user_answers:
+        st.session_state.user_answers['journal_entry'] = ''
+
+
 def get_session_vars():
     return SessionVariables()
 # page_init = False

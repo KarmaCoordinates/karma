@@ -12,6 +12,7 @@ import score_functions as sf
 import journal_functions as jf
 import plot_functions as pf
 import dynamodb_functions as db
+import state_mgmt_functions as smf
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -28,13 +29,11 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
     return data_dictionary_array, df, X.columns, categorical_cols, model, label_encoder
 
 def run_app():
-    initial_assessment = True
-
     static_files_folder = '.static'
     web_content.page_config(static_files_folder)
-
+    smf.init()
     af.identity_msg()
-
+    initial_assessment = True
     latest_user_answers = {}
     if st.session_state.auth:
         # fetch latest record if any
@@ -47,43 +46,22 @@ def run_app():
             initial_assessment = False
 
     web_content.intro(static_files_folder)
-
-    # openai_assistant_chat.init()
     openai_assistant_chat.prompt()
-
     web_content.brief(static_files_folder)
-
-    # model_choice = 'RandomForest'
-    # bucket_name = 'karmacoordinates'
-    # features_data_file = 'kc3_synthout_chunk_0.csv'
-    # pickled_model_data_file = 'kc_model_finalized.sav'
-    # data_dictionary_array, df, columns, categorical_cols, model, label_encoder = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
-
-    # accuracy, conf_matrix = functions.model_eval(model, X_test, y_test)
 
     st.subheader('Make a journal entry')
     jf.journal_entry()
 
     st.subheader('Calculate my Karma Coordinates')
-    # if initial_assessment:
     show_assessment_questionnaire = not (not initial_assessment and st.session_state.user_answers['journal_entry'])
-    # print(f'show_assessment_questionnaire {show_assessment_questionnaire}')
 
-    placehoder = st.container()
+    placehoder = st.empty()
     user_answers, score_ai_analysis_query, percent_completed = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
     
     if st.session_state.auth:
         st.subheader('My progress')
-        # pf.progress_chart()
         pf.clickable_progress_chart()
     pf.bell_curve()        
-
-    # with st.container(border=True):
-    #     input_df, user_input = model_functions.show_user_input(data_dictionary_array, df, columns, categorical_cols)   
-
-    # prediction, prediction_label = model_functions.make_prediction(model, label_encoder, input_df)  
-    # model_functions.show_prediction(prediction_label)
-    # model_functions.explain_prediction(prediction_label)
 
     if  'karma_coordinates' in st.session_state:
         query = f'''Given: {score_ai_analysis_query} and today's journal entry: {st.session_state.user_answers['journal_entry']}, do: calculate my new karma coordinates and explain'''
@@ -92,7 +70,6 @@ def run_app():
         with plh:
             clicked = st.button('Show and explain my score')
             if clicked or (not initial_assessment and st.session_state.user_answers['journal_entry']):
-                # st.session_state['ai_analysis_requested'] = True
                 openai_assistant_chat.prompt_specific(query, plh)                
 
         analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
@@ -100,7 +77,6 @@ def run_app():
 
     st.subheader('Your feedback')
     with st.container(border=True):
-        # af.do_2fa()
         web_content.request_feedback_note()
         ff.user_feedback(user_answers, percent_completed)
 
@@ -108,9 +84,9 @@ def run_app():
     sp.subscribe()
     
 
-
 def main():
     run_app()
 
-if __name__ == '__main__': main()
+if __name__ == '__main__': 
+    main()
 

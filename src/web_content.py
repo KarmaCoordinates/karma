@@ -8,17 +8,7 @@ def page_config(static_files_folder):
         page_icon=f'{static_files_folder}/favicon.ico',
         layout='wide'
     )    
-    _init()
-
-
-def _init():
-    if 'user_answers' not in st.session_state:
-        st.session_state['user_answers'] = {}
-
-    if 'journal_entry' not in st.session_state.user_answers:
-        st.session_state.user_answers['journal_entry'] = ''
         
-
 def intro(static_files_folder):
     logo = f'{static_files_folder}/kapil-muni-image.png'
     intro = '''The app enhances clarity of thought, improving individuals' chances of success. Karma Coordinates, specifically lives to Moksha, serve as an index to track progress towards mental clarity. By focusing on clarity and using these coordinates as a metric, individuals can improve decision-making, foster personal growth, and increase success.'''

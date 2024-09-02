@@ -40,12 +40,16 @@ def _cache_user_answer(user_answer):
 
 
 # Function to process each category of questions
-def _calc_scores(show_assessment_questionnaire=True):
+def _calc_scores(plh_questionnaire=st.empty(), show_assessment_questionnaire=True):
     category_scores = {}
     score_range = {}
     score = 0
     features_df, categories_df, _score_range = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     score_range = _score_range
+
+    if not show_assessment_questionnaire:
+        plh_questionnaire.markdown(f'Using previous assessment and current journal entry to perform differential AI analysis!')
+
     for category_tpl in categories_df.itertuples():
         category_scores[category_tpl.category_name] = 0
         if show_assessment_questionnaire:
@@ -70,8 +74,8 @@ def _calc_scores(show_assessment_questionnaire=True):
 
     return category_scores, score_range
 
-def _process_questions(show_assessment_questionnaire=True):
-    category_scores, score_range = _calc_scores(show_assessment_questionnaire=show_assessment_questionnaire)
+def _process_questions(plh_questionnaire=st.empty(), show_assessment_questionnaire=True):
+    category_scores, score_range = _calc_scores(plh_questionnaire=plh_questionnaire, show_assessment_questionnaire=show_assessment_questionnaire)
     input_df = pd.DataFrame(st.session_state.user_answers, index=[0])
     return input_df, st.session_state.user_answers, category_scores, sum(category_scores.values()), _get_score_analysis_query(category_scores), score_range
 
@@ -81,7 +85,6 @@ def _get_score_analysis_query(category_scores):
     for category, score in category_scores.items():
         score_md = score_md + f'''{category}:{score}, '''
 
-    # Display clarity of thinking index
     score_md = f'''Your **Clarity of Thinking** score: **{clarity_of_thinking_index}** [{score_md}] '''
 
     return score_md
@@ -89,7 +92,8 @@ def _get_score_analysis_query(category_scores):
 def assessment(placehoder=st.empty(), show_assessment_questionnaire=True):
     _init()
     with placehoder.container(border=True):
-        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range = _process_questions(show_assessment_questionnaire=show_assessment_questionnaire)
+        plh_questionnaire = st.empty()
+        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range = _process_questions(plh_questionnaire=plh_questionnaire, show_assessment_questionnaire=show_assessment_questionnaire)
         st.divider()
         plh_kc = st.empty()
         percent_completed = len(st.session_state.user_answers) * 100 / score_range['number_of_questions']
