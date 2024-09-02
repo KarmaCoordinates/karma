@@ -6,7 +6,7 @@ def _init():
         st.session_state['user_answers'] = {}
 
     if 'journal_entry' not in st.session_state:
-        st.session_state['journal_entry'] = ''
+        st.session_state.user_answers['journal_entry'] = ''
 
 def journal_entry():
     _init()

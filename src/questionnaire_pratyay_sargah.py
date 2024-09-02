@@ -40,7 +40,7 @@ def _cache_user_answer(user_answer):
 
 
 # Function to process each category of questions
-def _calc_scores():
+def _calc_scores(show_assessment_questionnaire=True):
     category_scores = {}
     score_range = {}
     score = 0
@@ -48,19 +48,30 @@ def _calc_scores():
     score_range = _score_range
     for category_tpl in categories_df.itertuples():
         category_scores[category_tpl.category_name] = 0
-        st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
+        if show_assessment_questionnaire:
+            st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
+
         for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
             default_index = 0
+            default_selected_option = None
             if feature_tpl.Question in st.session_state.user_answers:
                 default_index = feature_tpl.options_list.index(st.session_state.user_answers[feature_tpl.Question])
-            selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, index=default_index, key=feature_tpl.Question, on_change=_cache_user_answer, args={feature_tpl.Question})
+                default_selected_option = st.session_state.user_answers[feature_tpl.Question]
+            else:
+                default_selected_option = feature_tpl.options_list[default_index]
+
+            if show_assessment_questionnaire:
+                selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, index=default_index, key=feature_tpl.Question, on_change=_cache_user_answer, args={feature_tpl.Question})
+            else: 
+                selected_option = default_selected_option
+
             selected_option_score = feature_tpl.options_dict.get(selected_option) 
             category_scores[category_tpl.category_name] += selected_option_score  
 
     return category_scores, score_range
 
-def _process_questions():
-    category_scores, score_range = _calc_scores()
+def _process_questions(show_assessment_questionnaire=True):
+    category_scores, score_range = _calc_scores(show_assessment_questionnaire=show_assessment_questionnaire)
     input_df = pd.DataFrame(st.session_state.user_answers, index=[0])
     return input_df, st.session_state.user_answers, category_scores, sum(category_scores.values()), _get_score_analysis_query(category_scores), score_range
 
@@ -75,10 +86,10 @@ def _get_score_analysis_query(category_scores):
 
     return score_md
 
-def assessment():
+def assessment(placehoder=st.empty(), show_assessment_questionnaire=True):
     _init()
-    with st.container(border=True):
-        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range = _process_questions()
+    with placehoder.container(border=True):
+        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range = _process_questions(show_assessment_questionnaire=show_assessment_questionnaire)
         st.divider()
         plh_kc = st.empty()
         percent_completed = len(st.session_state.user_answers) * 100 / score_range['number_of_questions']

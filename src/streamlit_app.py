@@ -40,6 +40,9 @@ def run_app():
         # fetch latest record if any
         response = db.query(st.session_state.user_answers['email'], 'latest')
         if response and len(response) > 0:
+            if 'journal_entry' in st.session_state.user_answers:
+                st.session_state.user_answers['journal_entry'] = ''
+            # second parameter takes precedence
             st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
             initial_assessment = False
 
@@ -63,8 +66,12 @@ def run_app():
 
     st.subheader('Calculate my Karma Coordinates')
     # if initial_assessment:
-    user_answers, score_ai_analysis_query, percent_completed = qps.assessment()
+    show_assessment_questionnaire = not (not initial_assessment and st.session_state.user_answers['journal_entry'])
+    # print(f'show_assessment_questionnaire {show_assessment_questionnaire}')
 
+    placehoder = st.container()
+    user_answers, score_ai_analysis_query, percent_completed = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
+    
     if st.session_state.auth:
         st.subheader('My progress')
         # pf.progress_chart()
@@ -79,12 +86,12 @@ def run_app():
     # model_functions.explain_prediction(prediction_label)
 
     if  'karma_coordinates' in st.session_state:
-        query = f'''Given: {score_ai_analysis_query} and today's journal entry {st.session_state.user_answers['journal_entry']}, calculate my new karma coordinates'''
+        query = f'''Given: {score_ai_analysis_query} and today's journal entry: {st.session_state.user_answers['journal_entry']}, do: calculate my new karma coordinates and explain'''
         st.subheader('AI analysis')
         plh = st.container(border=True)
         with plh:
             clicked = st.button('Show and explain my score')
-            if clicked or not initial_assessment:
+            if clicked or (not initial_assessment and st.session_state.user_answers['journal_entry']):
                 # st.session_state['ai_analysis_requested'] = True
                 openai_assistant_chat.prompt_specific(query, plh)                
 

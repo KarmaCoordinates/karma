@@ -8,7 +8,15 @@ def page_config(static_files_folder):
         page_icon=f'{static_files_folder}/favicon.ico',
         layout='wide'
     )    
-    # return
+    _init()
+
+
+def _init():
+    if 'user_answers' not in st.session_state:
+        st.session_state['user_answers'] = {}
+
+    if 'journal_entry' not in st.session_state.user_answers:
+        st.session_state.user_answers['journal_entry'] = ''
         
 
 def intro(static_files_folder):
