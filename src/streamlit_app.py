@@ -64,7 +64,7 @@ def run_app():
     pf.bell_curve()        
 
     if  'karma_coordinates' in st.session_state:
-        query = f'''Given: {score_ai_analysis_query} and today's journal entry: {st.session_state.user_answers['journal_entry']}, do: calculate my new karma coordinates and explain'''
+        query = f'''Given: [previous score={score_ai_analysis_query}] And: [today's journal entry={st.session_state.user_answers['journal_entry']}], Do: [Analyze and explain impact on score] And: [Suggest activities for improvement in the nearby cities (if known)]'''
         st.subheader('AI analysis')
         plh = st.container(border=True)
         with plh:

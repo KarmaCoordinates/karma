@@ -4,12 +4,9 @@ from openai.types.beta.assistant_stream_event import ThreadMessageDelta
 from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
 import streamlit_pills as stp
 import time
-import secrets_app
-import model_functions
 import s3_functions as s3f
 import _configs
 import pandas as pd
-import numpy
 import streamlit_button_list as ifunc
 import random
 import string
@@ -191,9 +188,12 @@ def prompt_specific(query, plh):
         return
 
     _init()
-    # process_prompt_container = st.container() # placeholder to keep current response above history
-    st.session_state.query_queue.append(query)
-    _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=plh)
+
+    cached_result = get_assistant_answer_from_cache(query)
+    if not cached_result:
+        # process_prompt_container = st.container() # placeholder to keep current response above history
+        st.session_state.query_queue.append(query)
+        _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=plh)
 
 def get_assistant_answer_from_cache(content):
     df = pd.DataFrame(st.session_state.chat_history, columns=['role', 'content', 'key'])
