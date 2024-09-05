@@ -58,18 +58,18 @@ def run_app():
     show_assessment_questionnaire = not (not initial_assessment and st.session_state.user_answers['journal_entry'])
 
     placehoder = st.empty()
-    features_df, user_answers, score_ai_analysis_query, percent_completed = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
+    features_df, score_range, percent_completed, category_scores, user_answers, score_ai_analysis_query = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
 
     if not show_assessment_questionnaire:
         plh = st.empty()
-        user_answers, score_ai_analysis_query, percent_completed, analysis = update_assessment(show_assessment_questionnaire, placehoder, features_df, user_answers, plh)
+        user_answers, analysis = update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh)
     
     if st.session_state.auth:
         st.subheader('My progress')
         pf.clickable_progress_chart()
     pf.bell_curve()        
 
-    if  'karma_coordinates' in st.session_state:
+    if 'karma_coordinates' in st.session_state:
         st.subheader('AI analysis')
         plh = st.container(border=True)
         query=None
@@ -77,7 +77,7 @@ def run_app():
         with plh:
             clicked = st.button('Show and explain my score')
             if clicked:
-                query = f'''Explain {score_ai_analysis_query}'''
+                query = f'''Explain {user_answers['score_ai_analysis_query']}'''
                 openai_assistant_chat.prompt_specific(query=query, ai_query=query, plh=plh)     
                 analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
 
@@ -91,7 +91,7 @@ def run_app():
     web_content.sankhya_references(static_files_folder)
     sp.subscribe()
 
-def update_assessment(show_assessment_questionnaire, placehoder, features_df, user_answers, plh):
+def update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh):
     query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                     and the answers={user_answers}, 
@@ -112,9 +112,10 @@ def update_assessment(show_assessment_questionnaire, placehoder, features_df, us
                         #         if i in user_answers:
                         #             user_answers[i]=matches[0][i]
                         # user_answers = user_answers | matches[0]
-            features_df, user_answers, score_ai_analysis_query, percent_completed = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
-    return user_answers,score_ai_analysis_query,percent_completed,analysis
-    
+            qps.update_assessment(score_range, percent_completed, category_scores, user_answers)            
+            return user_answers, analysis
+        
+    return user_answers, False
 
 def main():
     run_app()

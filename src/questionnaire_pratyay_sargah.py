@@ -121,7 +121,18 @@ def assessment(placehoder=st.empty(), show_assessment_questionnaire=True):
             smf.save(None, 'assessment')
         else:
             st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
-    return features_df, user_answers, score_ai_analysis_query, percent_completed
+    return features_df, score_range, percent_completed, category_scores, user_answers, score_ai_analysis_query 
+
+def update_assessment(score_range, percent_completed, category_scores, user_answers):
+    if percent_completed > st.session_state.minimum_required_completion_percent:
+        score_ai_analysis_query = _get_score_analysis_query(category_scores)        
+        # score_ai_analysis_query = st.session_state['karma_coordinates'] = category_scores
+        lives_to_moksha = sf.calculate_karma_coordinates(category_scores, score_range)
+        # plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
+        # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
+        user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
+        smf.save(None, 'assessment')
+
 
 def main():
     pass
