@@ -35,18 +35,24 @@ def insert(user_activity_data):
     )
 
 def query(partition_key_value, sort_key_prefix=17):
-    dynamodb = boto3.resource(resource_name)
-    table = dynamodb.Table(table_name)
-    response = table.query(
-        KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).begins_with(str(sort_key_prefix))
-    )
-    return response['Items']
+    try:
+        dynamodb = boto3.resource(resource_name)
+        table = dynamodb.Table(table_name)
+        response = table.query(
+            KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).begins_with(str(sort_key_prefix))
+        )
+        return response['Items']
+    except:
+        return False
 
 def query_columns(columns_to_fetch=['lives_to_moksha']):
-    dynamodb = boto3.resource(resource_name)
-    table = dynamodb.Table(table_name)
-    response = table.scan()
-    return pd.DataFrame(response['Items'], columns=columns_to_fetch)
+    try:
+        dynamodb = boto3.resource(resource_name)
+        table = dynamodb.Table(table_name)
+        response = table.scan()
+        return pd.DataFrame(response['Items'], columns=columns_to_fetch)
+    except:
+        return False
 
 
 def get_column_names():

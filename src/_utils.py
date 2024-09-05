@@ -85,11 +85,6 @@ def insert_line_breaks(text, max_length=50):
 # # Print the resulting DataFrame
 # print(df[['text_column', 'wrapped_text']])
 
-def main():
-    pass
-
-if __name__ == '__main__': main()
-
 
 def is_valid_email(email):
     # """Check if the email is a valid format."""
@@ -100,3 +95,9 @@ def is_valid_email(email):
         return True
     else:
         return False
+
+def main():
+    pass
+
+if __name__ == '__main__': main()
+

@@ -64,8 +64,7 @@ def guna_details():
     Karma Coordinates outcome is also explained in terms of three *Guna*:  
     - ***Sattv*** is the *Prakash* (light) property in the *Prakriti*. The neural network in our brain - our intellect - has the highest *Sattv*.  
     - ***Rajas*** is the energy property in the *Prakriti*. It moves mass. It activates. Our mind and bodies are enabled by *Rajas*.  
-    - ***Tamas*** is the mass property in the *Prakriti*  
-'''
+    - ***Tamas*** is the mass property in the *Prakriti*'''
 
 def sankhya_references(static_files_folder):
     subheader = "References"
@@ -75,9 +74,7 @@ def sankhya_references(static_files_folder):
 
 def request_feedback_note():
     # subheader = "Your Feedback"
-    feedback = '''
-Tell us what you think! Your feedback will further refine the Karma Coordinates AI classification system.
-        '''
+    feedback = '''Tell us what you think! Your feedback will further refine the Karma Coordinates AI classification system.'''
     # st.subheader(subheader)
     # with st.container(border=True):
     st.markdown(feedback)

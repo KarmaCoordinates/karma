@@ -12,7 +12,14 @@ import random
 import string
 import unicodedata
 
-# button_list_name = 'my_button_list'
+class Query:
+    def __init__(self, query, ai_query=None, status=None):
+        self.query=query
+        if ai_query:
+            self.ai_query=ai_query
+        else:
+            self.ai_query=query
+        self.status = status
 
 @st.cache_data
 def cache_button_list_from_s3():
@@ -44,8 +51,8 @@ def normalize_text(text):
 
 
 def _callback_button_on_click(key):
-    st.session_state.query_queue.append(key)
-    st.session_state.query_history.append(key)
+    st.session_state.query_queue.append(Query(query=key))
+    st.session_state.query_history.append(Query(query=key))
 
 def _render_user_input(user_query_container):
     ai_default_question = 'How can I help you?'
@@ -58,8 +65,8 @@ def _render_user_input(user_query_container):
         # draw user input box
         user_query = st.chat_input(ai_default_question)        
         if (user_query is not None) and not (user_query in st.session_state.query_history):
-            st.session_state.query_queue.append(user_query)
-            st.session_state.query_history.append(user_query)
+            st.session_state.query_queue.append(Query(query=user_query))
+            st.session_state.query_history.append(Query(query=user_query))
 
 
 # Display messages in chat history
@@ -87,11 +94,11 @@ def _process_prompt(client, assistant, user_query, random_key=generate_random_st
     # print(f'random_key@user:{random_key}')
     # Display the user's query
     with st.chat_message("user"):
-        st.markdown(user_query)
+        st.markdown(user_query.query)
     
     # Store the user's query into the history
     st.session_state.chat_history.append({"role": "user",
-                                        "content": user_query,
+                                        "content": user_query.query,
                                         "key":random_key})
 
     try:
@@ -99,7 +106,7 @@ def _process_prompt(client, assistant, user_query, random_key=generate_random_st
         client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="user",
-            content=user_query
+            content=user_query.ai_query
             )
 
         # Stream the assistant's reply
@@ -147,27 +154,40 @@ def _process_prompt(client, assistant, user_query, random_key=generate_random_st
     except Exception as e:
         print(f'Failed to process_prompt {e}')
 
-
 def _process_queue(client, assistant, process_prompt_container):
     # print(f'queue: {st.session_state.queue}')
 
-    # Create a new thread if it does not exist
-    if "thread_id" not in st.session_state:
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
+    try:
+        # Create a new thread if it does not exist
+        if "thread_id" not in st.session_state:
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
 
-    while st.session_state.query_queue and len(st.session_state.query_queue) > 0:
-        # Wait until there is no active run
-        while _check_active_run(client, st.session_state.thread_id):
-            time.sleep(1)  # Wait for 10 seconds before checking again      
+        while st.session_state.query_queue and len(st.session_state.query_queue) > 0:
+            # Wait until there is no active run
+            while _check_active_run(client, st.session_state.thread_id):
+                time.sleep(1)  # Wait for 10 seconds before checking again      
 
-        queued_user_query = st.session_state.query_queue.pop(0)
-        # print(f'processing queued_user_query:{queued_user_query}')
+            queued_user_query = st.session_state.query_queue.pop(0)
+            # print(f'processing queued_user_query:{queued_user_query}')
 
-        # Streaming process
+            # Streaming process
+            with process_prompt_container:
+                _process_prompt(client, assistant, queued_user_query)      
+    except:
         with process_prompt_container:
-            _process_prompt(client, assistant, queued_user_query)      
+            st.markdown('Unable to connect.')
+        return False
 
+def get_assistant_answer_from_cache(content):
+    df = pd.DataFrame(st.session_state.chat_history, columns=['role', 'content', 'key'])
+    df['normalized_content'] = df['content'].apply(normalize_text)
+    try:
+        key = df.loc[df['normalized_content'] == normalize_text(content), 'key'].values[0]
+        return df.loc[(df['key'] == key) & (df['role'] == 'assistant'), 'content'].values[0]
+    except:
+        # print(f'ai analysis query={content} not found in cache.')
+        pass
 
 def prompt():
     if not _configs.get_config():
@@ -181,9 +201,10 @@ def prompt():
         st.divider()
         _render_chat_history()        
         _render_user_input(user_query_container=user_query_container)
-        _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=process_prompt_container)
+        processing = _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=process_prompt_container)
 
-def prompt_specific(query, plh):
+
+def prompt_specific(query, ai_query, plh):
     if not _configs.get_config():
         return
 
@@ -191,19 +212,9 @@ def prompt_specific(query, plh):
 
     cached_result = get_assistant_answer_from_cache(query)
     if not cached_result:
-        # process_prompt_container = st.container() # placeholder to keep current response above history
-        st.session_state.query_queue.append(query)
-        _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=plh)
+        st.session_state.query_queue.append(Query(query=query, ai_query=ai_query))
+        processing = _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=plh)
 
-def get_assistant_answer_from_cache(content):
-    df = pd.DataFrame(st.session_state.chat_history, columns=['role', 'content', 'key'])
-    df['normalized_content'] = df['content'].apply(normalize_text)
-    try:
-        key = df.loc[df['normalized_content'] == normalize_text(content), 'key'].values[0]
-        return df.loc[(df['key'] == key) & (df['role'] == 'assistant'), 'content'].values[0]
-    except:
-        # print(f'ai analysis query={content} not found in cache.')
-        pass
         
 
 def main():

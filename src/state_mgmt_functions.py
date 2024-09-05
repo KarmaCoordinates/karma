@@ -21,6 +21,7 @@ def init():
 
 def get_session_vars():
     return SessionVariables()
+
 # page_init = False
 # statuses = ("page_init", "page_loaded")
 # only act on one key at a time

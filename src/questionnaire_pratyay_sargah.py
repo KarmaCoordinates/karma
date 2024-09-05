@@ -61,7 +61,9 @@ def _calc_scores(plh_questionnaire=st.empty(), show_assessment_questionnaire=Tru
                     default_selected_option = feature_tpl.options_list[default_index]
 
                 selected_option_score = feature_tpl.options_dict.get(default_selected_option) 
-                category_scores[category_tpl.category_name] += selected_option_score  
+
+                if selected_option_score:
+                    category_scores[category_tpl.category_name] += selected_option_score  
 
     else:
 
@@ -74,8 +76,9 @@ def _calc_scores(plh_questionnaire=st.empty(), show_assessment_questionnaire=Tru
                     default_index = 0
                     default_selected_option = None
                     if feature_tpl.Question in st.session_state.user_answers:
-                        default_index = feature_tpl.options_list.index(st.session_state.user_answers[feature_tpl.Question])
-                        default_selected_option = st.session_state.user_answers[feature_tpl.Question]
+                        if st.session_state.user_answers[feature_tpl.Question] in feature_tpl.options_list:
+                            default_index = feature_tpl.options_list.index(st.session_state.user_answers[feature_tpl.Question])
+                            default_selected_option = st.session_state.user_answers[feature_tpl.Question]
                     else:
                         default_selected_option = feature_tpl.options_list[default_index]
 
@@ -84,12 +87,12 @@ def _calc_scores(plh_questionnaire=st.empty(), show_assessment_questionnaire=Tru
                     selected_option_score = feature_tpl.options_dict.get(selected_option) 
                     category_scores[category_tpl.category_name] += selected_option_score  
 
-    return category_scores, score_range
+    return category_scores, score_range, features_df
 
 def _process_questions(plh_questionnaire=st.empty(), show_assessment_questionnaire=True):
-    category_scores, score_range = _calc_scores(plh_questionnaire=plh_questionnaire, show_assessment_questionnaire=show_assessment_questionnaire)
+    category_scores, score_range, features_df = _calc_scores(plh_questionnaire=plh_questionnaire, show_assessment_questionnaire=show_assessment_questionnaire)
     input_df = pd.DataFrame(st.session_state.user_answers, index=[0])
-    return input_df, st.session_state.user_answers, category_scores, sum(category_scores.values()), _get_score_analysis_query(category_scores), score_range
+    return input_df, st.session_state.user_answers, category_scores, sum(category_scores.values()), _get_score_analysis_query(category_scores), score_range, features_df
 
 def _get_score_analysis_query(category_scores):
     clarity_of_thinking_index = sum(category_scores.values())
@@ -105,7 +108,7 @@ def assessment(placehoder=st.empty(), show_assessment_questionnaire=True):
     _init()
     with placehoder.container(border=True):
         plh_questionnaire = st.empty()
-        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range = _process_questions(plh_questionnaire=plh_questionnaire, show_assessment_questionnaire=show_assessment_questionnaire)
+        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range, features_df = _process_questions(plh_questionnaire=plh_questionnaire, show_assessment_questionnaire=show_assessment_questionnaire)
         st.divider()
         plh_kc = st.empty()
         percent_completed = len(st.session_state.user_answers) * 100 / score_range['number_of_questions']
@@ -118,7 +121,7 @@ def assessment(placehoder=st.empty(), show_assessment_questionnaire=True):
             smf.save(None, 'assessment')
         else:
             st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
-    return user_answers, score_ai_analysis_query, percent_completed
+    return features_df, user_answers, score_ai_analysis_query, percent_completed
 
 def main():
     pass
