@@ -30,6 +30,33 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
     model = s3f.cache_pickle_obj_from_s3(bucket_name, pickled_model_data_file)
     return data_dictionary_array, df, X.columns, categorical_cols, model, label_encoder
 
+
+def _update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh):
+    query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
+    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
+                    and the answers={user_answers}, 
+                    which answers get changed due to the new journal entry={st.session_state.user_answers['journal_entry']}?
+                    Give impacted questions and new answers (only from valid options of answers) as a dictionary.'''
+    openai_assistant_chat.prompt_specific(query=query, ai_query=ai_query, plh=plh)   
+                  
+    analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
+
+    rx = r'(\{[^{}]+\})'
+    if analysis:
+        matches = re.findall(rx, analysis)
+        if matches and len(matches) > 0:                
+                        # print(matches[0])
+            updated_dict = ast.literal_eval(matches[0])
+            user_answers.update(updated_dict)
+                        # for i in matches[0].keys():
+                        #         if i in user_answers:
+                        #             user_answers[i]=matches[0][i]
+                        # user_answers = user_answers | matches[0]
+            qps.update_assessment(score_range, percent_completed, category_scores, user_answers)            
+            return user_answers, analysis
+        
+    return user_answers, False
+
 def run_app():
     static_files_folder = '.static'
     web_content.page_config(static_files_folder)
@@ -62,7 +89,8 @@ def run_app():
 
     if not show_assessment_questionnaire:
         plh = st.empty()
-        user_answers, analysis = update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh)
+        user_answers, analysis = _update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh)
+        score_ai_analysis_query = user_answers['score_ai_analysis_query']
     
     if st.session_state.auth:
         st.subheader('My progress')
@@ -77,7 +105,7 @@ def run_app():
         with plh:
             clicked = st.button('Show and explain my score')
             if clicked:
-                query = f'''Explain {user_answers['score_ai_analysis_query']}'''
+                query = f'''Explain {score_ai_analysis_query}'''
                 openai_assistant_chat.prompt_specific(query=query, ai_query=query, plh=plh)     
                 analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
 
@@ -91,31 +119,6 @@ def run_app():
     web_content.sankhya_references(static_files_folder)
     sp.subscribe()
 
-def update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh):
-    query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
-    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the answers={user_answers}, 
-                    which answers get changed due to the new journal entry={st.session_state.user_answers['journal_entry']}?
-                    Give impacted questions and new answers (only from valid options of answers) as a dictionary.'''
-    openai_assistant_chat.prompt_specific(query=query, ai_query=ai_query, plh=plh)   
-                  
-    analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
-
-    rx = r'(\{[^{}]+\})'
-    if analysis:
-        matches = re.findall(rx, analysis)
-        if matches and len(matches) > 0:                
-                        # print(matches[0])
-            updated_dict = ast.literal_eval(matches[0])
-            user_answers.update(updated_dict)
-                        # for i in matches[0].keys():
-                        #         if i in user_answers:
-                        #             user_answers[i]=matches[0][i]
-                        # user_answers = user_answers | matches[0]
-            qps.update_assessment(score_range, percent_completed, category_scores, user_answers)            
-            return user_answers, analysis
-        
-    return user_answers, False
 
 def main():
     run_app()
