@@ -59,6 +59,10 @@ def run_app():
 
     placehoder = st.empty()
     features_df, user_answers, score_ai_analysis_query, percent_completed = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
+
+    if not show_assessment_questionnaire:
+        plh = st.empty()
+        user_answers, score_ai_analysis_query, percent_completed, analysis = update_assessment(show_assessment_questionnaire, placehoder, features_df, user_answers, plh)
     
     if st.session_state.auth:
         st.subheader('My progress')
@@ -73,31 +77,9 @@ def run_app():
         with plh:
             clicked = st.button('Show and explain my score')
             if clicked:
-                query = f'''Analyse my answers and assessment score'''
+                query = f'''Explain {score_ai_analysis_query}'''
                 openai_assistant_chat.prompt_specific(query=query, ai_query=query, plh=plh)     
                 analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
-            elif not show_assessment_questionnaire:
-                query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
-                ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the answers={user_answers}, 
-                    which answers get changed due to the new journal entry={st.session_state.user_answers['journal_entry']}?
-                    Give impacted questions and new answers (only from valid options of answers) as a dictionary.'''
-                openai_assistant_chat.prompt_specific(query=query, ai_query=ai_query, plh=plh)   
-                  
-                analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
-
-                rx = r'(\{[^{}]+\})'
-                if analysis:
-                    matches = re.findall(rx, analysis)
-                    if matches and len(matches) > 0:                
-                        # print(matches[0])
-                        updated_dict = ast.literal_eval(matches[0])
-                        user_answers.update(updated_dict)
-                        # for i in matches[0].keys():
-                        #         if i in user_answers:
-                        #             user_answers[i]=matches[0][i]
-                        # user_answers = user_answers | matches[0]
-                        features_df, user_answers, score_ai_analysis_query, percent_completed = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
 
         pdf.download_pdf(user_answers, st.session_state.karma_coordinates, analysis)
 
@@ -108,6 +90,30 @@ def run_app():
 
     web_content.sankhya_references(static_files_folder)
     sp.subscribe()
+
+def update_assessment(show_assessment_questionnaire, placehoder, features_df, user_answers, plh):
+    query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
+    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
+                    and the answers={user_answers}, 
+                    which answers get changed due to the new journal entry={st.session_state.user_answers['journal_entry']}?
+                    Give impacted questions and new answers (only from valid options of answers) as a dictionary.'''
+    openai_assistant_chat.prompt_specific(query=query, ai_query=ai_query, plh=plh)   
+                  
+    analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
+
+    rx = r'(\{[^{}]+\})'
+    if analysis:
+        matches = re.findall(rx, analysis)
+        if matches and len(matches) > 0:                
+                        # print(matches[0])
+            updated_dict = ast.literal_eval(matches[0])
+            user_answers.update(updated_dict)
+                        # for i in matches[0].keys():
+                        #         if i in user_answers:
+                        #             user_answers[i]=matches[0][i]
+                        # user_answers = user_answers | matches[0]
+            features_df, user_answers, score_ai_analysis_query, percent_completed = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
+    return user_answers,score_ai_analysis_query,percent_completed,analysis
     
 
 def main():
