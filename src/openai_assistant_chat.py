@@ -2,7 +2,6 @@ import streamlit as st
 from openai import OpenAI
 from openai.types.beta.assistant_stream_event import ThreadMessageDelta
 from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
-import streamlit_pills as stp
 import time
 import s3_functions as s3f
 import _configs
@@ -215,7 +214,6 @@ def prompt_specific(query, ai_query, plh):
         st.session_state.query_queue.append(Query(query=query, ai_query=ai_query))
         processing = _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=plh)
 
-        
 
 def main():
     pass

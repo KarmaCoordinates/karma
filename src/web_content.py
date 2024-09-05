@@ -1,13 +1,5 @@
 import streamlit as st
 import base64
-
-
-def page_config(static_files_folder):
-    st.set_page_config(
-        page_title='Karma Coordinates',
-        page_icon=f'{static_files_folder}/favicon.ico',
-        layout='wide'
-    )    
         
 def intro(static_files_folder):
     logo = f'{static_files_folder}/kapil-muni-image.png'
