@@ -53,8 +53,8 @@ def clickable_progress_chart():
 
 
 def bell_curve():
-    response_df = db.query_columns('lives_to_moksha')
-    if not response_df:
+    response_df = db.query_columns()
+    if response_df.empty:
         return
     data = pd.to_numeric(response_df['lives_to_moksha'].dropna()).to_list()
 
