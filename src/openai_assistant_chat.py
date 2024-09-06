@@ -57,9 +57,10 @@ def _render_user_input(user_query_container):
     ai_default_question = 'How can I help you?'
     with user_query_container:
 
-        st.markdown('FAQs')
-        # show suggested options
-        ifunc.render_buttons(button_list=[item for item in cache_button_list_from_s3() if item not in st.session_state.query_history], on_click_callback=_callback_button_on_click)
+        # show suggested options (if auth=false)
+        if not st.session_state.auth:
+            st.markdown('FAQs')
+            ifunc.render_buttons(button_list=[item for item in cache_button_list_from_s3() if item not in st.session_state.query_history], on_click_callback=_callback_button_on_click)
 
         # draw user input box
         user_query = st.chat_input(ai_default_question)        
@@ -70,9 +71,12 @@ def _render_user_input(user_query_container):
 
 # Display messages in chat history
 def _render_chat_history():
-    for message in (st.session_state.chat_history):
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    show_history = st.toggle('Show history')
+    # st.markdown('History')
+    if show_history:
+        for message in (st.session_state.chat_history):
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
     
 
 # Function to check if there is an active run

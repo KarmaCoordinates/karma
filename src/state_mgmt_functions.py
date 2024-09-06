@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import dynamodb_functions as df
-import time
 
 class SessionVariables:
     def __init__(self):
@@ -12,12 +11,18 @@ class SessionVariables:
 
 
 def init():
+    if 'auth' not in st.session_state:
+        st.session_state['auth'] = False
+
     if 'user_answers' not in st.session_state:
         st.session_state['user_answers'] = {}
 
     if 'journal_entry' not in st.session_state.user_answers:
         st.session_state.user_answers['journal_entry'] = ''
 
+
+def is_set(str):
+    return st.session_state[str]
 
 def get_session_vars():
     return SessionVariables()
