@@ -67,37 +67,41 @@ def page_config(static_files_folder):
     except:
         pass
 
+def retrieve_previous_assessment():
+    # fetch latest record if any
+    response = db.query(st.session_state.user_answers['email'], 'latest')
+    if response and len(response) > 0:
+        if 'journal_entry' in st.session_state.user_answers:
+            st.session_state.user_answers['journal_entry'] = ''
+        # second parameter takes precedence
+        st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
+        return True
+
 def run_app():
     static_files_folder = '.static'
     page_config(static_files_folder)
     smf.init()
     af.identity_msg()
     initial_assessment = True
-    latest_user_answers = {}
     if st.session_state.auth:
-        # fetch latest record if any
-        response = db.query(st.session_state.user_answers['email'], 'latest')
-        if response and len(response) > 0:
-            if 'journal_entry' in st.session_state.user_answers:
-                st.session_state.user_answers['journal_entry'] = ''
-            # second parameter takes precedence
-            st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
+        if retrieve_previous_assessment():
             initial_assessment = False
-
-    web_content.intro(static_files_folder)
-    openai_assistant_chat.prompt()
-    web_content.brief(static_files_folder)
-
-    st.subheader('Make a journal entry')
-    jf.journal_entry()
+        web_content.auth_overview(static_files_folder)
+        openai_assistant_chat.prompt()
+        st.subheader('Make a journal entry')
+        jf.journal_entry()
+    else:
+        web_content.overview(static_files_folder)
+        openai_assistant_chat.prompt()
+        web_content.background(static_files_folder)
 
     st.subheader('Calculate my Karma Coordinates')
-    show_assessment_questionnaire = not (not initial_assessment and st.session_state.user_answers['journal_entry'])
+    hide_assessment_questionnaire = (not initial_assessment and st.session_state.user_answers['journal_entry'])
 
     placehoder = st.empty()
-    features_df, score_range, percent_completed, category_scores, user_answers, score_ai_analysis_query = qps.assessment(placehoder=placehoder, show_assessment_questionnaire=show_assessment_questionnaire)
+    features_df, score_range, percent_completed, category_scores, user_answers, score_ai_analysis_query = qps.assessment(placehoder=placehoder, hide_assessment_questionnaire=hide_assessment_questionnaire)
 
-    if not show_assessment_questionnaire:
+    if hide_assessment_questionnaire:
         plh = st.empty()
         user_answers, analysis = _update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh)
         score_ai_analysis_query = user_answers['score_ai_analysis_query']
@@ -123,10 +127,11 @@ def run_app():
 
         pdf.download_pdf(user_answers, st.session_state.karma_coordinates, analysis)
 
-    st.subheader('Your feedback')
-    with st.container(border=True):
-        web_content.request_feedback_note()
-        ff.user_feedback(user_answers, percent_completed)
+    if st.session_state.auth:
+        st.subheader('Your feedback')
+        with st.container(border=True):
+            web_content.request_feedback_note()
+            ff.user_feedback(user_answers, percent_completed)
 
     web_content.sankhya_references(static_files_folder)
     sp.subscribe()

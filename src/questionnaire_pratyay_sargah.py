@@ -76,14 +76,14 @@ def _calc_category_scores(category_scores, features_df, categories_df):
             if selected_option_score:
                 category_scores[category_tpl.category_name] += selected_option_score
 
-def _calc_scores(plh_questionnaire=st.empty(), show_assessment_questionnaire=True):
+def _calc_scores(plh_questionnaire=st.empty(), hide_assessment_questionnaire=False):
     category_scores = {}
     score_range = {}
     score = 0
     features_df, categories_df, _score_range = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     score_range = _score_range
 
-    if not show_assessment_questionnaire:
+    if hide_assessment_questionnaire:
         plh_questionnaire.markdown(f'Using previous assessment and current journal entry to perform differential AI analysis!')
         _calc_category_scores(category_scores, features_df, categories_df)  
     else:
@@ -92,8 +92,8 @@ def _calc_scores(plh_questionnaire=st.empty(), show_assessment_questionnaire=Tru
 
     return category_scores, score_range, features_df
 
-def _process_questions(plh_questionnaire=st.empty(), show_assessment_questionnaire=True):
-    category_scores, score_range, features_df = _calc_scores(plh_questionnaire=plh_questionnaire, show_assessment_questionnaire=show_assessment_questionnaire)
+def _process_questions(plh_questionnaire=st.empty(), hide_assessment_questionnaire=False):
+    category_scores, score_range, features_df = _calc_scores(plh_questionnaire=plh_questionnaire, hide_assessment_questionnaire=hide_assessment_questionnaire)
     input_df = pd.DataFrame(st.session_state.user_answers, index=[0])
     return input_df, st.session_state.user_answers, category_scores, sum(category_scores.values()), _get_score_analysis_query(category_scores), score_range, features_df
 
@@ -101,17 +101,17 @@ def _get_score_analysis_query(category_scores):
     clarity_of_thinking_index = sum(category_scores.values())
     score_md = ''
     for category, score in category_scores.items():
-        score_md = score_md + f'''{category}:{score}, '''
+        score_md = score_md + f'''{category}:{round(score, 1)}, '''
 
     score_md = f'''Your **Clarity of Thinking** score: **{clarity_of_thinking_index}** [{score_md}] '''
 
     return score_md
 
-def assessment(placehoder=st.empty(), show_assessment_questionnaire=True):
+def assessment(placehoder=st.empty(), hide_assessment_questionnaire=False):
     _init()
     with placehoder.container(border=True):
         plh_questionnaire = st.empty()
-        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range, features_df = _process_questions(plh_questionnaire=plh_questionnaire, show_assessment_questionnaire=show_assessment_questionnaire)
+        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range, features_df = _process_questions(plh_questionnaire=plh_questionnaire, hide_assessment_questionnaire=hide_assessment_questionnaire)
         st.divider()
         plh_kc = st.empty()
         percent_completed = len(st.session_state.user_answers) * 100 / score_range['number_of_questions']
