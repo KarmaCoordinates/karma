@@ -46,7 +46,7 @@ def _save_user_feedback(user_answers, percent_completed):
         else:
             phl = st.empty()
     else: 
-        phl.warning(f'*(Note: Feedback needs to be minimum 20 character long. Atleast {st.session_state.minimum_required_completion_percent}\\% of assessment needs to be completed. Your identity needs to be confirmed. Click number of stars to rate and save your feedback!*)')
+        phl.warning(f'*(Note: Feedback needs to be minimum 20 character long. Atleast {st.session_state.minimum_required_completion_percent}\\% of assessment needs to be completed. Click number of stars to rate and save your feedback!*)')
 
 
 # User feedback

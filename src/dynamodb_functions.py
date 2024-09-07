@@ -52,7 +52,7 @@ def query_columns(columns_to_fetch=['lives_to_moksha']):
         response = table.scan()
         return pd.DataFrame(response['Items'], columns=columns_to_fetch)
     except:
-        return False
+        return None
 
 
 def get_column_names():

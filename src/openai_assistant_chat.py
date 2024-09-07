@@ -201,8 +201,10 @@ def prompt():
     with st.container(border=True):
         user_query_container = st.container()
         process_prompt_container = st.container() # placeholder to keep current response above history
-        st.divider()
-        _render_chat_history()        
+
+        if len(st.session_state.chat_history) > 0:
+            st.divider()
+            _render_chat_history()        
         _render_user_input(user_query_container=user_query_container)
         processing = _process_queue(client=_configs.get_config().openai_client, assistant=_configs.get_config().openai_assistant, process_prompt_container=process_prompt_container)
 
