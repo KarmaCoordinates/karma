@@ -121,7 +121,6 @@ def run_app():
             clicked = st.button('Show and explain my score')
             if clicked:
                 query = f'''Explain {score_ai_analysis_query}'''
-                # print(f'clicked query is: {query}')
                 openai_assistant_chat.prompt_specific(query=query, ai_query=query, plh=plh)     
                 analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
 

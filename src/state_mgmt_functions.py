@@ -20,6 +20,13 @@ def init():
     if 'journal_entry' not in st.session_state.user_answers:
         st.session_state.user_answers['journal_entry'] = ''
 
+    if 'score_ai_analysis_query' not in st.session_state.user_answers:
+        st.session_state.user_answers['score_ai_analysis_query'] = None
+
+    if 'lives_to_moksha' not in st.session_state.user_answers:
+        st.session_state.user_answers['lives_to_moksha'] = None
+
+
 
 def is_set(str):
     return st.session_state[str]

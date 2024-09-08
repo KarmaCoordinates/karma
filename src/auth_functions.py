@@ -6,6 +6,15 @@ import time
 
 from _utils import is_valid_email
 
+import boto3
+
+def sms():
+    sns = boto3.client('sns')
+    number = '+12065559830'
+    sns.publish(PhoneNumber = '+12169266696', Message='example text message' )
+
+
+
 def _init():
     if '_enter_email' not in st.session_state:
         st.session_state['_enter_email'] = ''
@@ -15,10 +24,7 @@ def _init():
 
     if 'auth' not in st.session_state:
         st.session_state['auth'] = ''
-
-    if 'user_answers' not in st.session_state:
-        st.session_state['user_answers'] = {}
-    
+            
 
 # Function to send email
 def send_email(recipient, token):
@@ -151,5 +157,6 @@ def _reset_data():
 
 def main():
     pass
+    # sms()
 
 if __name__ == '__main__': main()
