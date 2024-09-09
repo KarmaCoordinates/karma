@@ -32,7 +32,9 @@ def init():
     if 'lives_to_moksha' not in st.session_state.user_answers:
         st.session_state.user_answers.update({'lives_to_moksha':None})
 
-
+    if 'previous_user_answers' not in st.session_state:
+        st.session_state['previous_user_answers'] = False
+    
 def is_set(str):
     return st.session_state[str]
 

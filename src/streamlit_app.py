@@ -68,24 +68,24 @@ def page_config(static_files_folder):
         pass
 
 def retrieve_previous_assessment():
-    # fetch latest record if any
-    response = db.query(st.session_state.user_answers['email'], 'latest')
-    if not response is None and len(response) > 0:
-        if 'journal_entry' in st.session_state.user_answers:
-            st.session_state.user_answers['journal_entry'] = ''
-        # second parameter takes precedence
-        st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
-        return True
+    if not st.session_state.previous_user_answers:
+        response = db.query(st.session_state.user_answers['email'], 'latest')
+        print(f'response {response}')
+        if not response is None and len(response) > 0:
+            st.session_state.user_answers.update({'journal_entry' : None})
+            # second parameter takes precedence
+            st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
+            st.session_state.previous_user_answers = True
 
 def run_app():
     static_files_folder = '.static'
     page_config(static_files_folder)
     smf.init()
     af.identity_msg()
-    initial_assessment = True
+    hide_assessment_questionnaire = False
     if st.session_state.auth:
-        if retrieve_previous_assessment():
-            initial_assessment = False
+        retrieve_previous_assessment()
+        hide_assessment_questionnaire = st.session_state.previous_user_answers and not st.session_state.user_answers['journal_entry'] is None
         web_content.auth_overview(static_files_folder)
         openai_assistant_chat.prompt()
         st.subheader('Make a journal entry')
@@ -96,7 +96,6 @@ def run_app():
         web_content.background(static_files_folder)
 
     st.subheader('Calculate my Karma Coordinates')
-    hide_assessment_questionnaire = (not initial_assessment and st.session_state.user_answers['journal_entry'])
 
     placehoder = st.empty()
     features_df, score_range, percent_completed, category_scores, user_answers, score_ai_analysis_query = qps.assessment(placehoder=placehoder, hide_assessment_questionnaire=hide_assessment_questionnaire)
