@@ -15,6 +15,7 @@ class Columns:
         self.lives_to_moksha = 'lives_to_moksha'
         self.journal_entry = 'journal_entry'
         self.score_ai_analysis_query = 'score_ai_analysis_query'
+        self.percent_completed = 'percent_completed'
         self.rating = 'rating'
         self.feedback = 'feedback'
 

@@ -160,9 +160,16 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
                 st.markdown(analysis)
 
         category_scores = _calc_category_scores(features_df=features_df, categories_df=categories_df)  
-        st.markdown(f'Using previous assessment and current journal entry to perform differential AI analysis!')        
 
-        return update_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
+        st.markdown(f'The previous assessment and the current journal entry will be used to perform differential AI analysis!')        
+
+        if jf.is_new():
+            return update_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
+        else:
+            score_ai_analysis_query = _get_score_analysis_query(category_scores)        
+            percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
+            return percent_completed, score_ai_analysis_query
+
 
 
 def assessment(placehoder=st.empty(), hide_assessment_questionnaire=False):
