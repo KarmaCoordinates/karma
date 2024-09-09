@@ -132,7 +132,7 @@ def _user_assessment(features_df, categories_df, features_df_stats, category_sco
 def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.empty()):
     with placehoder.container():   
         if jf.is_new():
-            print(f'calling ai analysis')
+            # print(f'calling ai analysis')
             query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
             ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                             and the answers={st.session_state.user_answers}, 
@@ -167,8 +167,6 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
 
 def assessment(placehoder=st.empty(), hide_assessment_questionnaire=False):
     _init()
-    category_scores = {}
-    score_range = {}
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     with placehoder.container(border=True):
         if hide_assessment_questionnaire:

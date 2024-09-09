@@ -51,9 +51,9 @@ def run_app():
     hide_assessment_questionnaire = False
     if st.session_state.auth:
         qps.retrieve_previous_assessment()
-        if st.session_state.previous_user_answers and st.session_state.user_answers['journal_entry']:
+        if st.session_state.previous_user_answers:
             hide_assessment_questionnaire = True
-        print(f'''journal_entry: {st.session_state.user_answers['journal_entry']}, hide_assessment_questionnaire: {hide_assessment_questionnaire}''')
+        # print(f'''jf.is_new(): {jf.is_new()}, st.session_state.previous_user_answers: {st.session_state.previous_user_answers}''')
         web_content.auth_overview(static_files_folder)
         openai_assistant_chat.prompt()
         st.subheader('Make a journal entry')

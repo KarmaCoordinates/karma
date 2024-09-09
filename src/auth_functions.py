@@ -139,7 +139,7 @@ def _show_2fa(placeholder):
                     if user_token == st.session_state.token:
                         st.session_state.auth=True
                         st.session_state.user_answers.update({'email': st.session_state._enter_email, 'date' : str(time.time())})
-                        print(f'''auth: {st.session_state.user_answers['email']}''')
+                        # print(f'''auth: {st.session_state.user_answers['email']}''')
                         st.success(f'Your identity [*{st.session_state._enter_email}*] is confirmed!')
                     else:
                         st.error("Failed.")
