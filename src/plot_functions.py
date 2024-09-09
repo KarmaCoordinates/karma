@@ -17,10 +17,10 @@ def progress_chart():
     if rows is None:
         return
     df = pd.DataFrame(rows)
-    x = df[db.get_column_names().date].to_list()
-    if not db.get_column_names().lives_to_moksha in df:
-        df[db.get_column_names().lives_to_moksha] = ''
-    y = df[db.get_column_names().lives_to_moksha].to_list()
+    x = df[db.Columns().date].to_list()
+    if not db.Columns().lives_to_moksha in df:
+        df[db.Columns().lives_to_moksha] = ''
+    y = df[db.Columns().lives_to_moksha].to_list()
     plt.plot(x, y, marker='o')
     plt.title("My progress")
     plt.xlabel("Timeline")
@@ -34,13 +34,13 @@ def clickable_progress_chart():
     if rows is None:
         return
     df = pd.DataFrame(rows)
-    df = df[[db.get_column_names().date, db.get_column_names().lives_to_moksha, db.get_column_names().journal_entry]]
+    df = df[[db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]]
     # df['Timeline'] = pd.to_datetime(df['date'].astype(float))
     # df['Timeline'] = pd.to_datetime( df['date'].astype(float) ).dt.strftime('%Y-%m-%d %H:%M:%S')    
     df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
-    df['Journal'] = df[db.get_column_names().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
+    df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
 
-    fig = px.scatter(df, x='Timeline', y=db.get_column_names().lives_to_moksha, title="My progress", 
+    fig = px.scatter(df, x='Timeline', y=db.Columns().lives_to_moksha, title="My progress", 
                      hover_data=df[['Journal']], trendline="ols")
     
     fig.update_layout({

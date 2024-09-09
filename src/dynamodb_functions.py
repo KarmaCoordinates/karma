@@ -16,6 +16,7 @@ class Columns:
         self.journal_entry = 'journal_entry'
         self.score_ai_analysis_query = 'score_ai_analysis_query'
         self.rating = 'rating'
+        self.feedback = 'feedback'
 
 resource_name = 'dynamodb'
 table_name = 'kc_user_activity'
@@ -65,12 +66,6 @@ def query_columns(columns_to_fetch=['lives_to_moksha']):
         return pd.DataFrame(response['Items'], columns=columns_to_fetch)
     except:
         return None
-
-
-def get_column_names():
-    return Columns()
-# # Get the items
-# items = response['Items']
     
 
 def main():

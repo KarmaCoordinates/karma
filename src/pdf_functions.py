@@ -5,7 +5,7 @@ import fpdf
 from fpdf import FPDF
 import dynamodb_functions as db
 
-def create_prediction_report_pdf(data_dict, score, analysis):
+def create_assessment_pdf(data_dict, score, analysis):
     pdf = FPDF()
 
     # pdf.add_blank_page(width=250, height=700)
@@ -50,15 +50,15 @@ def create_prediction_report_pdf(data_dict, score, analysis):
     
     return pdf
 
-def download_pdf(data_dict, score, analysis=None):
+def download_assessment_pdf(data_dict, score, analysis=None):
     st.subheader('Download Prediction as PDF')
     # if st.button('Generate PDF Report'):
     # pdf_output = pdf.output(dest='S').encode('latin-1')
     # b64 = base64.b64encode(pdf_output).decode('latin-1')
 
-    columns_to_drop_from_report = [db.Columns().journal_entry, db.Columns().email, db.Columns().date, db.Columns().lives_to_moksha, db.Columns().score_ai_analysis_query, db.Columns().rating]
-    [data_dict.pop(key) for key in columns_to_drop_from_report]    
-    pdf = create_prediction_report_pdf(data_dict=data_dict, score=score, analysis=analysis)
+    columns_to_drop_from_report = [db.Columns().journal_entry, db.Columns().email, db.Columns().date, db.Columns().lives_to_moksha, db.Columns().score_ai_analysis_query, db.Columns().feedback, db.Columns().rating]
+    [data_dict.pop(key, None) for key in columns_to_drop_from_report]    
+    pdf = create_assessment_pdf(data_dict=data_dict, score=score, analysis=analysis)
     pdf_output = pdf.output(dest='S')
     b64 = base64.b64encode(pdf_output).decode('utf-8')
     href = f'<a href="data:application/octet-stream;base64,{b64}" download="prediction_report.pdf">Download PDF Report</a>'

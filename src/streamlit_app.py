@@ -124,7 +124,7 @@ def run_app():
                 openai_assistant_chat.prompt_specific(query=query, ai_query=query, plh=plh)     
                 analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
 
-        pdf.download_pdf(user_answers, st.session_state.karma_coordinates, analysis)
+        pdf.download_assessment_pdf(user_answers, st.session_state.karma_coordinates, analysis)
 
     if st.session_state.auth:
         st.subheader('Your feedback')
