@@ -1,16 +1,11 @@
 import streamlit as st
-# from fpdf import FPDF
 import base64
 from datetime import datetime, timezone, timedelta
-# import pypdf as pyp
 import fpdf
 from fpdf import FPDF
+import dynamodb_functions as db
 
-# Option to download the result as PDF
-def create_pdf(data_dict, score, analysis):
-    # pdf = pyp.PdfWriter()
-
-    # pdf = FPDF()
+def create_prediction_report_pdf(data_dict, score, analysis):
     pdf = FPDF()
 
     # pdf.add_blank_page(width=250, height=700)
@@ -31,7 +26,7 @@ def create_pdf(data_dict, score, analysis):
     pdf.set_author('KarmaCoordinates.org')
     
     col_width = 185
-    pdf.cell(col_width, 10, txt=f'Karma Coordinates Prediction Report at {dt.strftime("%I:%M%p on %B %d, %Y")}', align='C')
+    pdf.cell(col_width, 10, txt=f'Karma Coordinates Assessment Report at {dt.strftime("%I:%M%p on %B %d, %Y")}', align='C')
     pdf.ln(10)
     
     pdf.cell(col_width, 10, txt="Your inputs:", ln=True)
@@ -60,7 +55,10 @@ def download_pdf(data_dict, score, analysis=None):
     # if st.button('Generate PDF Report'):
     # pdf_output = pdf.output(dest='S').encode('latin-1')
     # b64 = base64.b64encode(pdf_output).decode('latin-1')
-    pdf = create_pdf(data_dict=data_dict, score=score, analysis=analysis)
+
+    columns_to_drop_from_report = [db.Columns().journal_entry, db.Columns().email, db.Columns().date, db.Columns().lives_to_moksha, db.Columns().score_ai_analysis_query, db.Columns().rating]
+    [data_dict.pop(key) for key in columns_to_drop_from_report]    
+    pdf = create_prediction_report_pdf(data_dict=data_dict, score=score, analysis=analysis)
     pdf_output = pdf.output(dest='S')
     b64 = base64.b64encode(pdf_output).decode('utf-8')
     href = f'<a href="data:application/octet-stream;base64,{b64}" download="prediction_report.pdf">Download PDF Report</a>'

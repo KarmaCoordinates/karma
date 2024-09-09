@@ -15,6 +15,7 @@ class Columns:
         self.lives_to_moksha = 'lives_to_moksha'
         self.journal_entry = 'journal_entry'
         self.score_ai_analysis_query = 'score_ai_analysis_query'
+        self.rating = 'rating'
 
 resource_name = 'dynamodb'
 table_name = 'kc_user_activity'
@@ -61,7 +62,7 @@ def query_columns(columns_to_fetch=['lives_to_moksha']):
         dynamodb = boto3.resource(resource_name)
         table = dynamodb.Table(table_name)
         response = table.scan()
-        return pd.DataFrame(response['Items'], columns=columns_to_fetch).dropna()
+        return pd.DataFrame(response['Items'], columns=columns_to_fetch)
     except:
         return None
 
