@@ -1,8 +1,9 @@
 import re
 import pandas as pd
 import numpy as np
-
 from urllib import request
+import datetime
+import calendar
 
 def internet_on():
     try:
@@ -95,6 +96,30 @@ def is_valid_email(email):
         return True
     else:
         return False
+
+
+def previous_month():
+    today = datetime.date.today()
+    first = today.replace(day=1)
+    last_month = first - datetime.timedelta(days=1)
+    return last_month.strftime("%Y%m")
+
+
+def get_start_end_month(input_yyyymm):
+    input_ = str(input_yyyymm)
+    year = int(input_[:4])
+    month = int(input_[4:])
+    start = int(input_+"01")
+    end = int(input_+str(calendar.monthrange(year, month)[1]))
+
+    return start, end
+
+def previous_month_timestamp():
+    start, end = get_start_end_month(previous_month())
+    start_timestamp = datetime.datetime.strptime(str(start), "%Y%m%d").timestamp()
+    end_timestamp = datetime.datetime.strptime(str(end), "%Y%m%d").timestamp()
+    return start_timestamp, end_timestamp
+
 
 def main():
     pass

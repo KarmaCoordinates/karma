@@ -156,7 +156,7 @@ def _reset_data():
     if 'enter_token' in st.session_state: st.session_state.enter_token=None
 
 def main():
-    pass
-    # sms()
+    # pass
+    sms()
 
 if __name__ == '__main__': main()

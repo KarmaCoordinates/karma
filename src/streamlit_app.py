@@ -70,7 +70,7 @@ def page_config(static_files_folder):
 def retrieve_previous_assessment():
     # fetch latest record if any
     response = db.query(st.session_state.user_answers['email'], 'latest')
-    if response and len(response) > 0:
+    if not response is None and len(response) > 0:
         if 'journal_entry' in st.session_state.user_answers:
             st.session_state.user_answers['journal_entry'] = ''
         # second parameter takes precedence
