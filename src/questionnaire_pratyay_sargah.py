@@ -7,6 +7,10 @@ import _configs
 import random
 import dynamodb_functions as db
 import state_mgmt_functions as smf
+import openai_assistant_chat as oac
+import re
+import ast
+import journal_functions as jf
 
 @st.cache_data
 def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
@@ -40,7 +44,7 @@ def _cache_user_answer(user_answer):
 
 
 # Function to process each category of questions
-def _calc_scores_user_selection(category_scores, features_df, categories_df):
+def _calc_scores_user_selection(features_df, categories_df,category_scores={}, ):
     for category_tpl in categories_df.itertuples():
         category_scores[category_tpl.category_name] = 0
         st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
@@ -60,7 +64,10 @@ def _calc_scores_user_selection(category_scores, features_df, categories_df):
             selected_option_score = feature_tpl.options_dict.get(selected_option) 
             category_scores[category_tpl.category_name] += selected_option_score
 
-def _calc_category_scores(category_scores, features_df, categories_df):
+    return category_scores
+
+
+def _calc_category_scores(features_df, categories_df,category_scores={}):
     for category_tpl in categories_df.itertuples():
         category_scores[category_tpl.category_name] = 0
         for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
@@ -76,26 +83,7 @@ def _calc_category_scores(category_scores, features_df, categories_df):
             if selected_option_score:
                 category_scores[category_tpl.category_name] += selected_option_score
 
-def _calc_scores(plh_questionnaire=st.empty(), hide_assessment_questionnaire=False):
-    category_scores = {}
-    score_range = {}
-    score = 0
-    features_df, categories_df, _score_range = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    score_range = _score_range
-
-    if hide_assessment_questionnaire:
-        plh_questionnaire.markdown(f'Using previous assessment and current journal entry to perform differential AI analysis!')
-        _calc_category_scores(category_scores, features_df, categories_df)  
-    else:
-        with plh_questionnaire.container():
-            _calc_scores_user_selection(category_scores, features_df, categories_df)  
-
-    return category_scores, score_range, features_df
-
-def _process_questions(plh_questionnaire=st.empty(), hide_assessment_questionnaire=False):
-    category_scores, score_range, features_df = _calc_scores(plh_questionnaire=plh_questionnaire, hide_assessment_questionnaire=hide_assessment_questionnaire)
-    input_df = pd.DataFrame(st.session_state.user_answers, index=[0])
-    return input_df, st.session_state.user_answers, category_scores, sum(category_scores.values()), _get_score_analysis_query(category_scores), score_range, features_df
+    return category_scores
 
 def _get_score_analysis_query(category_scores):
     clarity_of_thinking_index = sum(category_scores.values())
@@ -107,34 +95,89 @@ def _get_score_analysis_query(category_scores):
 
     return score_md
 
+def retrieve_previous_assessment():
+    if not st.session_state.previous_user_answers:
+        response = db.query(st.session_state.user_answers['email'], 'latest')
+        # print(f'response {response}')
+        if not response is None and len(response) > 0:
+            st.session_state.user_answers.update({'journal_entry' : None})
+            # second parameter takes precedence
+            st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
+            st.session_state.previous_user_answers = True
+
+def update_assessment(features_df_stats, category_scores):
+    st.divider()
+    plh_kc = st.empty()
+    score_ai_analysis_query = _get_score_analysis_query(category_scores)        
+    percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
+    if percent_completed > st.session_state.minimum_required_completion_percent:
+        st.session_state['karma_coordinates'] = category_scores
+        lives_to_moksha = sf.calculate_karma_coordinates(category_scores, features_df_stats)
+        plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
+        # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
+        st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
+        smf.save(None, 'assessment')
+    else:
+        st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
+
+    return percent_completed, score_ai_analysis_query
+
+
+def _user_assessment(features_df, categories_df, features_df_stats, category_scores={}, placehoder=st.empty()):
+    with placehoder.container():   
+        category_scores = _calc_scores_user_selection(features_df, categories_df)  
+        return update_assessment(category_scores=category_scores, features_df_stats=features_df_stats, )
+
+
+def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.empty()):
+    with placehoder.container():   
+        if jf.is_new():
+            print(f'calling ai analysis')
+            query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
+            ai_query = f'''Given the questionnaire={features_df.to_csv()} 
+                            and the answers={st.session_state.user_answers}, 
+                            which answers get changed due to the new journal entry={st.session_state.user_answers['journal_entry']}?
+                            Give impacted questions and new answers (only from valid options of answers) as a dictionary.'''
+            oac.prompt_specific(query=query, ai_query=ai_query, plh=placehoder)   
+                        
+            analysis = oac.get_assistant_answer_from_cache(query)
+
+            rx = r'(\{[^{}]+\})'
+            if analysis:
+                matches = re.findall(rx, analysis)
+                if matches and len(matches) > 0:                
+                                # print(matches[0])
+                    updated_dict = ast.literal_eval(matches[0])
+                    st.session_state.user_answers.update(updated_dict)
+                                # for i in matches[0].keys():
+                                #         if i in user_answers:
+                                #             user_answers[i]=matches[0][i]
+                                # user_answers = user_answers | matches[0]
+                    # percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
+                    # update_assessment(features_df_stats, percent_completed, category_scores, st.session_state.user_answers)            
+                    # return user_answers, analysis
+            
+                st.markdown(analysis)
+
+        category_scores = _calc_category_scores(features_df=features_df, categories_df=categories_df)  
+        st.markdown(f'Using previous assessment and current journal entry to perform differential AI analysis!')        
+
+        return update_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
+
+
 def assessment(placehoder=st.empty(), hide_assessment_questionnaire=False):
     _init()
+    category_scores = {}
+    score_range = {}
+    features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     with placehoder.container(border=True):
-        plh_questionnaire = st.empty()
-        input_df, user_answers, category_scores, total_score, score_ai_analysis_query, score_range, features_df = _process_questions(plh_questionnaire=plh_questionnaire, hide_assessment_questionnaire=hide_assessment_questionnaire)
-        st.divider()
-        plh_kc = st.empty()
-        percent_completed = len(st.session_state.user_answers) * 100 / score_range['number_of_questions']
-        if percent_completed > st.session_state.minimum_required_completion_percent:
-            st.session_state['karma_coordinates'] = category_scores
-            lives_to_moksha = sf.calculate_karma_coordinates(category_scores, score_range)
-            plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
-            # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
-            user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
-            smf.save(None, 'assessment')
+        if hide_assessment_questionnaire:
+            plh = st.empty()
+            return _ai_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=plh)
         else:
-            st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
-    return features_df, score_range, percent_completed, category_scores, user_answers, score_ai_analysis_query 
+            plh = st.empty()
+            return _user_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=plh)
 
-def update_assessment(score_range, percent_completed, category_scores, user_answers):
-    if percent_completed > st.session_state.minimum_required_completion_percent:
-        score_ai_analysis_query = _get_score_analysis_query(category_scores)        
-        # score_ai_analysis_query = st.session_state['karma_coordinates'] = category_scores
-        lives_to_moksha = sf.calculate_karma_coordinates(category_scores, score_range)
-        # plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
-        # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
-        user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
-        smf.save(None, 'assessment')
 
 
 def main():

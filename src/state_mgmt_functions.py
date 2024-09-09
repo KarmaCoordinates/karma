@@ -24,7 +24,7 @@ def init():
         st.session_state.user_answers.update({'date':None})
 
     if 'journal_entry' not in st.session_state.user_answers:
-        st.session_state.user_answers.update({'journal_entry':''})
+        st.session_state.user_answers.update({'journal_entry': None})
 
     if 'score_ai_analysis_query' not in st.session_state.user_answers:
         st.session_state.user_answers.update({'score_ai_analysis_query':None})

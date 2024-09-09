@@ -7,15 +7,13 @@ import time
 import state_mgmt_functions as smf
 import _configs
 
-def _init(user_input):
-    if not user_input:
-        user_input = {}
+def _init(user_answers):
 
-    if not 'rating' in user_input:
-        user_input['rating'] = ''
+    if not 'rating' in user_answers:
+        user_answers.update({'rating' : None})
 
-    if not 'feedback' in user_input:
-        user_input['feedback'] = '' 
+    if not 'feedback' in user_answers:
+        user_answers.update({'feedback' : None})
 
     if  'minimum_required_completion_percent' not in st.session_state:
         st.session_state['minimum_required_completion_percent'] = _configs.get_config().minimum_assessment_completion_percent
@@ -27,6 +25,7 @@ def _init(user_input):
 # df_read['key_value_pairs'] = df_read['key_value_pairs'].str.replace("\\;", ";")
 def _save_user_feedback(user_answers, percent_completed):
     phl = st.empty()
+    # st.write(f'st.session_state.feedback: {st.session_state.user_answers}')
     if len(st.session_state.feedback) > 20 and percent_completed > st.session_state.minimum_required_completion_percent and 'auth' in st.session_state and st.session_state.auth:
         if (('rating' in st.session_state and not st.session_state.rating is None) and ('feedback' in st.session_state and not st.session_state.feedback is None)) and (not st.session_state.rating == user_answers['rating'] or not st.session_state.feedback == user_answers['feedback']):
             user_answers.update({'rating': st.session_state.rating, 'feedback':st.session_state.feedback})

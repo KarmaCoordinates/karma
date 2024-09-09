@@ -31,31 +31,6 @@ def cache_model(model_choice, bucket_name, features_data_file, pickled_model_dat
     return data_dictionary_array, df, X.columns, categorical_cols, model, label_encoder
 
 
-def _update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh):
-    query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
-    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the answers={user_answers}, 
-                    which answers get changed due to the new journal entry={st.session_state.user_answers['journal_entry']}?
-                    Give impacted questions and new answers (only from valid options of answers) as a dictionary.'''
-    openai_assistant_chat.prompt_specific(query=query, ai_query=ai_query, plh=plh)   
-                  
-    analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
-
-    rx = r'(\{[^{}]+\})'
-    if analysis:
-        matches = re.findall(rx, analysis)
-        if matches and len(matches) > 0:                
-                        # print(matches[0])
-            updated_dict = ast.literal_eval(matches[0])
-            user_answers.update(updated_dict)
-                        # for i in matches[0].keys():
-                        #         if i in user_answers:
-                        #             user_answers[i]=matches[0][i]
-                        # user_answers = user_answers | matches[0]
-            qps.update_assessment(score_range, percent_completed, category_scores, user_answers)            
-            return user_answers, analysis
-        
-    return user_answers, False
 
 def page_config(static_files_folder):
     try:
@@ -67,15 +42,6 @@ def page_config(static_files_folder):
     except:
         pass
 
-def retrieve_previous_assessment():
-    if not st.session_state.previous_user_answers:
-        response = db.query(st.session_state.user_answers['email'], 'latest')
-        print(f'response {response}')
-        if not response is None and len(response) > 0:
-            st.session_state.user_answers.update({'journal_entry' : None})
-            # second parameter takes precedence
-            st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
-            st.session_state.previous_user_answers = True
 
 def run_app():
     static_files_folder = '.static'
@@ -84,26 +50,22 @@ def run_app():
     af.identity_msg()
     hide_assessment_questionnaire = False
     if st.session_state.auth:
-        retrieve_previous_assessment()
-        hide_assessment_questionnaire = st.session_state.previous_user_answers and not st.session_state.user_answers['journal_entry'] is None
+        qps.retrieve_previous_assessment()
+        if st.session_state.previous_user_answers and st.session_state.user_answers['journal_entry']:
+            hide_assessment_questionnaire = True
+        print(f'''journal_entry: {st.session_state.user_answers['journal_entry']}, hide_assessment_questionnaire: {hide_assessment_questionnaire}''')
         web_content.auth_overview(static_files_folder)
         openai_assistant_chat.prompt()
         st.subheader('Make a journal entry')
-        jf.journal_entry()
+        new_journal_entry=jf.journal_entry()
     else:
         web_content.overview(static_files_folder)
         openai_assistant_chat.prompt()
         web_content.background(static_files_folder)
 
-    st.subheader('Calculate my Karma Coordinates')
-
+    st.subheader('Calculate my Karma Coordinates')    
     placehoder = st.empty()
-    features_df, score_range, percent_completed, category_scores, user_answers, score_ai_analysis_query = qps.assessment(placehoder=placehoder, hide_assessment_questionnaire=hide_assessment_questionnaire)
-
-    if hide_assessment_questionnaire:
-        plh = st.empty()
-        user_answers, analysis = _update_assessment(features_df, score_range, percent_completed, category_scores, user_answers, plh)
-        score_ai_analysis_query = user_answers['score_ai_analysis_query']
+    percent_completed, score_ai_analysis_query = qps.assessment(placehoder=placehoder, hide_assessment_questionnaire=hide_assessment_questionnaire)
     
     if st.session_state.auth:
         st.subheader('My progress')
@@ -123,13 +85,13 @@ def run_app():
                 openai_assistant_chat.prompt_specific(query=query, ai_query=query, plh=plh)     
                 analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
 
-        pdf.download_assessment_pdf(user_answers, st.session_state.karma_coordinates, analysis)
+        pdf.download_assessment_pdf(st.session_state.user_answers, st.session_state.karma_coordinates, analysis)
 
     if st.session_state.auth:
         st.subheader('Your feedback')
         with st.container(border=True):
             web_content.request_feedback_note()
-            ff.user_feedback(user_answers, percent_completed)
+            ff.user_feedback(st.session_state.user_answers, percent_completed)
 
     web_content.sankhya_references(static_files_folder)
     sp.subscribe()
