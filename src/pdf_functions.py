@@ -42,10 +42,11 @@ def create_pdf(data_dict, score, analysis):
         # pdf.multi_cell(col_width, 10, txt=f'{key} - {value}', border=1, align='L')
         # pdf.multi_cell(col_width, 10, txt=f'{key} - {value}'.encode('utf-8').decode('latin-1'), border=1, align='L')
     
-    pdf.ln(10)
-    pdf.cell(col_width, 10, txt="Your Karma Coordinates:", ln=True)
-    # pdf.multi_cell(col_width, 10, txt=f"{prediction}".encode('utf-8').decode('latin-1'), border=1, align='L')
-    pdf.multi_cell(col_width, 10, txt=f"{score}", border=1, align='L', )
+    if score:
+        pdf.ln(10)
+        pdf.cell(col_width, 10, txt="Your Karma Coordinates:", ln=True)
+        # pdf.multi_cell(col_width, 10, txt=f"{prediction}".encode('utf-8').decode('latin-1'), border=1, align='L')
+        pdf.multi_cell(col_width, 10, txt=f"{score}", border=1, align='L', )
 
     if analysis:
         pdf.ln(10)

@@ -18,6 +18,8 @@ def progress_chart():
         return
     df = pd.DataFrame(rows)
     x = df[db.get_column_names().date].to_list()
+    if not db.get_column_names().lives_to_moksha in df:
+        df[db.get_column_names().lives_to_moksha] = ''
     y = df[db.get_column_names().lives_to_moksha].to_list()
     plt.plot(x, y, marker='o')
     plt.title("My progress")
