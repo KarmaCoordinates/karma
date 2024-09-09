@@ -17,15 +17,20 @@ def init():
     if 'user_answers' not in st.session_state:
         st.session_state['user_answers'] = {}
 
+    if 'email' not in st.session_state.user_answers:
+        st.session_state.user_answers.update({'email':None})
+
+    if 'date' not in st.session_state.user_answers:
+        st.session_state.user_answers.update({'date':None})
+
     if 'journal_entry' not in st.session_state.user_answers:
-        st.session_state.user_answers['journal_entry'] = ''
+        st.session_state.user_answers.update({'journal_entry':''})
 
     if 'score_ai_analysis_query' not in st.session_state.user_answers:
-        st.session_state.user_answers['score_ai_analysis_query'] = None
+        st.session_state.user_answers.update({'score_ai_analysis_query':None})
 
     if 'lives_to_moksha' not in st.session_state.user_answers:
-        st.session_state.user_answers['lives_to_moksha'] = None
-
+        st.session_state.user_answers.update({'lives_to_moksha':None})
 
 
 def is_set(str):
