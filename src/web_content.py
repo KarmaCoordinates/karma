@@ -3,7 +3,7 @@ import base64
         
 def overview(static_files_folder):
     logo = f'{static_files_folder}/kapil-muni-image.png'
-    intro = '''The app enhances clarity of thought, improving individuals' chances of success. Karma Coordinates, specifically lives to Moksha, serve as an index to track progress towards mental clarity. By focusing on clarity and using these coordinates as a metric, individuals can improve decision-making, foster personal growth, and increase success.'''
+    intro = '''The app enhances clarity of thought through reflective journaling, AI analytics and recommended activities, improving individuals' chances of success. Karma Coordinates, specifically lives to Moksha, serves as an index to track progress towards mental clarity. By focusing on clarity and using Karma coordinates as a metric, individuals can improve decision-making, foster personal growth, and increase success.'''
     style = '''
         <style>
         .container {
