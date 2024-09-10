@@ -56,7 +56,7 @@ def download_assessment_pdf(data_dict, score, analysis=None):
     # pdf_output = pdf.output(dest='S').encode('latin-1')
     # b64 = base64.b64encode(pdf_output).decode('latin-1')
 
-    columns_to_drop_from_report = [db.Columns().journal_entry, db.Columns().email, db.Columns().date, db.Columns().lives_to_moksha, db.Columns().score_ai_analysis_query, db.Columns().feedback, db.Columns().rating]
+    columns_to_drop_from_report = [db.Columns().journal_entry, db.Columns().email, db.Columns().date, db.Columns().lives_to_moksha, db.Columns().score_ai_analysis_query, db.Columns().feedback, db.Columns().rating, db.Columns().percent_completed]
     copy_dict = dict(data_dict)
     [copy_dict.pop(key, None) for key in columns_to_drop_from_report]    
     pdf = create_assessment_pdf(data_dict=copy_dict, score=score, analysis=analysis)

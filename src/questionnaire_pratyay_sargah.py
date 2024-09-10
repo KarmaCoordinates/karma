@@ -105,7 +105,7 @@ def retrieve_previous_assessment():
             st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
             st.session_state.previous_user_answers = True
 
-def update_assessment(features_df_stats, category_scores):
+def save_assessment(features_df_stats, category_scores):
     st.divider()
     plh_kc = st.empty()
     score_ai_analysis_query = _get_score_analysis_query(category_scores)        
@@ -126,13 +126,12 @@ def update_assessment(features_df_stats, category_scores):
 def _user_assessment(features_df, categories_df, features_df_stats, category_scores={}, placehoder=st.empty()):
     with placehoder.container():   
         category_scores = _calc_scores_user_selection(features_df, categories_df)  
-        return update_assessment(category_scores=category_scores, features_df_stats=features_df_stats, )
+        return save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, )
 
 
 def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.empty()):
     with placehoder.container():   
         if jf.is_new():
-            # print(f'calling ai analysis')
             query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
             ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                             and the answers={st.session_state.user_answers}, 
@@ -164,7 +163,7 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
         st.markdown(f'The previous assessment and the current journal entry will be used to perform differential AI analysis!')        
 
         if jf.is_new():
-            return update_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
+            return save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
         else:
             score_ai_analysis_query = _get_score_analysis_query(category_scores)        
             percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
