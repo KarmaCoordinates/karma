@@ -35,8 +35,7 @@ def clickable_progress_chart():
         return
     df = pd.DataFrame(rows)
     df = df[[db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]]
-    # df['Timeline'] = pd.to_datetime(df['date'].astype(float))
-    # df['Timeline'] = pd.to_datetime( df['date'].astype(float) ).dt.strftime('%Y-%m-%d %H:%M:%S')    
+    # df['Timeline'] = df['date'].astype(float).dt.strftime('%m/%d/%Y %H:%M')    
     df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
     df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
 

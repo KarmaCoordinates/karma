@@ -70,7 +70,7 @@ def is_loading(key_startswith_str = None):
     else:
         return 'loading' in st.session_state and not st.session_state.loading is None and st.session_state.loading.startswith(key_startswith_str)
     
-def save(placeholder=st.spinner('Saving...'), msg='activity'):
+def save(placeholder=None, msg='activity'):
     if st.session_state.auth:
         try:
             df.insert(user_activity_data=st.session_state.user_answers)
