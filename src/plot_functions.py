@@ -39,8 +39,11 @@ def clickable_progress_chart():
     df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
     df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
 
-    fig = px.scatter(df, x='Timeline', y=db.Columns().lives_to_moksha, title="My progress", 
-                     hover_data=df[['Journal']], trendline="ols")
+    fig = px.scatter(df, x='Timeline', y=db.Columns().lives_to_moksha, 
+            labels={
+                "lives_to_moksha": "Lives to Moksha"},
+            title="My progress", 
+            hover_data=df[['Journal']], trendline="ols")
     
     fig.update_layout({
         'plot_bgcolor':'white',
