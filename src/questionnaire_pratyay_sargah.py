@@ -43,8 +43,8 @@ def _cache_user_answer(user_answer):
     st.session_state.user_answers[user_answer] = st.session_state[user_answer]
 
 
-# Function to process each category of questions
-def _calc_scores_user_selection(features_df, categories_df,category_scores={}, ):
+def _calc_category_scores_user_selection(features_df, categories_df):
+    category_scores={}
     for category_tpl in categories_df.itertuples():
         category_scores[category_tpl.category_name] = 0
         st.markdown(f'{category_tpl.category_name} Assessment - {category_tpl.category_description}')
@@ -67,7 +67,8 @@ def _calc_scores_user_selection(features_df, categories_df,category_scores={}, )
     return category_scores
 
 
-def _calc_category_scores(features_df, categories_df,category_scores={}):
+def _calc_category_scores(features_df, categories_df):
+    category_scores={}
     for category_tpl in categories_df.itertuples():
         category_scores[category_tpl.category_name] = 0
         for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
@@ -105,7 +106,7 @@ def retrieve_previous_assessment():
             st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
             st.session_state.previous_user_answers = True
 
-def save_assessment(features_df_stats, category_scores):
+def _save_assessment(features_df_stats, category_scores):
     st.divider()
     plh_kc = st.empty()
     score_ai_analysis_query = _get_score_analysis_query(category_scores)        
@@ -125,8 +126,8 @@ def save_assessment(features_df_stats, category_scores):
 
 def _user_assessment(features_df, categories_df, features_df_stats, category_scores={}, placehoder=st.empty()):
     with placehoder.container():   
-        category_scores = _calc_scores_user_selection(features_df, categories_df)  
-        return save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, )
+        category_scores = _calc_category_scores_user_selection(features_df, categories_df)  
+        return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, )
 
 
 def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.empty()):
@@ -145,16 +146,13 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
             if analysis:
                 matches = re.findall(rx, analysis)
                 if matches and len(matches) > 0:                
-                                # print(matches[0])
+                    # print(matches[0])
+                    # for i in matches[0].keys():
+                    #         if i in user_answers:
+                    #             user_answers[i]=matches[0][i]
+                    # user_answers = user_answers | matches[0]
                     updated_dict = ast.literal_eval(matches[0])
                     st.session_state.user_answers.update(updated_dict)
-                                # for i in matches[0].keys():
-                                #         if i in user_answers:
-                                #             user_answers[i]=matches[0][i]
-                                # user_answers = user_answers | matches[0]
-                    # percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
-                    # update_assessment(features_df_stats, percent_completed, category_scores, st.session_state.user_answers)            
-                    # return user_answers, analysis
             
                 st.markdown(analysis)
 
@@ -163,7 +161,7 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
         st.markdown(f'The previous assessment and the current journal entry will be used to perform differential AI analysis!')        
 
         if jf.is_new():
-            return save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
+            return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
         else:
             score_ai_analysis_query = _get_score_analysis_query(category_scores)        
             percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
