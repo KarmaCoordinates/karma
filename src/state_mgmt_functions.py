@@ -14,6 +14,9 @@ def init():
     if 'auth' not in st.session_state:
         st.session_state['auth'] = False
 
+    if 'previous_user_answers' not in st.session_state:
+        st.session_state['previous_user_answers'] = False
+
     if 'user_answers' not in st.session_state:
         st.session_state['user_answers'] = {}
 
@@ -32,8 +35,6 @@ def init():
     if 'lives_to_moksha' not in st.session_state.user_answers:
         st.session_state.user_answers.update({'lives_to_moksha':None})
 
-    if 'previous_user_answers' not in st.session_state:
-        st.session_state['previous_user_answers'] = False
     
 def is_set(str):
     return st.session_state[str]
@@ -64,24 +65,22 @@ def update_ui_status(key, value=None):
 
 
 def is_loading(key_startswith_str = None):
-    # print(f'key_startswith_str: {key_startswith_str}')
     if key_startswith_str is None:
         return 'loading' in st.session_state
     else:
-        # print(f'is_loading: {st.session_state.loading}, key_startswith_str: {key_startswith_str}')
         return 'loading' in st.session_state and not st.session_state.loading is None and st.session_state.loading.startswith(key_startswith_str)
     
-def save(placeholder=None, msg='activity'):
+def save(placeholder=st.spinner('Saving...'), msg='activity'):
     if st.session_state.auth:
         try:
             df.insert(user_activity_data=st.session_state.user_answers)
             if placeholder:
-                placeholder.success(f'''Your {msg} is saved.''')
+                placeholder.success(f'''Your {msg} is saved.''', icon="✅")                
+            return True
         except Exception as e:
             if placeholder:
                 placeholder.error(f'''Error{e} saving {msg}.''')
-
-        return True
+        return False
 
 def main():
     pass

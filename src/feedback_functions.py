@@ -26,7 +26,7 @@ def _init(user_answers):
 def _save_user_feedback(user_answers, percent_completed):
     phl = st.empty()
     # st.write(f'st.session_state.feedback: {st.session_state.user_answers}')
-    if len(st.session_state.feedback) > 20 and percent_completed > st.session_state.minimum_required_completion_percent and 'auth' in st.session_state and st.session_state.auth:
+    if len(st.session_state.feedback) > 20:
         if (('rating' in st.session_state and not st.session_state.rating is None) and ('feedback' in st.session_state and not st.session_state.feedback is None)) and (not st.session_state.rating == user_answers['rating'] or not st.session_state.feedback == user_answers['feedback']):
             user_answers.update({'rating': st.session_state.rating, 'feedback':st.session_state.feedback})
             smf.save(phl, 'feedback')
@@ -45,7 +45,7 @@ def _save_user_feedback(user_answers, percent_completed):
         else:
             phl = st.empty()
     else: 
-        phl.warning(f'*(Note: Feedback needs to be minimum 20 character long. Atleast {st.session_state.minimum_required_completion_percent}\\% of assessment needs to be completed. Click number of stars to rate and save your feedback!*)')
+        phl.warning(f'*(Note: Feedback needs to be minimum 20 character long. Click number of stars to rate and save your feedback!*)')
 
 
 # User feedback

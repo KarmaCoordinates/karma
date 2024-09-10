@@ -12,14 +12,18 @@ def _init():
 
 def journal_entry():
     _init()
-    entry = st.text_area("Journal entries are used in calculating your scores.", key="make_journal_entry", placeholder='What are your feelings/mood/thoughts today?', height=150)
+    plh = st.empty()
+    plh_msg = st.empty()
+    with plh.container():
+        entry = st.text_area("Journal entries are used in calculating your scores.", key="make_journal_entry", placeholder='What are your feelings/mood/thoughts today?', height=150)
+
     # print(f'entry is {entry} {st.session_state.make_journal_entry}')
     if entry:
         if not st.session_state['_journal_entry'] or not st.session_state._journal_entry['value'] == entry:
             st.session_state.user_answers.update({'journal_entry' : entry})
             st.session_state._journal_entry = {'value':entry, 'status':'New'}
             # print(f'journal entry is new')
-            smf.save()
+            smf.save(plh_msg, 'Journal Entry')
         else:
             st.session_state._journal_entry['status'] = None
 

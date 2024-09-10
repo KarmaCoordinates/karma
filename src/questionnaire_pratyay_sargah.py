@@ -158,7 +158,7 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
 
         category_scores = _calc_category_scores(features_df=features_df, categories_df=categories_df)  
 
-        st.markdown(f'The previous assessment and the current journal entry will be used to perform differential AI analysis!')        
+        st.markdown(f'Karma Coordinates AI automatically updates your assessment by analyzing your journal entries!') 
 
         if jf.is_new():
             return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)

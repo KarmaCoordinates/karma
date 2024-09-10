@@ -95,7 +95,7 @@ def identity_msg():
 def _do_2fa(placeholder):
     if st.session_state.auth:
         _reset_data()
-        placeholder.success(f'Your identity [*{st.session_state._enter_email}*] is confirmed!')
+        placeholder.success(f'Your identity [*{st.session_state._enter_email}*] is confirmed!', icon="✅")
     else:
         _show_2fa(placeholder)
 
