@@ -45,7 +45,9 @@ def clickable_progress_chart():
     
     fig.update_layout({
         'plot_bgcolor':'white',
-        'hoverlabel.align':'left'}
+        'hoverlabel.align':'left',
+        'xaxis_title':'Timeline',
+        'yaxis_title':'Lives to Moksha'}
     )    
     fig.data[1].line.color = 'gold'
 

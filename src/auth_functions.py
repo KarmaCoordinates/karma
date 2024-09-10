@@ -57,6 +57,7 @@ def send_email(recipient, token):
 
     except Exception as e:
         # sending_email_bar.error(f"Error: {e}")
+        # print(f'error sending email {e}')
         return False
 
 
