@@ -14,6 +14,7 @@ class Columns:
         self.sort_key_name = 'date'
         self.lives_to_moksha = 'lives_to_moksha'
         self.journal_entry = 'journal_entry'
+        self._journal_entry = '_journal_entry' #deprecated
         self.score_ai_analysis_query = 'score_ai_analysis_query'
         self.percent_completed = 'percent_completed'
         self.rating = 'rating'
