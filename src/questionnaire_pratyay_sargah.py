@@ -114,8 +114,14 @@ def _save_assessment(features_df_stats, category_scores):
     if percent_completed > st.session_state.minimum_required_completion_percent:
         st.session_state['karma_coordinates'] = category_scores
         lives_to_moksha = sf.calculate_karma_coordinates(category_scores, features_df_stats)
-        ref = '$$\\small Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates$$'
-        plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$ {ref}')
+
+        ref = '\\allowbreak\\tiny\\text{{(Sandeep Dixit, 2024. \\textit{{Calculating Karma Coordinates}})}}'
+        completed = f'\\allowbreak\\small\\text{{based on {round(percent_completed)}\\% completion.}}'
+        score = f'\\large\\text{{Number of lives to Moksha:}}\\huge{{ {lives_to_moksha} }}'
+        result = f':orange-background[$${score} {completed}$$] $${ref}$$'
+
+        plh_kc.markdown(result)
+        
         st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
         smf.save(None, 'assessment')
     else:
