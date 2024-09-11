@@ -114,8 +114,8 @@ def _save_assessment(features_df_stats, category_scores):
     if percent_completed > st.session_state.minimum_required_completion_percent:
         st.session_state['karma_coordinates'] = category_scores
         lives_to_moksha = sf.calculate_karma_coordinates(category_scores, features_df_stats)
-        plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$')
-        # plh_kc.markdown(f'Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates')
+        ref = '$$\\small Sandeep\\space Dixit,\\space 2024.\\space \\it Calculating\\space Karma\\space Coordinates$$'
+        plh_kc.markdown(f':orange-background[$$\\large\\space Number\\space of \\space lives \\space to \\space Moksha:$$ $$\\huge {lives_to_moksha} $$] $$\\small based\\space on\\space {round(percent_completed)}\\% \\space assessment.$$ {ref}')
         st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
         smf.save(None, 'assessment')
     else:
@@ -137,7 +137,7 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
             ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                             and the answers={st.session_state.user_answers}, 
                             which answers get changed due to the new journal entry={st.session_state.user_answers['journal_entry']}?
-                            Give impacted questions and new answers (only from valid options of answers) as a dictionary.'''
+                            Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
             oac.prompt_specific(query=query, ai_query=ai_query, plh=placehoder)   
                         
             analysis = oac.get_assistant_answer_from_cache(query)
@@ -158,7 +158,12 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
 
         category_scores = _calc_category_scores(features_df=features_df, categories_df=categories_df)  
 
+
         st.markdown(f'Karma Coordinates AI automatically updates your assessment by analyzing your journal entries!') 
+        phl_toggle = st.empty()
+        manual_update = phl_toggle.toggle('Manually update assessment', key='toggle_assessment')
+        if manual_update:
+            _calc_category_scores_user_selection(features_df=features_df, categories_df=categories_df)            
 
         if jf.is_new():
             return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
