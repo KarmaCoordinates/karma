@@ -27,10 +27,19 @@ Further it quantifies the factors associated with the clarity of thinking in thi
 पञ्च विपर्ययभेदा भवन्त्यशक्तिश्च करणवैकल्यात् । अष्टाविंशतिभेदा तुष्टिर्नवधाऽष्टधा सिद्धिः ॥ ४७ ॥
 Five are the divisions of ignorance; and according to the impairment of the instruments, incapacity has twenty-eight varieties; while complacency is ninefold; perfection, eightfold.
 
+## Brief on *Sankhya*
+*Sankhya*, a doctrine acredited to Kapil *Muni* (Sage) dating back to 5561 BCE, theorizes that *Prakriti* (the universe) exists for providing experiences to *Purush* (an experiencer) (Aniruddha. et al., 1915, p. 20, Shloka 21). *Purush* upon realization that “I exist” awakes/achieves *Moksh* (liberation) (Aniruddha. et al., 1915, p. 48-49, Shloka 64-66). 
+
+*Prakriti* is constructed of three *Guna* (properties of root element) - *Sattv* (light), *Rajas* (energy) and *Tamas* (mass)  and *Purush* is an unobservable entity outside of *Prakriti* that is not constructed of these three *Gunas* (Aniruddha. et al., 1915, p. 17, Shloka 17).
+
+Every *Jiv* (life-form) in *Prakriti* is engaged in providing experiences to a *Purush* that incite *Bhav* (tendencies). *Jiv* comes into an existence due to *Sukshm* (a microscopic particle). It is *Sukshm* that gets tinged with *Bhav*, carrying *Bhav* from existence to existence! Once all *Bhav* are overcome/consumed, *Purush* realizes "I exist"/becomes aware of itself and *Moksh* is achieved. A human life is the only known form of *Sukshm* that is capable of achieving *Moksh* for its *Purush*. (Aniruddha. et al., 1915, p. 33, Shloka 39-40). Once all *Purush* awake, *Prakriti*’s work is complete and it collapses into a singularity and the next cycle of big-bang - big-crunch begins. 
+
+*Sankhya*-yoga quantifies *Bhav*, overcoming which takes a *Sukshm* closer to achieving *Moksh* (Aniruddha. et al., 1915, p. 38-41, Shloka 46-51). 
+
 ## Calculating the clarity of thinking score
 The clarity of one's thinking is thus the fundamental aspect of Karma Coordinates computation. *Sankhya* describes fifty positive and negative factors contributing to the clarity in these karikas:  
 
-### Ignorance
+### *Viparyay* (Ignorance) 
 भेदस्तमसोऽष्टविधो मोहस्य च, दशविधो महामोहः । तामिस्रोऽष्टादशधा, तथा भवत्यन्धतामिस्रः ॥ ४८ ॥
 The distinctions of Avidya are eightfold, as also of Asmita; tenfold is Raga; Dvesa is eighteenfold; so also is Abhinivesa.
 
@@ -38,26 +47,26 @@ Karma Coordinates currently uses these factors below in computing the Ingorance/
 Misunderstanding of reality and the nature of existence, a false sense of identity or self, attachment to pleasurable experiences, aversion to certain situations or experiences that are perceived as painful, and a deep-seated fear of death and an unexamined attachment to life itself.
 
 
-### Inability or Incapacity
+### *Ashakti* (Inability or Incapacity)
 एकादशेन्द्रियवधाः सह बुद्धिवधैरशक्तिरुद्दिष्टा । सप्तदश वधा बुद्धेर्विपर्ययात् तुष्टिसिद्धीनाम् ॥ ४९ ॥
 Injuries of the eleven Indriyas, together with injuries of Buddhi, are pronounced to be Incapacity. The injuries of Buddhi are seventeen, through inversion of complacencies and perfections.
 
 Karma Coordinates currently uses these factors below in computing the Incapacity/*Ashakti* score:
 Lack of Knowledge, Confusion Regarding Identity, Attachment to Objects, Inability to Manage Suffering, Impairment of Perception, Cognitive Delays, Misinterpretation, Sensory Overload, Dissociation, Physical Impairment, Emotional Instability, Intellectual Limitations, Social Anxiety, Repetitive Habits, Conflicting Intentions, Distraction, Resistance to Change, Lack of Motivation, Social Withdrawal, Unrealistic Expectations, Negative Self-Comparison, Dependence on Others, Communication Barriers, Indulgence, Analysis Paralysis, Poor Self-Image, Emotional Dysregulation, and Inability to Embrace Change.
 
-### Complecency
+### *Tushti* (Complecency)
 आध्यात्मिकाश्चतस्रः प्रकृत्युपादानकालभाग्याख्याः । बाह्या विषयोपरमात् पञ्च, नव तुष्टयोऽभिहिताः ॥ ५० ॥
 The nine Complacencies are propounded : the four Self-regarding ones called after Prakriti, Material, Time, and Luck ; the external five, through abstinence from objects.
 
 Karma Coordinates currently uses these factors below in computing the Complecency/*Tushti* score:
 Satisfaction achieved through detachment and abstaining from sensory pleasures, a sense of satisfaction from making extensive sacrifices or offerings, Satisfaction from achieving a state of equilibrium and balance in life, Satisfaction from selflessly serving others or contributing to their well-being, and Satisfaction found in social cooperation, harmony, and communal living.
 
-### True and Real Knowledge
+### *Siddhi* (True and Real Knowledge)
 ऊहः शब्दोऽध्ययनं दुःखविघातास्त्रयः सुहृत्प्राप्तिः । दानं च सिद्धयोऽष्टौ सिद्धेः पूर्वोऽङ्कुशस्त्रिविधः ॥ ५१ ॥
-Argumentation, Word, Study, the three Preventions of Pain, Acquisition of friends, Charity or Purity are the eight Perfections. Those mentioned before Perfec tion are the threefold goad to (Ignorance and suffering).
+Argumentation, Word, Study, the three Preventions of Pain, Acquisition of friends, Charity or Purity are the eight Perfections. *Viparyay*, *Ashakti* and *Tushti* are hindrances.
 
 Karma Coordinates currently uses these factors below in computing the Knowledge/*Siddhi* score:
-Ability to reason, Mastery of vocabulary, Ability to do dedicated studies/efforts, Knowledge of technology to overcome sorrows, Knowledge of technolgoy/medical sciences/psychology/philosophy to overcome physical pain/disease and mental pain, Acquisition of good people, and Giving time, money for benefit of all
+Ability to reason, Mastery of vocabulary, Ability to do dedicated studies/efforts, Knowledge of technology to overcome sorrows, Knowledge of technolgoy/medical sciences/psychology/philosophy to overcome physical pain/disease and mental pain, Acquisition of good people, and Giving time, money for benefit of all.
 
 Positive factors help develop clarity and negative factors make thinking foggy.
 
@@ -116,8 +125,10 @@ Through 8.4 million incarnations they wander lost and confused; through all thei
 
 
 #### *Moksha*
-कर्मजं बुद्धियुक्ता हि फलं त्यक्त्वा मनीषिण: | जन्मबन्धविनिर्मुक्ता: पदं गच्छन्त्यनामयम् || 51|| (Bhagavad Gita, ch. 2 verse.51).
+मनुष्याणां सहस्रेषु कश्चिद्यतति सिद्धये | यततामपि सिद्धानां कश्चिन्मां वेत्ति तत्त्वत: || 3 || (Bhagavad Gita, ch. 7 verse.3).
+Amongst thousands of persons, hardly one strives for perfection; and amongst those who have achieved perfection, hardly one knows Me in truth.
 
+कर्मजं बुद्धियुक्ता हि फलं त्यक्त्वा मनीषिण: | जन्मबन्धविनिर्मुक्ता: पदं गच्छन्त्यनामयम् || 51|| (Bhagavad Gita, ch. 2 verse.51).
 The wise ones, whose mind is immersed in wisdom and intelligence, detach themselves from the fruit of born of their actions. On doing so they free themselves from the bondage of re-birth and thus go on to attain a state of being which is beyond all sufferings (Bhagavad Gita, ch. 2 verse.51)..
 
 
