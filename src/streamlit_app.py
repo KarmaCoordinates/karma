@@ -13,8 +13,7 @@ import journal_functions as jf
 import plot_functions as pf
 import dynamodb_functions as db
 import state_mgmt_functions as smf
-import re
-import ast
+import quiz as qz
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -62,6 +61,8 @@ def run_app():
         web_content.overview(static_files_folder)
         openai_assistant_chat.prompt()
         web_content.background(static_files_folder)
+        qz.take_quiz()
+
 
     st.subheader('Calculate my Karma Coordinates')    
     placehoder = st.empty()
