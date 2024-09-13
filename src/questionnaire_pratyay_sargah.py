@@ -119,9 +119,8 @@ def _save_assessment(features_df_stats, category_scores):
         completed = f'\\allowbreak\\small\\text{{based on {round(percent_completed)}\\% completion.}}'
         score = f'\\large\\text{{Number of lives to Moksha:}}\\huge{{ {lives_to_moksha} }}'
         result = f':orange-background[$${score} {completed}$$] $${ref}$$'
-
         plh_kc.markdown(result)
-        
+
         st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
         smf.save(None, 'assessment')
     else:
