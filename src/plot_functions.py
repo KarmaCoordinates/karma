@@ -99,7 +99,7 @@ def bell_curve():
 
 
     # Update the layout
-    fig.update_layout(title=f'How does your score compare (based on {len(data)} assessments)? ',
+    fig.update_layout(title=f'Total {len(data)} assessments)? ',
                     xaxis_title=f'Lives to Moksha',
                     yaxis_title='Probability Density')
         
