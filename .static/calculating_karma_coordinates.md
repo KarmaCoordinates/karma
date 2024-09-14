@@ -54,11 +54,11 @@ Injuries of the eleven Indriyas, together with injuries of Buddhi, are pronounce
 Karma Coordinates currently uses these factors below in computing the Incapacity/*Ashakti* score:
 Lack of Knowledge, Confusion Regarding Identity, Attachment to Objects, Inability to Manage Suffering, Impairment of Perception, Cognitive Delays, Misinterpretation, Sensory Overload, Dissociation, Physical Impairment, Emotional Instability, Intellectual Limitations, Social Anxiety, Repetitive Habits, Conflicting Intentions, Distraction, Resistance to Change, Lack of Motivation, Social Withdrawal, Unrealistic Expectations, Negative Self-Comparison, Dependence on Others, Communication Barriers, Indulgence, Analysis Paralysis, Poor Self-Image, Emotional Dysregulation, and Inability to Embrace Change.
 
-### *Tushti* (Complecency)
+### *Tushti* (Complacency)
 आध्यात्मिकाश्चतस्रः प्रकृत्युपादानकालभाग्याख्याः । बाह्या विषयोपरमात् पञ्च, नव तुष्टयोऽभिहिताः ॥ ५० ॥
 The nine Complacencies are propounded : the four Self-regarding ones called after Prakriti, Material, Time, and Luck ; the external five, through abstinence from objects.
 
-Karma Coordinates currently uses these factors below in computing the Complecency/*Tushti* score:
+Karma Coordinates currently uses these factors below in computing the Complacency/*Tushti* score:
 Satisfaction achieved through detachment and abstaining from sensory pleasures, a sense of satisfaction from making extensive sacrifices or offerings, Satisfaction from achieving a state of equilibrium and balance in life, Satisfaction from selflessly serving others or contributing to their well-being, and Satisfaction found in social cooperation, harmony, and communal living.
 
 ### *Siddhi* (True and Real Knowledge)
