@@ -6,7 +6,7 @@ def take_quiz():
         st.session_state['quiz'] = None
 
     if not st.session_state['quiz']:
-        st.subheader(f'''Let's check basic understanding!''')
+        st.subheader(f'''Sankhya pop quiz!''')
         plh = st.empty()
         plh_result = st.empty()
         with plh.container():        
