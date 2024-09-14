@@ -72,7 +72,7 @@ def run_app():
         st.subheader('My progress')
         pf.clickable_progress_chart()
 
-    st.subheader('How does your score compare?')
+    # st.subheader('How does your score compare?')
     pf.bell_curve()        
 
     if 'karma_coordinates' in st.session_state:

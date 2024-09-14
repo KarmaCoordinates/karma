@@ -99,9 +99,9 @@ def bell_curve():
 
 
     # Update the layout
-    fig.update_layout(title=f'Total {len(data)} assessments)? ',
+    fig.update_layout(title=f'How does your score compare?',
                     xaxis_title=f'Lives to Moksha',
-                    yaxis_title='Probability Density')
+                    yaxis_title=f'Probability Density ({len(data)} assessments)')
         
 
     st.plotly_chart(fig, use_container_width=True)
