@@ -101,7 +101,7 @@ def retrieve_previous_assessment():
         response = db.query(st.session_state.user_answers['email'], 'latest')
         # print(f'response {response}')
         if not response is None and len(response) > 0:
-            st.session_state.user_answers.update({'journal_entry' : None})
+            st.session_state.user_answers.update({'journal_entry' : None, 'score_ai_analysis_query':None, 'lives_to_moksha':None})
             # second parameter takes precedence
             st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
             st.session_state.previous_user_answers = True
@@ -123,6 +123,7 @@ def _save_assessment(features_df_stats, category_scores, print_only=None):
 
         st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})  
         if not print_only:          
+            # print(f'saving assessment: {st.session_state.user_answers}')
             smf.save(None, 'assessment')
     else:
         st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
@@ -169,12 +170,14 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
         phl_toggle = st.empty()
         manual_update = phl_toggle.toggle('Manually update assessment', key='toggle_assessment')
         if manual_update:
-            _calc_category_scores_user_selection(features_df=features_df, categories_df=categories_df)            
+            phl_manual_assessment = st.empty()
+            return _user_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=phl_manual_assessment)
 
-        if jf.is_new():
-            return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
         else:
-            return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, print_only=True)
+            if jf.is_new():
+                return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
+            else:
+                return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, print_only=True)
 
 
 
