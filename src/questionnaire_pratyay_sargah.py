@@ -106,7 +106,7 @@ def retrieve_previous_assessment():
             st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
             st.session_state.previous_user_answers = True
 
-def _save_assessment(features_df_stats, category_scores):
+def _save_assessment(features_df_stats, category_scores, print_only=None):
     st.divider()
     plh_kc = st.empty()
     score_ai_analysis_query = _get_score_analysis_query(category_scores)        
@@ -121,8 +121,9 @@ def _save_assessment(features_df_stats, category_scores):
         result = f':orange-background[$${score} {completed}$$] $${ref}$$'
         plh_kc.markdown(result)
 
-        st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})           
-        smf.save(None, 'assessment')
+        st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})  
+        if not print_only:          
+            smf.save(None, 'assessment')
     else:
         st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
 
@@ -173,9 +174,7 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
         if jf.is_new():
             return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
         else:
-            score_ai_analysis_query = _get_score_analysis_query(category_scores)        
-            percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
-            return percent_completed, score_ai_analysis_query
+            return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, print_only=True)
 
 
 
