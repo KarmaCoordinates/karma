@@ -39,8 +39,8 @@ def _init():
         st.session_state['ai_analysis_requested'] = False
  
 
-def _cache_user_answer(user_answer):
-    st.session_state.user_answers[user_answer] = st.session_state[user_answer]
+def _cache_user_answer(question):
+    st.session_state.user_answers.update({question:st.session_state[question]})
 
 
 def _calc_category_scores_user_selection(features_df, categories_df):
@@ -55,9 +55,9 @@ def _calc_category_scores_user_selection(features_df, categories_df):
             if feature_tpl.Question in st.session_state.user_answers:
                 if st.session_state.user_answers[feature_tpl.Question] in feature_tpl.options_list:
                     default_index = feature_tpl.options_list.index(st.session_state.user_answers[feature_tpl.Question])
-                    default_selected_option = st.session_state.user_answers[feature_tpl.Question]
-            else:
-                default_selected_option = feature_tpl.options_list[default_index]
+                    default_selected_option = st.session_state.user_answers[feature_tpl.Question]                    
+                else:
+                    default_selected_option = feature_tpl.options_list[default_index]
 
             selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, index=default_index, key=feature_tpl.Question, on_change=_cache_user_answer, args={feature_tpl.Question})
 
@@ -79,6 +79,7 @@ def _calc_category_scores(features_df, categories_df):
             else:
                 default_selected_option = feature_tpl.options_list[default_index]
 
+            # st.session_state.user_answers.update({feature_tpl.Question:default_selected_option})
             selected_option_score = feature_tpl.options_dict.get(default_selected_option) 
 
             if selected_option_score:
@@ -99,7 +100,6 @@ def _get_score_analysis_query(category_scores):
 def retrieve_previous_assessment():
     if not st.session_state.previous_user_answers:
         response = db.query(st.session_state.user_answers['email'], 'latest')
-        # print(f'response {response}')
         if not response is None and len(response) > 0:
             st.session_state.user_answers.update({'journal_entry' : None, 'score_ai_analysis_query':None, 'lives_to_moksha':None})
             # second parameter takes precedence
@@ -109,7 +109,7 @@ def retrieve_previous_assessment():
 def _save_assessment(features_df_stats, category_scores, print_only=None):
     st.divider()
     plh_kc = st.empty()
-    score_ai_analysis_query = _get_score_analysis_query(category_scores)        
+    score_ai_analysis_query = _get_score_analysis_query(category_scores)     
     percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
     if percent_completed > st.session_state.minimum_required_completion_percent:
         st.session_state['karma_coordinates'] = category_scores
@@ -123,7 +123,6 @@ def _save_assessment(features_df_stats, category_scores, print_only=None):
 
         st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})  
         if not print_only:          
-            # print(f'saving assessment: {st.session_state.user_answers}')
             smf.save(None, 'assessment')
     else:
         st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
@@ -149,17 +148,17 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
                         
             analysis = oac.get_assistant_answer_from_cache(query)
 
-            rx = r'(\{[^{}]+\})'
             if analysis:
+                rx = r'(\{[^{}]+\})'
                 matches = re.findall(rx, analysis)
                 if matches and len(matches) > 0:                
-                    # print(matches[0])
-                    # for i in matches[0].keys():
-                    #         if i in user_answers:
-                    #             user_answers[i]=matches[0][i]
-                    # user_answers = user_answers | matches[0]
                     updated_dict = ast.literal_eval(matches[0])
-                    st.session_state.user_answers.update(updated_dict)
+                    for i in updated_dict.keys():
+                        matched_question = features_df.loc[features_df['Question'] == i]
+                        if len(matched_question) == 1:
+                            answer = updated_dict.get(i)
+                            if answer in matched_question['options_list']:
+                                st.session_state.user_answers.update({i:answer})
             
                 st.markdown(analysis)
 
