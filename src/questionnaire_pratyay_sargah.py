@@ -149,19 +149,8 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
             analysis = oac.get_assistant_answer_from_cache(query)
 
             if analysis:
-                rx = r'(\{[^{}]+\})'
-                matches = re.findall(rx, analysis)
-                if matches and len(matches) > 0:                
-                    updated_dict = ast.literal_eval(matches[0])
-                    for i in updated_dict.keys():
-                        matched_question = features_df.loc[features_df['Question'] == i]
-                        if len(matched_question) == 1:
-                            answer = updated_dict.get(i)
-                            if answer in matched_question['options_list']:
-                                st.session_state.user_answers.update({i:answer})
+                _update_assessment_per_analysis(features_df, analysis)
             
-                st.markdown(analysis)
-
         category_scores = _calc_category_scores(features_df=features_df, categories_df=categories_df)  
 
 
@@ -177,6 +166,18 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
                 return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
             else:
                 return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, print_only=True)
+
+def _update_assessment_per_analysis(features_df, analysis):
+    rx = r'(\{[^{}]+\})'
+    matches = re.findall(rx, analysis)
+    if matches and len(matches) > 0:                
+        updated_dict = ast.literal_eval(matches[0])
+        for i in updated_dict.keys():
+            matched_question = features_df.loc[features_df['Question'] == i]
+            if len(matched_question) == 1:
+                answer = updated_dict.get(i)
+                if answer in matched_question['options_list']:
+                    st.session_state.user_answers.update({i:answer})
 
 
 
