@@ -117,16 +117,17 @@ def create_journal_pdf(journal_df):
 def download_journal():
     journal_df = jf.previous_month_journal_entries()
 
-    st.subheader('''Download last month's journal as PDF''')
-    # if st.button('Generate PDF Report'):
-    # pdf_output = pdf.output(dest='S').encode('latin-1')
-    # b64 = base64.b64encode(pdf_output).decode('latin-1')
+    if 'journal_entry' in journal_df:
+        st.subheader('''Download last month's journal as PDF''')
+        # if st.button('Generate PDF Report'):
+        # pdf_output = pdf.output(dest='S').encode('latin-1')
+        # b64 = base64.b64encode(pdf_output).decode('latin-1')
 
-    pdf = create_journal_pdf(journal_df)
-    pdf_output = pdf.output(dest='S')
-    b64 = base64.b64encode(pdf_output).decode('utf-8')
-    href = f'<a href="data:application/octet-stream;base64,{b64}" download="karma_coordinates_journal.pdf">My journal PDF</a>'
-    st.markdown(href, unsafe_allow_html=True)
+        pdf = create_journal_pdf(journal_df)
+        pdf_output = pdf.output(dest='S')
+        b64 = base64.b64encode(pdf_output).decode('utf-8')
+        href = f'<a href="data:application/octet-stream;base64,{b64}" download="karma_coordinates_journal.pdf">My journal PDF</a>'
+        st.markdown(href, unsafe_allow_html=True)
 
 
 def main():
