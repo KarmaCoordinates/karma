@@ -1,17 +1,7 @@
 import streamlit as st
-import smtplib
 import secrets
-import _configs
 import time
-
-from _utils import is_valid_email
-
-import boto3
-
-def sms():
-    sns = boto3.client('sns')
-    number = '+12065559830'
-    sns.publish(PhoneNumber = '+12169266696', Message='example text message' )
+from boto_functions import send_email, smsToken
 
 
 
@@ -27,40 +17,6 @@ def _init():
             
 
 # Function to send email
-def send_email(recipient, token):
-    # sending_email_bar = st.progress(0, 'Sending...')
-    if not is_valid_email(recipient):
-        return False
-
-    try:
-        # Setup the SMTP server
-        smtp_server = _configs.get_config().smtp_server
-        smtp_port = _configs.get_config().smtp_port
-        smtp_username = _configs.get_config().smtp_username
-        sender_email = _configs.get_config().sender_email
-        smtp_password = _configs.get_config().smtp_password
-
-        # Create the email content
-        subject = "KarmaCoordinates 2FA Token"
-        body = f"Your token is {token}"
-        msg = f"Subject: {subject}\n\n{body}"
-
-        # Connect to the SMTP server
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_username, smtp_password)
-            server.sendmail(sender_email, recipient, msg)
-
-        # sending_email_bar.success("Emailed!")
-
-        return True
-
-    except Exception as e:
-        # sending_email_bar.error(f"Error: {e}")
-        # print(f'error sending email {e}')
-        return False
-
-
 def _send_token():
     b_email = False
         
@@ -73,6 +29,12 @@ def _send_token():
         st.session_state._enter_email = None       
         token = secrets.token_hex(4)  
         b_email = send_email(st.session_state.enter_email, token)
+
+        try:
+            smsToken('+12169266696', token)
+        except Exception as e:
+            print(f'error: {e}')
+
 
         if b_email:
             st.session_state.token = token
