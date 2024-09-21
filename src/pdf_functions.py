@@ -151,7 +151,8 @@ def download_journal():
     if href1:
         st.markdown(f'{href1} | {href2}', unsafe_allow_html=True)
     else:
-        st.markdown(f'{href2}', unsafe_allow_html=True)
+        if href2:
+            st.markdown(f'{href2}', unsafe_allow_html=True)
 
 
 
