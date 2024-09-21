@@ -116,7 +116,7 @@ def _save_assessment(features_df_stats, category_scores, print_only=None):
         lives_to_moksha = sf.calculate_karma_coordinates(category_scores, features_df_stats)
 
         ref = '\\allowbreak\\tiny\\text{{(Sandeep Dixit, 2024. \\textit{{Calculating Karma Coordinates}})}}'
-        completed = f'\\allowbreak\\small\\text{{based on {round(percent_completed)}\\% completion.}}'
+        completed = f'\\allowbreak\\small\\text{{based on {min([round(percent_completed), 100])}\\% completion.}}'
         score = f'\\large\\text{{Number of lives to Moksha:}}\\huge{{ {lives_to_moksha} }}'
         result = f':orange-background[$${score} {completed}$$] $${ref}$$'
         plh_kc.markdown(result)
