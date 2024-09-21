@@ -88,7 +88,9 @@ def run_app():
                 analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
 
         pdf.download_assessment_pdf(st.session_state.user_answers, st.session_state.karma_coordinates, analysis)
+
         if st.session_state.auth:
+            st.subheader('Download Journal as PDF')    
             pdf.download_journal()
 
     if st.session_state.auth:

@@ -121,6 +121,17 @@ def previous_month_timestamp():
     return start_timestamp, end_timestamp
 
 
+def current_month():
+    today = datetime.date.today()
+    return today.strftime("%Y%m")
+
+def current_month_timestamp():
+    start, end = get_start_end_month(current_month())
+    start_timestamp = datetime.datetime.strptime(str(start), "%Y%m%d").timestamp()
+    end_timestamp = datetime.datetime.strptime(str(end), "%Y%m%d").timestamp()
+    return start_timestamp, end_timestamp
+
+
 def main():
     pass
 

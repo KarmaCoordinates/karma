@@ -113,12 +113,11 @@ def create_journal_pdf(journal_df):
         
     return pdf
 
-
-def download_journal():
+def download_previous_month_journal():
     journal_df = jf.previous_month_journal_entries()
 
     if 'journal_entry' in journal_df:
-        st.subheader('''Download last month's journal as PDF''')
+        # st.subheader('''Download last month's journal as PDF''')
         # if st.button('Generate PDF Report'):
         # pdf_output = pdf.output(dest='S').encode('latin-1')
         # b64 = base64.b64encode(pdf_output).decode('latin-1')
@@ -126,8 +125,35 @@ def download_journal():
         pdf = create_journal_pdf(journal_df)
         pdf_output = pdf.output(dest='S')
         b64 = base64.b64encode(pdf_output).decode('utf-8')
-        href = f'<a href="data:application/octet-stream;base64,{b64}" download="karma_coordinates_journal.pdf">My journal PDF</a>'
-        st.markdown(href, unsafe_allow_html=True)
+        href = f'''<a href="data:application/octet-stream;base64,{b64}" download="karma_coordinates_journal.pdf">Last month's journal</a>'''
+        # st.markdown(href, unsafe_allow_html=True)
+        return href
+
+def download_current_month_journal():
+    journal_df = jf.current_month_journal_entries()
+
+    if 'journal_entry' in journal_df:
+        # st.subheader('''Download current month's journal as PDF''')
+        # if st.button('Generate PDF Report'):
+        # pdf_output = pdf.output(dest='S').encode('latin-1')
+        # b64 = base64.b64encode(pdf_output).decode('latin-1')
+
+        pdf = create_journal_pdf(journal_df)
+        pdf_output = pdf.output(dest='S')
+        b64 = base64.b64encode(pdf_output).decode('utf-8')
+        href = f'''<a href="data:application/octet-stream;base64,{b64}" download="karma_coordinates_journal.pdf">Current month's journal</a>'''
+        # st.markdown(href, unsafe_allow_html=True)
+        return href
+
+def download_journal():
+    href1 =  download_previous_month_journal()
+    href2 = download_current_month_journal()    
+    if href1:
+        st.markdown(f'{href1} | {href2}', unsafe_allow_html=True)
+    else:
+        st.markdown(f'{href2}', unsafe_allow_html=True)
+
+
 
 
 def main():

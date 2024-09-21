@@ -30,10 +30,10 @@ def _send_token():
         token = secrets.token_hex(4)  
         b_email = send_email(st.session_state.enter_email, token)
 
-        try:
-            smsToken('+12169266696', token)
-        except Exception as e:
-            print(f'error: {e}')
+        # try:
+        #     smsToken('+12169266696', token)
+        # except Exception as e:
+        #     print(f'error: {e}')
 
 
         if b_email:

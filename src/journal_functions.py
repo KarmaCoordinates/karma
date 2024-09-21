@@ -36,3 +36,6 @@ def is_new():
 def previous_month_journal_entries():
     return db.query_by_sort_key_between(st.session_state._enter_email, *_utils.previous_month_timestamp())
     # print(f'items: {items_df['journal_entry']}')
+
+def current_month_journal_entries():
+    return db.query_by_sort_key_between(st.session_state._enter_email, *_utils.current_month_timestamp())
