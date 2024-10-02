@@ -4,10 +4,17 @@ import boto3
 import _configs
 from _utils import is_valid_email
 
-def smsToken(number, token):
+def sms_opt_in(number):
+    response = boto3.client('sns').opt_in_phone_number(
+        phoneNumber=f'{number}'    
+    )    
+    print(f'response: {response}')
+
+def sms_token(number, token):
     sns = boto3.client('sns')
-    sns.set_sms_attributes(attributes={'DefaultSenderID': '+12065559830', 'DefaultSMSType': 'Transactional'})
+    sns.set_sms_attributes(attributes={'DefaultSenderID': 'SankhyaApp', 'DefaultSMSType': 'Transactional'})
     # number = '+12169266696'
+    sms_opt_in(number=number)
     sns.publish(PhoneNumber = number, Message=token )
 
 

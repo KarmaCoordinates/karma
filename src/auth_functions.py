@@ -1,7 +1,7 @@
 import streamlit as st
 import secrets
 import time
-from boto_functions import send_email, smsToken
+from boto_functions import send_email, sms_token
 
 
 
@@ -31,7 +31,7 @@ def _send_token():
         b_email = send_email(st.session_state.enter_email, token)
 
         # try:
-        #     smsToken('+12169266696', token)
+        #     sms_token('+12169266696', token)
         # except Exception as e:
         #     print(f'error: {e}')
 

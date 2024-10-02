@@ -2,7 +2,8 @@ import streamlit as st
 import base64
         
 def overview(static_files_folder):
-    logo = f'{static_files_folder}/kapil-muni-image.png'
+    # logo = f'{static_files_folder}/kapil-muni-image.png'
+    logo = f'{static_files_folder}/sankhya_app_logo_350x350.png'
     intro = '''The app enhances clarity of thought through <span style="color:gold">reflective journaling, AI analytics and recommended activities, improving individuals' chances of success.</span> Karma Coordinates, specifically lives to Moksha, serves as an index to track progress towards mental clarity. By focusing on clarity and using Karma coordinates as a metric, individuals can improve decision-making, foster personal growth, and increase success.'''
     style = '''
         <style>
@@ -27,7 +28,7 @@ def overview(static_files_folder):
         '''
 
     # title
-    st.title('Karma Coordinates Calculator')
+    st.title('Sankhya App')
     # st.markdown(
     #     style,
     #     unsafe_allow_html=True
@@ -89,10 +90,43 @@ def auth_overview(static_files_folder):
 
 
 def background(static_files_folder):
+    style = '''
+        <style>
+        .container {
+            # display: flex;
+        }
+        .logo-text {
+            # font-weight:700 !important;
+            # font-size:50px !important;
+            # color: #f9a01b !important;
+            # padding-top: 75px !important;
+            # padding-left: 15px !important;
+        }
+        .logo-img {
+            object-fit: cover;
+            float: left;
+            width: auto;
+            height: 150px;
+            padding-right: 15px !important;
+        }
+        </style>
+        '''
     st.subheader('Background')
+    logo = f'{static_files_folder}/kapil-muni-image.png'
     pdf = f'<a href="{static_files_folder}/samkhya-karika.pdf">pdf</a>'
-    about_karma_coordinates = content = open(f'{static_files_folder}/karma_coordinates_summary.md', 'r').read()
-    st.markdown(about_karma_coordinates)
+    pdf_content = open(f'{static_files_folder}/karma_coordinates_summary.md', 'r').read()
+    about_karma_coordinates = f'''{pdf_content}'''
+    # st.markdown(about_karma_coordinates)
+
+    st.markdown(
+        f'''
+        <div class="container">
+            <img class="logo-img" src="data:image/png;base64,{base64.b64encode(open(logo, "rb").read()).decode()}" alt="Kapil Muni 5561 BCE">
+            <p class="logo-text">{about_karma_coordinates}</p>
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )    
 
 def guna_details():
     text = '''
