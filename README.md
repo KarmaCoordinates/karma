@@ -6,4 +6,4 @@ python src/model_app.py
 python src/whitepaper_to_html.py
 
 # run app
-streamlit run src/streamlit-app.py
+streamlit run src/streamlit_app.py
