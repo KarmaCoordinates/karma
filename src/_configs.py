@@ -1,7 +1,7 @@
 import streamlit as st
 import openai
 from openai import OpenAI
-import secrets_app
+import security.secrets_app as secrets_app
 
 class Configuration:
     def __init__(self, openai_client, openai_assistant, stripe_api_key, 

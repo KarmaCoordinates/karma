@@ -1,18 +1,18 @@
-import model_functions
+import ai.model_functions as model_functions
 import web_content 
 import streamlit as st
-import s3_functions as s3f
-import openai_assistant_chat
-import stripe_payment as sp
-import questionnaire_pratyay_sargah as qps
-import feedback_functions as ff
-import pdf_functions as pdf
-import auth_functions as af
-import score_functions as sf
-import journal_functions as jf
-import plot_functions as pf
-import dynamodb_functions as db
-import state_mgmt_functions as smf
+import storage.s3_functions as s3f
+import ai.openai_assistant_chat as openai_assistant_chat
+import payment.stripe_payment as sp
+import assessment.questionnaire_pratyay_sargah as qps
+import feedback.feedback_functions as ff
+import analytics.pdf_functions as pdf
+import security.auth_functions as af
+import assessment.score_functions as sf
+import journal.journal_functions as jf
+import analytics.plot_functions as pf
+import storage.dynamodb_functions as db
+import streamlit_functions.state_mgmt_functions as smf
 import quiz as qz
 
 @st.cache_data

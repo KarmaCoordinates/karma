@@ -2,7 +2,7 @@ from sklearn.preprocessing import scale
 import numpy as np
 import pandas as pd
 import itertools
-import s3_functions as s3f
+import storage.s3_functions as s3f
 from ast import literal_eval
 
 # weightage translates to how much it contributes to clarity of thinking

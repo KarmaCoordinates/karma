@@ -1,6 +1,6 @@
 import streamlit as st
-import s3_functions as s3f
-import model_functions
+import storage.s3_functions as s3f
+import ai.model_functions as model_functions
 import web_content 
 
 @st.cache_data
