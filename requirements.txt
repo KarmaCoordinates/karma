@@ -19,3 +19,6 @@ openai
 statsmodels
 plotly
 streamlit_plotly_events
+fastapi
+uvicorn
+mangum

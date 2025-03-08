@@ -4,6 +4,15 @@ Use Amazon ACM to generate your certificate and attach this to your HTTPS listen
 ALB Target Group sending traffic unencrypted to port 80 on the instance.
 Security group for instances only allows port 80 access from your ALB.
 
+# python fastapi
+## to create dependencies folder with all dependencies
+pip3 install -t dependencies -r requirements.txt
+## to package all dependencies into a zip
+{cd dependencies; zip ../aws_lambda_artifact.zip -r .}
+## add fastapi_app.py to zip
+zip aws_lambda_artifact.zip -u src/fastapi_app.py
+
+
 # server
 Canonical, Ubuntu, 24.04 LTS, amd64 noble image build on 2024-07-01
 ami-0862be96e41dcbf74
@@ -155,5 +164,6 @@ sudo systemctl status kc-app
 # logs w/o --user
 journalctl --since "1 day ago" -u kc-app.service
 journalctl --user -xeu kc-app.service
+
 
 
