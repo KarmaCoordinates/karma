@@ -27,27 +27,26 @@ class UserIdentifier(BaseModel):
 
 
 app = FastAPI()
-app = FastAPI(middleware=[
-        Middleware(SessionMiddleware, secret_key="123")
-    ])
+app = FastAPI(middleware=[Middleware(SessionMiddleware, secret_key="kc-0001-001")])
 #app.add_middleware(SessionMiddleware, secret_key="kc-0001-001")
 # handler = Mangum(app)
 
-@app.get("/set-cookie")
-def set_cookie(response: Response):
-    response.set_cookie(key="example_cookie", value="cookie_value", max_age=3600)
-    return {"message": "Cookie set"}
+# @app.get("/set-cookie")
+# def set_cookie(response: Response):
+#     response.set_cookie(key="example_cookie", value="cookie_value", max_age=3600)
+#     return {"message": "Cookie set"}
 
-@app.get("/set-session")
-async def set_session(request: Request):
-    request.session["item"] = "value"
-    return {"message": "Session set"}
+# @app.get("/set-session")
+# async def set_session(request: Request):
+#     print(request.scope)
+#     request.session["item"] = "value"
+#     return {"message": "Session set"}
     
-@app.get("/get-session")
-async def get_session(request: Request):
-    item = request.session.get("item")
-    return {"item": item}
-
+# @app.get("/get-session")
+# async def get_session(request: Request):
+#     print(request.scope)
+#     item = request.session.get("item")
+#     return {"item": item}
 
 
 @app.get("/")
@@ -60,13 +59,13 @@ async def send_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
     request.session['_token'] = token
     request.session['_userId'] = userId.email
-    print(f"token:{token}, _token: {request.session.get('_token')}")
+    # print(f"token:{token}, _token: {request.session.get('_token')}")
     b_email = send_email(userId.email, token)
     return {"status": b_email}
 
 @app.get("/validate_token/{token}")
 async def validate_token(request: Request, token: str):
-    print(f"token:{token}, _token: {request.session.get('_token')}")
+    # print(f"token:{token}, _token: {request.session.get('_token')}")
     b_valid = token == request.session.get('_token')
     if b_valid:
         request.session['userId'] = request.session.get('_userId')
