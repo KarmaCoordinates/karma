@@ -22,14 +22,29 @@ handler = Mangum(app)
 async def hello():    
     return {"message": "Welcome to Karam Coordinates API"}
 
+@app.post("/login")
+async def login():
+    # send token
+    # if successful, establish session/context for logged in user
+    return {"status": "login implementation is in progress"}
+
 @app.get("/assessment_questionnaire")
 async def assessment_questionnaire():
+    # if user context is established then
     # qps.retrieve_previous_assessment()    
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     return {features_df.to_json(orient="records")}
 
 @app.post("/assessment_answers")
 async def questionnaire_answers():
+    # calculate score
+    # if user context is established then 
+    # save/update the assessment
+    # else 
+    # do not save the assessment
+
+    # show the score and graphs
+
     return {"status": "assessment_answers implementation is in progress"}
 
 @app.post("/journal_entry")

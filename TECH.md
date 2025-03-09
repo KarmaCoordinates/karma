@@ -74,18 +74,18 @@ server {
     #your root, index, etc. stuff
     location / {
         proxy_pass http://127.0.0.1:8501/;
-     proxy_set_header X-Real-IP $remote_addr;
-     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-     proxy_set_header X-Forwarded-Proto https;
-     proxy_set_header X-Forwarded-Port 443;
-     proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-Port 443;
+        proxy_set_header Host $host;
 
      # The following 5 lines you have to add for Streamlit to work with HTTPS
-     proxy_http_version 1.1;
-     proxy_set_header Upgrade $http_upgrade;
-     proxy_set_header Connection "upgrade";
-     proxy_buffering off;
-     proxy_read_timeout 86400;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_buffering off;
+        proxy_read_timeout 86400;
     }
     ssl_certificate /etc/letsencrypt/live/karmacoordinates.org/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/karmacoordinates.org/privkey.pem; # managed by Certbot
@@ -99,7 +99,7 @@ sudo systemctl start nginx
 sudo systemctl enable nginx
 
 sudo nginx -t && sudo nginx -s reload
-sudo service restart nginx
+sudo systemctl restart nginx
 
 
 # s3 bucket - setup kc-dev access keys, security and us-east-2 default region
@@ -145,6 +145,23 @@ RestartSec=2
 WantedBy=default.target  
 
 
+# ubuntu service kc-fastapi-app.service
+[Unit]  
+Description=a service for the kc FastAPI app  
+After=network.target  
+  
+[Service]  
+Type=simple  
+WorkingDirectory=/home/ubuntu/karma
+EnvironmentFile=/home/ubuntu/.config/systemd/user/kc-env.conf
+ExecStart=/home/ubuntu/karma/.venv/bin/python3 -m fastapi run src/fastapi_app.py  
+Restart=on-failure  
+RestartSec=2  
+  
+[Install]  
+WantedBy=default.target  
+
+
 # Note - make sure using .venv/bin/python3
 
 # confirm if working as a USER service
@@ -165,5 +182,5 @@ sudo systemctl status kc-app
 journalctl --since "1 day ago" -u kc-app.service
 journalctl --user -xeu kc-app.service
 
-
-
+# restart kc-app.service
+sudo systemctl restart kc-app.service
