@@ -14,6 +14,11 @@ import re
 import ast
 import journal.journal_functions as jf
 import json
+import secrets
+import time
+from storage.boto_functions import send_email, sms_token
+from pydantic import BaseModel
+
 
 app = FastAPI()
 handler = Mangum(app)
@@ -21,6 +26,16 @@ handler = Mangum(app)
 @app.get("/")
 async def hello():    
     return {"message": "Welcome to Karam Coordinates API"}
+
+class UserIdentifier(BaseModel):
+    email: str
+    phone: str | None = None
+
+@app.post("/send_token")
+async def send_token(userId: UserIdentifier):
+    token = secrets.token_hex(4)  
+    b_email = send_email(userId.email, token)
+    return {"status": b_email}
 
 @app.post("/login")
 async def login():
@@ -35,6 +50,9 @@ async def assessment_questionnaire():
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     return {features_df.to_json(orient="records")}
 
+
+#
+# | category | question | answer_option |
 @app.post("/assessment_answers")
 async def questionnaire_answers():
     # calculate score
