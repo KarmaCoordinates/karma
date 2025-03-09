@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from mangum import Mangum
 import assessment.questionnaire_pratyay_sargah as qps
 import numpy as np
@@ -18,24 +18,40 @@ import secrets
 import time
 from storage.boto_functions import send_email, sms_token
 from pydantic import BaseModel
+from starlette.middleware.sessions import SessionMiddleware
 
-
-app = FastAPI()
-handler = Mangum(app)
-
-@app.get("/")
-async def hello():    
-    return {"message": "Welcome to Karam Coordinates API"}
 
 class UserIdentifier(BaseModel):
     email: str
     phone: str | None = None
 
+
+app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
+# handler = Mangum(app)
+
+@app.get("/")
+async def hello():    
+    return {"message": "Welcome to Karam Coordinates API"}
+
+
 @app.post("/send_token")
-async def send_token(userId: UserIdentifier):
+async def send_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
+    request.session['_token'] = token
+    request.session['_userId'] = userId.email
     b_email = send_email(userId.email, token)
     return {"status": b_email}
+
+@app.post("/validate_token/{token}")
+async def validate_token(request: Request, token: str):
+    b_valid = token == request.session.get('_token')
+    if b_valid:
+        request.session['userId'] = request.session.get('_userId')
+    return {"status": b_valid}
+    
+   
+
 
 @app.post("/login")
 async def login():
