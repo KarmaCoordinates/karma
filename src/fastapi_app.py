@@ -40,19 +40,19 @@ async def send_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
     request.session['_token'] = token
     request.session['_userId'] = userId.email
+    print(f"token:{token}, _token: {request.session.get('_token')}")
     b_email = send_email(userId.email, token)
     return {"status": b_email}
 
 @app.post("/validate_token/{token}")
 async def validate_token(request: Request, token: str):
+    print(f"token:{token}, _token: {request.session.get('_token')}")
     b_valid = token == request.session.get('_token')
     if b_valid:
         request.session['userId'] = request.session.get('_userId')
     return {"status": b_valid}
     
    
-
-
 @app.post("/login")
 async def login():
     # send token
