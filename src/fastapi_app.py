@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from mangum import Mangum
 import assessment.questionnaire_pratyay_sargah as qps
 import numpy as np
@@ -18,8 +18,8 @@ import secrets
 import time
 from storage.boto_functions import send_email, sms_token
 from pydantic import BaseModel
+from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
-
 
 class UserIdentifier(BaseModel):
     email: str
@@ -27,8 +27,28 @@ class UserIdentifier(BaseModel):
 
 
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
+app = FastAPI(middleware=[
+        Middleware(SessionMiddleware, secret_key="123")
+    ])
+#app.add_middleware(SessionMiddleware, secret_key="kc-0001-001")
 # handler = Mangum(app)
+
+@app.get("/set-cookie")
+def set_cookie(response: Response):
+    response.set_cookie(key="example_cookie", value="cookie_value", max_age=3600)
+    return {"message": "Cookie set"}
+
+@app.get("/set-session")
+async def set_session(request: Request):
+    request.session["item"] = "value"
+    return {"message": "Session set"}
+    
+@app.get("/get-session")
+async def get_session(request: Request):
+    item = request.session.get("item")
+    return {"item": item}
+
+
 
 @app.get("/")
 async def hello():    
@@ -44,7 +64,7 @@ async def send_token(request: Request, userId: UserIdentifier):
     b_email = send_email(userId.email, token)
     return {"status": b_email}
 
-@app.post("/validate_token/{token}")
+@app.get("/validate_token/{token}")
 async def validate_token(request: Request, token: str):
     print(f"token:{token}, _token: {request.session.get('_token')}")
     b_valid = token == request.session.get('_token')
@@ -87,6 +107,8 @@ async def journal_entry():
 
 
 
+
+
 def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
     features_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=features_data_dict_object_key)
     key_value_columns = ['Option_1', 'Value_1', 'Option_2', 'Value_2', 'Option_3', 'Value_3', 'Option_4', 'Value_4']
@@ -100,3 +122,5 @@ def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_
     maximum_score = value_columns.max(axis=1).sum()
      
     return features_df, categories_df, {'minimum_score':minimum_score, 'maximum_score':maximum_score, 'number_of_questions':len(features_df)}
+
+

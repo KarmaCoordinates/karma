@@ -23,3 +23,5 @@ fastapi
 uvicorn
 mangum
 fastapi-sessions
+starlette
+itsdangerous
