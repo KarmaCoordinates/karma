@@ -69,15 +69,17 @@ async def validate_token(request: Request, token: str):
     b_valid = token == request.session.get('_token')
     if b_valid:
         request.session['userId'] = request.session.get('_userId')
+        response = db.query(request.session.get('userId'), 'latest')
+        print(response)
     return f'{{"status":"{b_valid}"}}'
     
 
 @app.get("/session-info") 
 async def session_info(request: Request):
-    if request.session.get("userId"):
-        return f'{{"userId":"{request.session.get("userId")}"}}'
-    else:
-        return f'{{"userId":"Unauthenticated"}}'
+    # if request.session.get("userId"):
+    return f'{{"userId":"{request.session.get("userId")}"}}'
+    # else:
+        # return f'{{"userId":"Unauthenticated"}}'
 
 @app.get("/assessment-questionnaire")
 async def assessment_questionnaire(request: Request):
