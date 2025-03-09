@@ -54,7 +54,7 @@ async def hello():
     return {"message":"Welcome to Karam Coordinates API"}
 
 
-@app.post("/get_token")
+@app.post("/get-token")
 async def get_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
     request.session['_token'] = token
@@ -63,7 +63,7 @@ async def get_token(request: Request, userId: UserIdentifier):
     b_email = send_email(userId.email, token)
     return f'{{"status":"{b_email}"}}'
 
-@app.get("/validate_token/{token}")
+@app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
     # print(f"token:{token}, _token: {request.session.get('_token')}")
     b_valid = token == request.session.get('_token')
@@ -72,14 +72,14 @@ async def validate_token(request: Request, token: str):
     return f'{{"status":"{b_valid}"}}'
     
 
-@app.get("/session_info") 
+@app.get("/session-info") 
 async def session_info(request: Request):
     if request.session.get("userId"):
         return f'{{"userId":"{request.session.get("userId")}"}}'
     else:
         return f'{{"userId":"Unauthenticated"}}'
 
-@app.get("/assessment_questionnaire")
+@app.get("/assessment-questionnaire")
 async def assessment_questionnaire(request: Request):
     # if user context is established then
     # qps.retrieve_previous_assessment() 
@@ -92,7 +92,7 @@ async def assessment_questionnaire(request: Request):
 
 #
 # | category | question | answer_option |
-@app.post("/assessment_answers")
+@app.post("/assessment-answers")
 async def questionnaire_answers(request: Request):
     # calculate score
     # if user context is established then 
@@ -106,7 +106,7 @@ async def questionnaire_answers(request: Request):
 
     return {"status":"assessment_answers implementation is in progress"}
 
-@app.post("/journal_entry")
+@app.post("/journal-entry")
 async def journal_entry(request: Request):
     if request.session.get('userId'):
         pass
