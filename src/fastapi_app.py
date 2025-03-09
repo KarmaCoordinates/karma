@@ -54,8 +54,8 @@ async def hello():
     return {"message": "Welcome to Karam Coordinates API"}
 
 
-@app.post("/send_token")
-async def send_token(request: Request, userId: UserIdentifier):
+@app.post("/get_token")
+async def get_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
     request.session['_token'] = token
     request.session['_userId'] = userId.email
@@ -72,16 +72,13 @@ async def validate_token(request: Request, token: str):
     return {"status": b_valid}
     
    
-@app.post("/login")
-async def login():
-    # send token
-    # if successful, establish session/context for logged in user
-    return {"status": "login implementation is in progress"}
-
 @app.get("/assessment_questionnaire")
-async def assessment_questionnaire():
+async def assessment_questionnaire(request: Request):
     # if user context is established then
-    # qps.retrieve_previous_assessment()    
+    # qps.retrieve_previous_assessment() 
+    if request.session.get('userId'):
+        pass
+
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     return {features_df.to_json(orient="records")}
 
@@ -89,19 +86,24 @@ async def assessment_questionnaire():
 #
 # | category | question | answer_option |
 @app.post("/assessment_answers")
-async def questionnaire_answers():
+async def questionnaire_answers(request: Request):
     # calculate score
     # if user context is established then 
     # save/update the assessment
     # else 
     # do not save the assessment
+    if request.session.get('userId'):
+        pass
 
     # show the score and graphs
 
     return {"status": "assessment_answers implementation is in progress"}
 
 @app.post("/journal_entry")
-async def journal_entry():
+async def journal_entry(request: Request):
+    if request.session.get('userId'):
+        pass
+
     return {"status": "journal_entry implementation is in progress"}
 
 
