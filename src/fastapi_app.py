@@ -51,7 +51,7 @@ app = FastAPI(middleware=[Middleware(SessionMiddleware, secret_key="kc-0001-001"
 
 @app.get("/")
 async def hello():    
-    return {"message": "Welcome to Karam Coordinates API"}
+    return {"message":"Welcome to Karam Coordinates API"}
 
 
 @app.post("/get_token")
@@ -61,7 +61,7 @@ async def get_token(request: Request, userId: UserIdentifier):
     request.session['_userId'] = userId.email
     # print(f"token:{token}, _token: {request.session.get('_token')}")
     b_email = send_email(userId.email, token)
-    return {"status": b_email}
+    return f'{{"status":"{b_email}"}}'
 
 @app.get("/validate_token/{token}")
 async def validate_token(request: Request, token: str):
@@ -69,9 +69,16 @@ async def validate_token(request: Request, token: str):
     b_valid = token == request.session.get('_token')
     if b_valid:
         request.session['userId'] = request.session.get('_userId')
-    return {"status": b_valid}
+    return f'{{"status":"{b_valid}"}}'
     
-   
+
+@app.get("/session_info") 
+async def session_info(request: Request):
+    if request.session.get("userId"):
+        return f'{{"userId":"{request.session.get("userId")}"}}'
+    else:
+        return f'{{"userId":"Unauthenticated"}}'
+
 @app.get("/assessment_questionnaire")
 async def assessment_questionnaire(request: Request):
     # if user context is established then
@@ -97,14 +104,14 @@ async def questionnaire_answers(request: Request):
 
     # show the score and graphs
 
-    return {"status": "assessment_answers implementation is in progress"}
+    return {"status":"assessment_answers implementation is in progress"}
 
 @app.post("/journal_entry")
 async def journal_entry(request: Request):
     if request.session.get('userId'):
         pass
 
-    return {"status": "journal_entry implementation is in progress"}
+    return {"status":"journal_entry implementation is in progress"}
 
 
 
