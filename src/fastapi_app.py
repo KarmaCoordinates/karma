@@ -6,6 +6,7 @@ import pandas as pd
 import storage.s3_functions as s3f
 import assessment.score_functions as sf
 import _configs
+import _utils
 import random
 import storage.dynamodb_functions as db
 # import streamlit_functions.state_mgmt_functions as smf
@@ -47,7 +48,7 @@ async def validate_token(request: Request, token: str):
     b_valid = token == request.session.get('_token')
     if b_valid:
         request.session['userId'] = request.session.get('_userId')
-        request.session['userAnswers'] = db.query(request.session.get('userId'), 'latest')        
+        request.session['userAnswers'] = json.dumps(db.query(request.session.get('userId'), 'latest'), cls=_utils.DecimalEncoder)
         request.session['_token'] = None
         request.session['_userId'] = None
     return f'{{"message":"{b_valid}"}}'
@@ -60,18 +61,10 @@ async def session_info(request: Request):
 @app.get("/assessment-questionnaire")
 async def assessment_questionnaire(request: Request):
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    # if user context is established then
-    # qps.retrieve_previous_assessment() 
-    if request.session.get('userId'):
-        # add answers to features_df
-        pass
     return {features_df.to_json(orient="records")}
 
 @app.get("/assessment-answers/latest")
 async def assessment_questionnaire(request: Request):
-    features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    # if user context is established then
-    # qps.retrieve_previous_assessment() 
     if request.session.get('userId'):
         return request.session.get('userAnswers')
     else:
@@ -100,9 +93,6 @@ async def journal_entry(request: Request):
         pass
 
     return {"status":"journal_entry implementation is in progress"}
-
-
-
 
 
 def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):

@@ -4,6 +4,15 @@ import numpy as np
 from urllib import request
 import datetime
 import calendar
+import json
+from decimal import Decimal
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return str(obj)
+        return super().default(obj)
+
 
 def internet_on():
     try:
