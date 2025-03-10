@@ -66,10 +66,11 @@ async def assessment_questionnaire(request: Request):
 async def assessment_questionnaire(request: Request):
     if request.session.get('userId'):
         userAnswers = json.loads(request.session.get('userAnswers'))
+        userAnswers[0].pop('email', None)
         userAnswers[0].pop('_journal_entry', None)
         userAnswers[0].pop('journal_entry', None)
         userAnswers[0].pop('feedback', None)
-        userAnswers[0].pop('email', None)
+        userAnswers[0].pop('rating', None)
         # print(userAnswers)
         return json.dumps(userAnswers)
     else:
