@@ -53,7 +53,6 @@ async def validate_token(request: Request, token: str):
         request.session['_userId'] = None
     return f'{{"message":"{b_valid}"}}'
     
-
 @app.get("/session-info") 
 async def session_info(request: Request):
     return f'{{"userId":"{request.session.get("userId")}"}}'
