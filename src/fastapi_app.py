@@ -66,7 +66,11 @@ async def assessment_questionnaire(request: Request):
 @app.get("/assessment-answers/latest")
 async def assessment_questionnaire(request: Request):
     if request.session.get('userId'):
-        return request.session.get('userAnswers')
+        userAnswers = json.loads(request.session.get('userAnswers'))
+        userAnswers[0].pop('_journal_entry', None)
+        userAnswers[0].pop('feedback', None)
+        # print(userAnswers)
+        return json.dumps(userAnswers)
     else:
         return {}
 
@@ -94,7 +98,6 @@ async def journal_entry(request: Request):
 
     return {"status":"journal_entry implementation is in progress"}
 
-
 def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
     features_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=features_data_dict_object_key)
     key_value_columns = ['Option_1', 'Value_1', 'Option_2', 'Value_2', 'Option_3', 'Value_3', 'Option_4', 'Value_4']
@@ -108,5 +111,3 @@ def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_
     maximum_score = value_columns.max(axis=1).sum()
      
     return features_df, categories_df, {'minimum_score':minimum_score, 'maximum_score':maximum_score, 'number_of_questions':len(features_df)}
-
-
