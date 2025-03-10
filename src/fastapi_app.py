@@ -28,26 +28,6 @@ class UserIdentifier(BaseModel):
 
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(SessionMiddleware, secret_key="kc-0001-001")])
-#app.add_middleware(SessionMiddleware, secret_key="kc-0001-001")
-# handler = Mangum(app)
-
-# @app.get("/set-cookie")
-# def set_cookie(response: Response):
-#     response.set_cookie(key="example_cookie", value="cookie_value", max_age=3600)
-#     return {"message": "Cookie set"}
-
-# @app.get("/set-session")
-# async def set_session(request: Request):
-#     print(request.scope)
-#     request.session["item"] = "value"
-#     return {"message": "Session set"}
-    
-# @app.get("/get-session")
-# async def get_session(request: Request):
-#     print(request.scope)
-#     item = request.session.get("item")
-#     return {"item": item}
-
 
 @app.get("/")
 async def hello():    
@@ -59,43 +39,49 @@ async def get_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
     request.session['_token'] = token
     request.session['_userId'] = userId.email
-    # print(f"token:{token}, _token: {request.session.get('_token')}")
     b_email = send_email(userId.email, token)
-    return f'{{"status":"{b_email}"}}'
+    return f'{{"message":"{b_email}"}}'
 
 @app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
-    # print(f"token:{token}, _token: {request.session.get('_token')}")
     b_valid = token == request.session.get('_token')
     if b_valid:
         request.session['userId'] = request.session.get('_userId')
-        response = db.query(request.session.get('userId'), 'latest')
-        print(response)
-    return f'{{"status":"{b_valid}"}}'
+        request.session['userAnswers'] = db.query(request.session.get('userId'), 'latest')        
+        request.session['_token'] = None
+        request.session['_userId'] = None
+    return f'{{"message":"{b_valid}"}}'
     
 
 @app.get("/session-info") 
 async def session_info(request: Request):
-    # if request.session.get("userId"):
     return f'{{"userId":"{request.session.get("userId")}"}}'
-    # else:
-        # return f'{{"userId":"Unauthenticated"}}'
 
 @app.get("/assessment-questionnaire")
 async def assessment_questionnaire(request: Request):
+    features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     # if user context is established then
     # qps.retrieve_previous_assessment() 
     if request.session.get('userId'):
+        # add answers to features_df
         pass
-
-    features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     return {features_df.to_json(orient="records")}
 
+@app.get("/assessment-answers/latest")
+async def assessment_questionnaire(request: Request):
+    features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
+    # if user context is established then
+    # qps.retrieve_previous_assessment() 
+    if request.session.get('userId'):
+        return request.session.get('userAnswers')
+    else:
+        return {}
 
 #
-# | category | question | answer_option |
+# [{question1:answer1,...,date:today}}
 @app.post("/assessment-answers")
 async def questionnaire_answers(request: Request):
+    # receive: [{questions: answers}]
     # calculate score
     # if user context is established then 
     # save/update the assessment

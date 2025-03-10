@@ -19,3 +19,8 @@
     - Show graphs
         - journal - score relationship
 
+03.09.25.rel
+Sample APIs
+curl -c cookies.txt -d '{"email":"sdixit@ohioedge.com"}' -X POST localhost:8503/get-token -H "Content-Type: application/json"
+curl -b cookies.txt localhost:8503/validate-token/9dd7b223 -H "Content-Type: application/json"
+curl -b cookies.txt localhost:8503/session-info -H "Content-Type: application/json"
