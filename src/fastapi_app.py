@@ -76,6 +76,14 @@ async def assessment_questionnaire(request: Request):
     else:
         return {}
 
+
+@app.post("/journal-entry")
+async def journal_entry(request: Request):
+    if request.session.get('userId'):
+        pass
+
+    return {"status":"journal_entry implementation is in progress"}
+
 #
 # [{question1:answer1,...,date:today}}
 @app.post("/assessment-answers")
@@ -93,12 +101,6 @@ async def questionnaire_answers(request: Request):
 
     return {"status":"assessment_answers implementation is in progress"}
 
-@app.post("/journal-entry")
-async def journal_entry(request: Request):
-    if request.session.get('userId'):
-        pass
-
-    return {"status":"journal_entry implementation is in progress"}
 
 def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
     features_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=features_data_dict_object_key)
