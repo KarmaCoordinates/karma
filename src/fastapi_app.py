@@ -26,6 +26,9 @@ class UserIdentifier(BaseModel):
     email: str
     phone: str | None = None
 
+class JournalEntry(BaseModel):
+    journal_entry: str
+
 
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(SessionMiddleware, secret_key="kc-0001-001")])
@@ -49,6 +52,7 @@ async def validate_token(request: Request, token: str):
     if b_valid:
         request.session['userId'] = request.session.get('_userId')
         request.session['userAnswers'] = json.dumps(db.query(request.session.get('userId'), 'latest'), cls=_utils.DecimalEncoder)
+
         request.session['_token'] = None
         request.session['_userId'] = None
     return f'{{"message":"{b_valid}"}}'
@@ -78,11 +82,17 @@ async def assessment_questionnaire(request: Request):
 
 
 @app.post("/journal-entry")
-async def journal_entry(request: Request):
+async def journal_entry(request: Request, journalEntry: JournalEntry):
     if request.session.get('userId'):
-        pass
-
-    return {"status":"journal_entry implementation is in progress"}
+        userAnswers = json.loads(request.session.get('userAnswers'))
+        userAnswers[0].pop('_journal_entry', None)
+        userAnswers[0].update({'journal_entry': journalEntry.journal_entry, 'date':str(time.time())})
+        db.insert(user_activity_data=userAnswers[0])
+        request.session['userAnswers'] = json.dumps(db.query(request.session.get('userId'), 'latest'), cls=_utils.DecimalEncoder)
+        # perform openAI analysis
+        return {"message":"{true}"}
+    else: 
+        return {"message":"{false}"}
 
 #
 # [{question1:answer1,...,date:today}}
