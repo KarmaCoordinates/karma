@@ -4,6 +4,7 @@ from mangum import Mangum
 import assessment.questionnaire_pratyay_sargah as qps
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
 import storage.s3_functions as s3f
 import assessment.score_functions as sf
 import _configs
@@ -113,12 +114,6 @@ async def ai_assist(request: Request):
                     which answers get changed due to the new journal entry={journal_entry}?
                     Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
 
-    # print(request.session.get('_assistantReply'))
-    # print(userAnswers[0].get('journal_entry'))
-    # ai_response = await _ask_ai(request, userAnswers[0].get('journal_entry'))    
-    # return StreamingResponse(_ask_ai(request, userAnswers[0].get('journal_entry')))
-
-    # make sure thread exist
     client=_configs.get_config().openai_client        
     assistant=_configs.get_config().openai_assistant
     thread = client.beta.threads.create()
@@ -129,7 +124,7 @@ async def ai_assist(request: Request):
         content=ai_query
     )
 
-    return StreamingResponse(stream_assistant_response(assistant.id, thread.id))    
+    return StreamingResponse(stream_assistant_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
     # return ai_response
 
 #
@@ -165,7 +160,66 @@ def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_
     return features_df, categories_df, {'minimum_score':minimum_score, 'maximum_score':maximum_score, 'number_of_questions':len(features_df)}
 
 
-async def stream_assistant_response(assistant_id, thread_id):
+def _get_score_analysis_query(category_scores):
+    clarity_of_thinking_index = sum(category_scores.values())
+    score_md = ''
+    for category, score in category_scores.items():
+        score_md = score_md + f'''{category}:{round(score, 1)}, '''
+
+    score_md = f'''Your **Clarity of Thinking** score: **{clarity_of_thinking_index}** [{score_md}] '''
+
+    return score_md
+
+def _calc_category_scores(features_df, categories_df, user_answers):
+    category_scores={}
+    for category_tpl in categories_df.itertuples():
+        category_scores[category_tpl.category_name] = 0
+        for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
+            default_index = 0
+            default_selected_option = None
+            if feature_tpl.Question in user_answers:
+                default_selected_option = user_answers[feature_tpl.Question]
+            else:
+                default_selected_option = feature_tpl.options_list[default_index]
+
+            # st.session_state.user_answers.update({feature_tpl.Question:default_selected_option})
+            selected_option_score = feature_tpl.options_dict.get(default_selected_option) 
+
+            if selected_option_score:
+                category_scores[category_tpl.category_name] += selected_option_score
+
+    return category_scores
+
+
+async def _update_assessment_per_analysis(request: Request, features_df, categories_df, features_df_stats, analysis):
+    updated_assessment = {}
+    rx = r'(\{[^{}]+\})'
+    matches = re.findall(rx, analysis)
+    if matches and len(matches) > 0:                
+        updated_dict = ast.literal_eval(matches[0])
+        for q in updated_dict.keys():
+            matched_question = features_df.loc[features_df['Question'] == q]
+            if len(matched_question) == 1:
+                ai_answer = updated_dict.get(q)
+
+                if any(answer_option.startswith(ai_answer) for answer_option in matched_question.get('options_list').values[0]):                
+                    updated_assessment.update({q:ai_answer})
+
+        if (updated_assessment):
+            userAnswers = json.loads(request.session.get('userAnswers'))
+            userAnswers[0].update(updated_assessment)
+            userAnswers[0].update({'date':str(time.time())})
+
+            #calculate new score
+            category_scores = _calc_category_scores(features_df, categories_df, userAnswers[0])
+            score_md = _get_score_analysis_query(category_scores)
+            lives_to_moksha = sf.calculate_karma_coordinates(category_scores, features_df_stats)
+
+            userAnswers[0].update({'score_ai_analysis_query':score_md, 'lives_to_moksha':lives_to_moksha})  
+
+            db.insert(user_activity_data=userAnswers[0])
+
+async def stream_assistant_response(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
     async_client=_configs.get_config().openai_async_client        
 
     stream = async_client.beta.threads.runs.stream(
@@ -173,50 +227,13 @@ async def stream_assistant_response(assistant_id, thread_id):
         thread_id=thread_id
     )
 
+    complete_text = ''
     async with stream as stream:
         async for text in stream.text_deltas:
             # formatted_text = text.replace('\n', '\\n')
+            complete_text += text
             yield f"{text}"
             # yield f"data: {text}\n\n"
 
-
-async def _ask_ai(request: Request, ai_query: str):        
-    client=_configs.get_config().openai_client        
-    assistant=_configs.get_config().openai_assistant
-    thread = client.beta.threads.create()
-
-    try:
-        # Add user query to the thread
-        client.beta.threads.messages.create(
-            thread_id=thread.id,
-            role="user",
-            content=ai_query
-            )
-
-        stream = client.beta.threads.runs.create(
-            thread_id=thread.id,
-            assistant_id=assistant.id,
-            stream=True
-            )
-        
-        # A blank string to store the assistant's reply
-        assistant_reply = ''
-
-        # Iterate through the stream 
-        for event in stream:
-            # There are various types of streaming events
-            # See here: https://platform.openai.com/docs/api-reference/assistants-streaming/events
-
-            # Here, we only consider if there's a delta text
-            if isinstance(event, ThreadMessageDelta):
-                if isinstance(event.data.delta.content[0], TextDeltaBlock):
-                    # add the new text
-                    assistant_reply += event.data.delta.content[0].text.value
-        
-        # Once the stream is over, return the reply
-        return assistant_reply
-        # print(request.session.get('_assistantReply'))
-    
-    except Exception as e:
-        print(f'Failed to process_prompt {e}')
+    asyncio.create_task(_update_assessment_per_analysis(request, features_df, categories_df, features_df_stats, complete_text))
 
