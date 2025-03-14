@@ -88,12 +88,12 @@ async def __update_ai_assessment(request: Request, features_df: DataFrame, categ
             user_answers[0].update({'date':str(time.time())})
 
             category_score = __calc_category_score(features_df, categories_df, user_answers[0])
-            score_md, category_score_dict, clarity_of_thinking_index_dict = __score_summary(category_score)
+            score_md, assessment_score_dict, clarity_of_thinking_index_dict = __score_summary(category_score)
             lives_to_moksha = sf.calculate_karma_coordinates(category_score, features_df_stats)
 
             user_answers[0].update({'score_ai_analysis_query':score_md, 'lives_to_moksha':lives_to_moksha})
 
-            user_answers[0].update(category_score_dict)
+            user_answers[0].update(assessment_score_dict)
             user_answers[0].update(clarity_of_thinking_index_dict)
 
             db.insert(user_activity_data=user_answers[0])

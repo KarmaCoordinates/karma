@@ -87,7 +87,8 @@ def calculate_lives(y, y_min, y_max, steepness):
     # Calculate x using the rearranged formula
     try:
         # Ensure argument to log is positive
-        x_value = (1 / steepness) * np.log((y - y_min) / c1)
+        with np.errstate(divide="ignore"):
+            x_value = (1 / steepness) * np.log((y - y_min) / c1)
         return x_value
     except Exception as e:    
         print(f"Error in calculation for steepness={steepness}, c1={c1}: {e}")
