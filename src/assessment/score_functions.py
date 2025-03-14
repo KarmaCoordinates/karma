@@ -33,10 +33,16 @@ def _calculate_siddhi_influence(y, y_min=0, y_max=22.5, x_min=0.01, x_max=0.02):
     c1 = (y_max - c3) / np.exp(c2 * x_max)
 
     # Calculate x using the rearranged exponential function
-    x_value = None
+    x_value = 0
     try:
-        x_value = (1 / c2) * np.log((y - c3) / c1)
-    except ZeroDivisionError:
+        # if c1 == 0: c1 = c1 + np.finfo(float).eps
+        # if c2 == 0: c2 = c2 + np.finfo(float).eps
+        # print(f'c1={c1}, c2={c2}, y={y}, c3={c3}')
+        
+        with np.errstate(divide="ignore"):
+            x_value = (1 / c2) * np.log((y - c3) / c1)
+    except:
+        print(f"Exception in calculation for c2={c2}, c1={c1}: {e}")
         x_value = 0
 
     # Ensure x is within the valid range
@@ -83,8 +89,8 @@ def calculate_lives(y, y_min, y_max, steepness):
         # Ensure argument to log is positive
         x_value = (1 / steepness) * np.log((y - y_min) / c1)
         return x_value
-    except ValueError as e:
-        print(f"Error in calculation for y = {y}: {e}")
+    except Exception as e:    
+        print(f"Error in calculation for steepness={steepness}, c1={c1}: {e}")
         return None
 
 def calculate_karma_coordinates(category_scores, score_range):

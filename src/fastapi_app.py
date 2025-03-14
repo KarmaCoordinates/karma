@@ -64,9 +64,7 @@ async def validate_token(request: Request, token: str):
     if b_valid:
         request.session['user_id'] = request.session.get('_user_id')
 
-        # user_answers = json.dumps(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
         user_answers = db.query(request.session.get('user_id'), 'latest')
-
         if not user_answers or user_answers == '[]' or user_answers == 'null':
             user_answers = [{'date':str(time.time()), 'email':request.session['user_id']}]
 
@@ -74,7 +72,6 @@ async def validate_token(request: Request, token: str):
 
         request.session['_token'] = None
         request.session['_user_id'] = None
-
 
     return f'{{"message":"{b_valid}"}}'
     
@@ -100,6 +97,19 @@ async def assessment_questionnaire(request: Request):
     else:
         return {}
 
+@app.get("/assessment-answers/latest",  deprecated=True)
+async def assessment_questionnaire(request: Request):
+    if request.session.get('user_id'):
+        user_answers = json.loads(request.session.get('user_answers'))
+        user_answers[0].pop('email', None)
+        user_answers[0].pop('_journal_entry', None)
+        user_answers[0].pop('journal_entry', None)
+        user_answers[0].pop('feedback', None)
+        user_answers[0].pop('rating', None)
+        return json.dumps(user_answers)
+    else:
+        return {}
+
 
 @app.post("/journal-entry")
 async def journal_entry(request: Request, journalEntry: JournalEntry):
@@ -110,21 +120,21 @@ async def journal_entry(request: Request, journalEntry: JournalEntry):
 
         db.insert(user_activity_data=user_answers[0])
         request.session['user_answers'] = json.dumps(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
-        # request.session['user_answers'] = json.loads(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
+
         return {"message":f"{True}"}
     else: 
         return {"message":f'{False}'}
 
-@app.get("/ai-assist")
+@app.get("/ai-assist/reflect")
 async def ai_assist(request: Request):
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
-    userAnswers = json.loads(request.session.get('user_answers'))
-    journal_entry = userAnswers[0].get('journal_entry')
+    user_answers = json.loads(request.session.get('user_answers'))
+    journal_entry = user_answers[0].get('journal_entry')
 
     query = f'''Analyse impact of journal entry={journal_entry}'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the answers={json.dumps(userAnswers[0])}, 
+                    and the answers={json.dumps(user_answers[0])}, 
                     which answers get changed due to the new journal entry={journal_entry}?
                     Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
 
@@ -139,7 +149,48 @@ async def ai_assist(request: Request):
     )
 
     return StreamingResponse(stream_assistant_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
-    # return ai_response
+
+@app.get("/ai-assist/journey")
+async def ai_assist(request: Request):
+    features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
+
+    user_answers = json.loads(request.session.get('user_answers'))
+    journal_entry = user_answers[0].get('journal_entry')
+
+    query = f'''Analyse impact of journal entry={journal_entry}'''
+    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
+                    and the answers={json.dumps(user_answers[0])}, 
+                    and the journal entry={journal_entry},
+                    what local (determine region based on IP Address) volunteering opportunities, local activities, local physical and mental well-being options, local events I can participate in? 
+                    Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
+
+    client=_configs.get_config().openai_client        
+    assistant=_configs.get_config().openai_assistant
+    thread = client.beta.threads.create()
+
+    client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=ai_query
+    )
+
+    return StreamingResponse(stream_assistant_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
+
+
+@app.get("/score/latest")
+async def journal_entry(request: Request):
+    if request.session.get('user_id'):
+        # user_answers = json.loads(request.session.get('user_answers'))
+        request.session['user_answers'] = json.dumps(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
+
+        user_answers = json.loads(request.session.get('user_answers'))
+        # print(f'user_answers:{user_answers}')
+        assessment_score = user_answers[0].pop('assessment_score', None)
+        clarity_of_thinking_index = user_answers[0].pop('clarity_of_thinking_index', None)
+
+        return {'assessment_score':assessment_score, 'clarity_of_thinking_index':{clarity_of_thinking_index}}
+    else: 
+        return {"message":f'{False}'}
 
 #
 # [{question1:answer1,...,date:today}}
@@ -174,20 +225,27 @@ def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_
     return features_df, categories_df, {'minimum_score':minimum_score, 'maximum_score':maximum_score, 'number_of_questions':len(features_df)}
 
 
-def _get_score_analysis_query(category_scores):
-    clarity_of_thinking_index = sum(category_scores.values())
-    score_md = ''
-    for category, score in category_scores.items():
-        score_md = score_md + f'''{category}:{round(score, 1)}, '''
+def _score_summary(category_score):
+    clarity_of_thinking_index = sum(category_score.values())
+    clarity_of_thinking_index_dict = {'clarity_of_thinking_index':str(sum(category_score.values()))}
+    category_score_str = ''
+    category_score_dict = {}
+    for category, score in category_score.items():
+        category_score_str = category_score_str + f'''{category}:{round(score, 1)}, '''
+        category_score_dict.update({category:str(round(score, 1))})
 
-    score_md = f'''Your **Clarity of Thinking** score: **{clarity_of_thinking_index}** [{score_md}] '''
+    # score_md is for backward-compatibility
+    score_md = f'''Your **Clarity of Thinking** score: **{clarity_of_thinking_index}** [{category_score_str}] '''
 
-    return score_md
+    category_score_array = [ {'category' : k, 'score' : category_score_dict[k]} for k in category_score_dict]
 
-def _calc_category_scores(features_df, categories_df, user_answers):
-    category_scores={}
+    return score_md, {'assessment_score':category_score_array}, clarity_of_thinking_index_dict
+    # return score_md, category_score_dict, clarity_of_thinking_index_dict
+
+def _calc_category_score(features_df, categories_df, user_answers):
+    category_score={}
     for category_tpl in categories_df.itertuples():
-        category_scores[category_tpl.category_name] = 0
+        category_score[category_tpl.category_name] = 0
         for feature_tpl in features_df.loc[features_df['Category'] == category_tpl.category_name].itertuples():
             default_index = 0
             default_selected_option = None
@@ -200,13 +258,13 @@ def _calc_category_scores(features_df, categories_df, user_answers):
             selected_option_score = feature_tpl.options_dict.get(default_selected_option) 
 
             if selected_option_score:
-                category_scores[category_tpl.category_name] += selected_option_score
+                category_score[category_tpl.category_name] += selected_option_score
 
-    return category_scores
+    return category_score
 
 
-async def _update_assessment_per_analysis(request: Request, features_df, categories_df, features_df_stats, analysis):
-    updated_assessment = {}
+async def _update_ai_assessment(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, analysis):
+    ai_assessment = {}
     rx = r'(\{[^{}]+\})'
     matches = re.findall(rx, analysis)
     if matches and len(matches) > 0:                
@@ -217,21 +275,27 @@ async def _update_assessment_per_analysis(request: Request, features_df, categor
                 ai_answer = updated_dict.get(q)
 
                 if any(answer_option.startswith(ai_answer) for answer_option in matched_question.get('options_list').values[0]):                
-                    updated_assessment.update({q:ai_answer})
+                    ai_assessment.update({q:ai_answer})
 
-        if (updated_assessment):
-            userAnswers = json.loads(request.session.get('user_answers'))
-            userAnswers[0].update(updated_assessment)
-            userAnswers[0].update({'date':str(time.time())})
 
-            #calculate new score
-            category_scores = _calc_category_scores(features_df, categories_df, userAnswers[0])
-            score_md = _get_score_analysis_query(category_scores)
-            lives_to_moksha = sf.calculate_karma_coordinates(category_scores, features_df_stats)
+        if (ai_assessment):
+            user_answers = json.loads(request.session.get('user_answers'))
+            user_answers[0].update(ai_assessment)
+            user_answers[0].update({'date':str(time.time())})
 
-            userAnswers[0].update({'score_ai_analysis_query':score_md, 'lives_to_moksha':lives_to_moksha})  
+            category_score = _calc_category_score(features_df, categories_df, user_answers[0])
+            score_md, category_score_dict, clarity_of_thinking_index_dict = _score_summary(category_score)
+            lives_to_moksha = sf.calculate_karma_coordinates(category_score, features_df_stats)
 
-            db.insert(user_activity_data=userAnswers[0])
+            user_answers[0].update({'score_ai_analysis_query':score_md, 'lives_to_moksha':lives_to_moksha})  
+
+            user_answers[0].update(category_score_dict)
+            user_answers[0].update(clarity_of_thinking_index_dict)
+
+            db.insert(user_activity_data=user_answers[0])
+
+            request.session['user_answers'] = json.dumps(user_answers, cls=_utils.DecimalEncoder)
+
 
 async def stream_assistant_response(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
     async_client=_configs.get_config().openai_async_client        
@@ -249,5 +313,21 @@ async def stream_assistant_response(request: Request, features_df: DataFrame, ca
             yield f"{text}"
             # yield f"data: {text}\n\n"
 
-    asyncio.create_task(_update_assessment_per_analysis(request, features_df, categories_df, features_df_stats, complete_text))
+    asyncio.create_task(_update_ai_assessment(request, features_df, categories_df, features_df_stats, complete_text))
 
+
+async def stream_assistant_journey_response(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
+    async_client=_configs.get_config().openai_async_client        
+
+    stream = async_client.beta.threads.runs.stream(
+        assistant_id=assistant_id,
+        thread_id=thread_id
+    )
+
+    complete_text = ''
+    async with stream as stream:
+        async for text in stream.text_deltas:
+            # formatted_text = text.replace('\n', '\\n')
+            complete_text += text
+            yield f"{text}"
+            # yield f"data: {text}\n\n"
