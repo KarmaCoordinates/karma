@@ -33,7 +33,11 @@ def _calculate_siddhi_influence(y, y_min=0, y_max=22.5, x_min=0.01, x_max=0.02):
     c1 = (y_max - c3) / np.exp(c2 * x_max)
 
     # Calculate x using the rearranged exponential function
-    x_value = (1 / c2) * np.log((y - c3) / c1)
+    x_value = None
+    try:
+        x_value = (1 / c2) * np.log((y - c3) / c1)
+    except ZeroDivisionError:
+        x_value = 0
 
     # Ensure x is within the valid range
     if x_value < x_min:

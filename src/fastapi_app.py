@@ -40,6 +40,10 @@ class JournalEntry(BaseModel):
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(SessionMiddleware, secret_key="kc-0001-001")])
 
+
+# json.dumps -> python object to JSON string; before loading into db for e.g.
+# json.loads -> JSON string to python object; after reading from db for e.g.
+
 @app.get("/")
 async def hello():    
     return {"message":"Welcome to Karam Coordinates API"}
@@ -49,54 +53,64 @@ async def hello():
 async def get_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
     request.session['_token'] = token
-    request.session['_userId'] = userId.email
+    request.session['_user_id'] = userId.email
     b_email = send_email(userId.email, token)
     return f'{{"message":"{b_email}"}}'
 
 @app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
     b_valid = token == request.session.get('_token')
+
     if b_valid:
-        request.session['userId'] = request.session.get('_userId')
-        request.session['userAnswers'] = json.dumps(db.query(request.session.get('userId'), 'latest'), cls=_utils.DecimalEncoder)
+        request.session['user_id'] = request.session.get('_user_id')
+
+        # user_answers = json.dumps(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
+        user_answers = db.query(request.session.get('user_id'), 'latest')
+
+        if not user_answers or user_answers == '[]' or user_answers == 'null':
+            user_answers = [{'date':str(time.time()), 'email':request.session['user_id']}]
+
+        request.session['user_answers'] = json.dumps(user_answers, cls=_utils.DecimalEncoder)
 
         request.session['_token'] = None
-        request.session['_userId'] = None
+        request.session['_user_id'] = None
+
+
     return f'{{"message":"{b_valid}"}}'
     
 @app.get("/session-info") 
 async def session_info(request: Request):
-    return f'{{"userId":"{request.session.get("userId")}"}}'
+    return f'{{"user_id":"{request.session.get("user_id")}"}}'
 
-@app.get("/assessment-questionnaire")
+@app.get("/assessment-questionnaire", deprecated=True)
 async def assessment_questionnaire(request: Request):
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     return {features_df.to_json(orient="records")}
 
-@app.get("/assessment-answers/latest")
+@app.get("/assessment-answers/latest",  deprecated=True)
 async def assessment_questionnaire(request: Request):
-    if request.session.get('userId'):
-        userAnswers = json.loads(request.session.get('userAnswers'))
-        userAnswers[0].pop('email', None)
-        userAnswers[0].pop('_journal_entry', None)
-        userAnswers[0].pop('journal_entry', None)
-        userAnswers[0].pop('feedback', None)
-        userAnswers[0].pop('rating', None)
-        return json.dumps(userAnswers)
+    if request.session.get('user_id'):
+        user_answers = json.loads(request.session.get('user_answers'))
+        user_answers[0].pop('email', None)
+        user_answers[0].pop('_journal_entry', None)
+        user_answers[0].pop('journal_entry', None)
+        user_answers[0].pop('feedback', None)
+        user_answers[0].pop('rating', None)
+        return json.dumps(user_answers)
     else:
         return {}
 
 
 @app.post("/journal-entry")
 async def journal_entry(request: Request, journalEntry: JournalEntry):
-    if request.session.get('userId'):
-        userAnswers = json.loads(request.session.get('userAnswers'))
-        userAnswers[0].pop('_journal_entry', None)
-        userAnswers[0].update({'journal_entry': journalEntry.journal_entry, 'date':str(time.time())})
-        db.insert(user_activity_data=userAnswers[0])
-        request.session['userAnswers'] = json.dumps(db.query(request.session.get('userId'), 'latest'), cls=_utils.DecimalEncoder)
-        # perform openAI analysis
-        # asyncio.create_task(_ask_ai(request, journalEntry.journal_entry))        
+    if request.session.get('user_id'):
+        user_answers = json.loads(request.session.get('user_answers'))
+        user_answers[0].pop('_journal_entry', None)
+        user_answers[0].update({'journal_entry': journalEntry.journal_entry, 'date':str(time.time())})
+
+        db.insert(user_activity_data=user_answers[0])
+        request.session['user_answers'] = json.dumps(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
+        # request.session['user_answers'] = json.loads(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
         return {"message":f"{True}"}
     else: 
         return {"message":f'{False}'}
@@ -105,7 +119,7 @@ async def journal_entry(request: Request, journalEntry: JournalEntry):
 async def ai_assist(request: Request):
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
-    userAnswers = json.loads(request.session.get('userAnswers'))
+    userAnswers = json.loads(request.session.get('user_answers'))
     journal_entry = userAnswers[0].get('journal_entry')
 
     query = f'''Analyse impact of journal entry={journal_entry}'''
@@ -137,7 +151,7 @@ async def questionnaire_answers(request: Request):
     # save/update the assessment
     # else 
     # do not save the assessment
-    if request.session.get('userId'):
+    if request.session.get('user_id'):
         pass
 
     # show the score and graphs
@@ -206,7 +220,7 @@ async def _update_assessment_per_analysis(request: Request, features_df, categor
                     updated_assessment.update({q:ai_answer})
 
         if (updated_assessment):
-            userAnswers = json.loads(request.session.get('userAnswers'))
+            userAnswers = json.loads(request.session.get('user_answers'))
             userAnswers[0].update(updated_assessment)
             userAnswers[0].update({'date':str(time.time())})
 
