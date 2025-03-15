@@ -48,7 +48,6 @@ def calculate_level_of_clarity(row):
 
 
 def main():
-
     # load features
     knowledge_df = get_feature_df('knowledge')
     discipline_df = get_feature_df('discipline')
