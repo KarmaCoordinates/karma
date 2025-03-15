@@ -46,7 +46,7 @@ def run_app():
         web_content.overview(static_files_folder)
         openai_assistant_chat.prompt()
         web_content.background(static_files_folder)
-        qz.take_quiz()
+        # qz.take_quiz()
 
 
     st.subheader('Calculate my Karma Coordinates')    

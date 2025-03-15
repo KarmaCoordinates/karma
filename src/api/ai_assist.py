@@ -3,15 +3,17 @@ import assessment.score_functions as sf
 import storage.dynamodb_functions as db
 from fastapi import Request
 from pandas import DataFrame
+import pandas as pd
 import ast
 import json
 import re
 import time
 import storage.s3_functions as s3f
 import asyncio
+import plotly.express as px
+import plotly.io as pio
+import plotly.graph_objects as go
 
-
-import pandas as pd
 
 
 def cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
@@ -119,3 +121,43 @@ async def stream_assistant_response(request: Request, features_df: DataFrame, ca
 
     asyncio.create_task(__update_ai_assessment(request, features_df, categories_df, features_df_stats, complete_text))
 
+
+def clickable_progress_chart(rows: str):
+    # rows = db.query(partition_key_value=email)
+    # print(f'here1')
+
+    if rows is None:
+        return
+    
+    df = pd.read_json(rows)
+    # print(f'rows:{rows} , {type(rows)}')
+    # print(f'here2')
+
+    # df = pd.DataFrame(json.loads(rows))
+    df = df[[db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]]
+    print(f'df:{df}')
+    # df['Timeline'] = df['date'].astype(float).dt.strftime('%m/%d/%Y %H:%M')    
+    # df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
+    df['Timeline'] = pd.to_datetime(df['date'])
+    df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
+
+    fig = px.scatter(df, x='Timeline', y=db.Columns().lives_to_moksha, 
+            labels={
+                "lives_to_moksha": "Lives to Moksha"},
+            title="My progress", 
+            hover_data=df[['Journal']], trendline="ols")
+    
+    fig.update_layout({
+        'plot_bgcolor':'white',
+        'hoverlabel.align':'left',
+        'xaxis_title':'Timeline',
+        'yaxis_title':'Lives to Moksha'}
+    )    
+    fig.data[1].line.color = 'gold'
+
+    fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 1, 3])])
+    
+    return pio.to_html(fig, full_html=False)
+    # selected_points = plotly_events(fig, click_event=True, hover_event=False, key="my_progress_chart")
+    # if selected_points:
+    #     print(f'selected: {selected_points[0]['pointIndex']}')

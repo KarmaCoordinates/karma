@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import StreamingResponse
-from api.ai_assist import cache_questionnaire, stream_assistant_response
+from fastapi.responses import StreamingResponse, HTMLResponse
+from api.ai_assist import cache_questionnaire, stream_assistant_response, clickable_progress_chart
 import _configs
 import _utils
 import storage.dynamodb_functions as db
@@ -171,30 +171,25 @@ async def journal_entry(request: Request):
         user_answers = json.loads(request.session.get('user_answers'))
         # print(f'user_answers:{user_answers}')
         assessment_score = user_answers[0].pop('assessment_score', None)
-        clarity_of_thinking_index = user_answers[0].pop('clarity_of_thinking_index', None)
+        lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
 
-        return {'assessment_score':assessment_score, 'clarity_of_thinking_index':{clarity_of_thinking_index}}
+        return {'assessment_score':assessment_score, 'lives_to_moksha':{lives_to_moksha}}
     else: 
         return {"message":f'{False}'}
-
+    
+@app.get("/plot/html")
+async def get_plot(request: Request):
+    user_answers_rows = db.query(partition_key_value=request.session.get('user_id'))
+    if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
+        user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
+    user_answers_rows = json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)   
+    # print(f'user_answers_rows: {user_answers_rows}, {type(user_answers_rows)}')    
+    return HTMLResponse(clickable_progress_chart(user_answers_rows))
 #
 # [{question1:answer1,...,date:today}}
 @app.post("/assessment-answers")
 async def questionnaire_answers(request: Request):
     # receive: [{questions: answers}]
-    # calculate score
-    # if user context is established then 
-    # save/update the assessment
-    # else 
-    # do not save the assessment
     if request.session.get('user_id'):
         pass
-
-    # show the score and graphs
-
     return {"status":"assessment_answers implementation is in progress"}
-
-
-    # return score_md, category_score_dict, clarity_of_thinking_index_dict
-
-            # yield f"data: {text}\n\n"
