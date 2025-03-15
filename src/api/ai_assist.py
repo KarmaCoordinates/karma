@@ -13,6 +13,7 @@ import asyncio
 import plotly.express as px
 import plotly.io as pio
 import plotly.graph_objects as go
+from io import StringIO
 
 
 
@@ -123,19 +124,13 @@ async def stream_assistant_response(request: Request, features_df: DataFrame, ca
 
 
 def clickable_progress_chart(rows: str):
-    # rows = db.query(partition_key_value=email)
-    # print(f'here1')
-
     if rows is None:
         return
     
-    df = pd.read_json(rows)
-    # print(f'rows:{rows} , {type(rows)}')
-    # print(f'here2')
+    json_file = StringIO(rows)
+    df = pd.read_json(json_file)
 
-    # df = pd.DataFrame(json.loads(rows))
-    df = df[[db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]]
-    print(f'df:{df}')
+    df = df[[db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]].dropna()
     # df['Timeline'] = df['date'].astype(float).dt.strftime('%m/%d/%Y %H:%M')    
     # df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
     df['Timeline'] = pd.to_datetime(df['date'])
@@ -146,18 +141,19 @@ def clickable_progress_chart(rows: str):
                 "lives_to_moksha": "Lives to Moksha"},
             title="My progress", 
             hover_data=df[['Journal']], trendline="ols")
-    
+
+    fig = go.Figure(data=[go.Scatter(x=df['Timeline'], y=df[db.Columns().lives_to_moksha], 
+                                     text=df[db.Columns().journal_entry].str.slice(0, 50),
+                                     mode='lines+markers',
+                                     line=dict(color='green'),
+                                     hovertemplate="<b>%{text}</b>")])
+
     fig.update_layout({
-        'plot_bgcolor':'white',
+        'title_text':"My progress<br><sup>on path to Moksha</sup>",
+        'plot_bgcolor':'lightgrey',
         'hoverlabel.align':'left',
         'xaxis_title':'Timeline',
         'yaxis_title':'Lives to Moksha'}
     )    
-    fig.data[1].line.color = 'gold'
-
-    fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 1, 3])])
-    
+    # fig.data[1].line.color = 'gold'
     return pio.to_html(fig, full_html=False)
-    # selected_points = plotly_events(fig, click_event=True, hover_event=False, key="my_progress_chart")
-    # if selected_points:
-    #     print(f'selected: {selected_points[0]['pointIndex']}')
