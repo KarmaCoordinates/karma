@@ -146,8 +146,8 @@ async def journal_entry(request: Request):
         user_answers = json.loads(request.session.get('user_answers'))
         assessment_score = user_answers[0].pop('assessment_score', None)
         lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
-        assessment_completion_percent = int((len(user_answers)/50)*100)
-        return {'assessment_score':assessment_score, 'assessment_completion_percent':assessment_completion_percent, 'lives_to_moksha':{lives_to_moksha}}
+        assessment_percent_completion = int((len(user_answers)/50)*100)
+        return {'assessment_score':assessment_score, 'assessment_percent_completion':assessment_percent_completion, 'lives_to_moksha':{lives_to_moksha}}
     else: 
         return {"message":f'{False}'}
     
