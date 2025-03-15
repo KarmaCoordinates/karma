@@ -65,17 +65,6 @@ async def validate_token(request: Request, token: str):
     return f'{{"message":"{b_valid}"}}'
 
 
-@app.get("/session-info") 
-async def session_info(request: Request):
-    return f'{{"user_id":"{request.session.get("user_id")}"}}'
-
-
-@app.get("/assessment-questionnaire", deprecated=True)
-async def assessment_questionnaire(request: Request):
-    features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    return {features_df.to_json(orient="records")}
-
-
 @app.post("/journal-entry")
 async def journal_entry(request: Request, journalEntry: JournalEntry):
     if request.session.get('user_id'):
