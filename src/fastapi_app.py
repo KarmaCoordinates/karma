@@ -58,6 +58,9 @@ async def validate_token(request: Request, token: str):
 
         request.session['_token'] = None
         request.session['_user_id'] = None
+    else:
+        request.session['_token'] = None
+        request.session['_user_id'] = None
 
     return f'{{"message":"{b_valid}"}}'
 
