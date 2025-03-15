@@ -15,8 +15,6 @@ import plotly.io as pio
 import plotly.graph_objects as go
 from io import StringIO
 
-
-
 def cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
     features_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=features_data_dict_object_key)
     key_value_columns = ['Option_1', 'Value_1', 'Option_2', 'Value_2', 'Option_3', 'Value_3', 'Option_4', 'Value_4']

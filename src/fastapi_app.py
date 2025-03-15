@@ -177,7 +177,7 @@ async def journal_entry(request: Request):
     else: 
         return {"message":f'{False}'}
     
-@app.get("/plot/html")
+@app.get("/plot/journey/html")
 async def get_plot(request: Request):
     user_answers_rows = db.query(partition_key_value=request.session.get('user_id'))
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
