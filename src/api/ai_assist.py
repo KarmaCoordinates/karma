@@ -120,6 +120,22 @@ async def stream_assistant_response(request: Request, features_df: DataFrame, ca
 
     asyncio.create_task(__update_ai_assessment(request, features_df, categories_df, features_df_stats, complete_text))
 
+async def stream_ai_assist_explore_response(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
+    async_client=_configs.get_config().openai_async_client
+
+    stream = async_client.beta.threads.runs.stream(
+        assistant_id=assistant_id,
+        thread_id=thread_id
+    )
+
+    complete_text = ''
+    async with stream as stream:
+        async for text in stream.text_deltas:
+            # formatted_text = text.replace('\n', '\\n')
+            complete_text += text
+            yield f"{text}"
+            # yield f"data: {text}\n\n"
+
 
 def clickable_progress_chart(rows: str):
     if rows is None:

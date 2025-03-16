@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse, HTMLResponse
-from api.ai_assist import cache_questionnaire, stream_assistant_response, clickable_progress_chart
+from api.ai_assist import cache_questionnaire, stream_assistant_response, clickable_progress_chart, stream_ai_assist_explore_response
 import _configs
 import _utils
 import storage.dynamodb_functions as db
@@ -66,7 +66,7 @@ async def validate_token(request: Request, token: str):
         request.session['_user_id'] = None
     else:
         request.session['_token'] = None
-        # request.session['_user_id'] = None
+        request.session['_user_id'] = None
 
     return f'{{"message":"{b_valid}"}}'
 
@@ -115,15 +115,21 @@ async def ai_assist(request: Request):
 async def ai_assist(request: Request):
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
-    user_answers = json.loads(request.session.get('user_answers'))
-    journal_entry = user_answers[0].get('journal_entry')
+    user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
+        user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
+    user_answers_rows = json.loads(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder))
 
-    query = f'''Analyse impact of journal entry={journal_entry}'''
+    # user_answers = json.loads(request.session.get('user_answers'))
+    # journal_entry = user_answers[0].get('journal_entry')
+    journal_entries = user_answers_rows[0]['journal_entry']
+
+    query = f'''Analyse impact of all journal entry'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the answers={json.dumps(user_answers[0])}, 
-                    and the journal entry={journal_entry},
-                    what local (determine region based on IP Address) volunteering opportunities, local activities, local physical and mental well-being options, local events I can participate in? 
-                    Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
+                    and the answers={user_answers_rows[0]}, 
+                    and the journal entries={user_answers_rows[0]['journal_entry']},
+                    Suggest local volunteering opportunities, local physical and mental well-being options, and local activities and events I can attend/participate in.''' 
+                    # Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
 
     client=_configs.get_config().openai_client        
     assistant=_configs.get_config().openai_assistant
@@ -135,6 +141,37 @@ async def ai_assist(request: Request):
         content=ai_query
     )
     return StreamingResponse(stream_assistant_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
+
+
+@app.get("/ai-assist/explore/{thought}")
+async def ai_assist(request: Request, thought: str):
+    features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
+
+    # user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    # if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
+    #     user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
+    # user_answers_rows = json.loads(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder))
+
+    # user_answers = json.loads(request.session.get('user_answers'))
+    # journal_entry = user_answers[0].get('journal_entry')
+    # journal_entries = user_answers_rows[0]['journal_entry']
+
+    query = f'''Analyse impact of all journal entry'''
+    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
+                    and the thought={thought}
+                    provide an answer and/or an insight and/or a solution''' 
+                    # Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
+
+    client=_configs.get_config().openai_client        
+    assistant=_configs.get_config().openai_assistant
+    thread = client.beta.threads.create()
+
+    client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=ai_query
+    )
+    return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
 @app.get("/score/latest")
