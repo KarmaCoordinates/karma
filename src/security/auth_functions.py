@@ -48,7 +48,7 @@ def _send_token():
 def identity_msg():    
     _init()
     phl = st.empty()
-    checked = phl.checkbox(f''':green-background[Check to confirm your identity to start journaling.]''')
+    checked = phl.checkbox(f''':green-background[Check to confirm your identity to start journaling and AI assessment.]''')
     if checked:
         _do_2fa(phl)
         

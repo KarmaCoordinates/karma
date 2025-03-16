@@ -3,7 +3,7 @@ import base64
         
 def overview(static_files_folder):
     # logo = f'{static_files_folder}/kapil-muni-image.png'
-    logo = f'{static_files_folder}/sankhya_app_logo_350x350.png'
+    logo = f'{static_files_folder}/sankhya-logo-transparent350x350.png'
     intro = '''The app enhances clarity of thought through <span style="color:gold">reflective journaling, AI analytics and recommended activities, improving individuals' chances of success.</span> Karma Coordinates, specifically lives to Moksha, serves as an index to track progress towards mental clarity. By focusing on clarity and using Karma coordinates as a metric, individuals can improve decision-making, foster personal growth, and increase success.'''
     style = '''
         <style>
@@ -28,7 +28,7 @@ def overview(static_files_folder):
         '''
 
     # title
-    st.title('Sankhya App')
+    st.title('Karma Coordinates')
     # st.markdown(
     #     style,
     #     unsafe_allow_html=True
