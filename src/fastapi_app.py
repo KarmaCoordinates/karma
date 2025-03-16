@@ -11,6 +11,8 @@ from storage.boto_functions import send_email
 from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
+import logging
+
 
 
 class UserIdentifier(BaseModel):
@@ -45,6 +47,7 @@ async def get_token(request: Request, userId: UserIdentifier):
 
 @app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
+    logging.info(f'''_user_id:{request.session['_user_id']}, session_token:{request.session.get('_token')}, request_token:{token}''')
     b_valid = token == request.session.get('_token')
 
     if b_valid:
