@@ -48,7 +48,7 @@ def _send_token():
 def identity_msg():    
     _init()
     phl = st.empty()
-    checked = phl.checkbox(f''':green-background[Check to confirm your identity to track progress. (Note: This website does not collect any data unless you explicitly confirm your identity.)]''')
+    checked = phl.checkbox(f''':green-background[Check to confirm your identity to start journaling.]''')
     if checked:
         _do_2fa(phl)
         

@@ -31,22 +31,26 @@ def run_app():
     static_files_folder = '.static'
     page_config(static_files_folder)
     smf.init()
+    web_content.overview(static_files_folder)
     af.identity_msg()
     hide_assessment_questionnaire = True
     if st.session_state.auth:
         qps.retrieve_previous_assessment()
         if st.session_state.previous_user_answers:
             hide_assessment_questionnaire = True
-        web_content.auth_overview(static_files_folder)
-        openai_assistant_chat.prompt()
+        # web_content.auth_overview(static_files_folder)
         st.subheader('Make a journal entry')
         new_journal_entry=jf.journal_entry()
+        # openai_assistant_chat.prompt()
     else:
-        web_content.overview(static_files_folder)
-        openai_assistant_chat.prompt()
+        # web_content.overview(static_files_folder)
+        # openai_assistant_chat.prompt()
         web_content.background(static_files_folder)
         # qz.take_quiz()
 
+    openai_assistant_chat.prompt()
+
+    # af.identity_msg()
 
     # st.subheader('Calculate my Karma Coordinates')    
     placehoder = st.empty()
