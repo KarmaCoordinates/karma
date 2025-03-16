@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 
 def progress_chart():    
     email=st.session_state[sf.get_session_vars()._enter_email]
-    rows = db.query(partition_key_value=email)
+    rows = db.query(partition_key_value=email, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if rows is None:
         return
     df = pd.DataFrame(rows)
@@ -30,7 +30,8 @@ def progress_chart():
 
 def clickable_progress_chart():
     email=st.session_state[sf.get_session_vars()._enter_email]
-    rows = db.query(partition_key_value=email)
+    rows = db.query(partition_key_value=email, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+
     if rows is None:
         return
     df = pd.DataFrame(rows)
