@@ -10,9 +10,12 @@ import time
 from storage.boto_functions import send_email
 from pydantic import BaseModel
 from starlette.middleware import Middleware
-from starlette.middleware.sessions import SessionMiddleware
+# from starlette.middleware.sessions import SessionMiddleware
+from starlette_authlib.middleware import AuthlibMiddleware as SessionMiddleware
 import logging
 
+temp_folder = '.tmp'
+logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
 
 
 class UserIdentifier(BaseModel):
