@@ -97,6 +97,9 @@ async def journal_entry(request: Request, journalEntry: JournalEntry):
 
 @app.get("/ai-assist/reflect")
 async def ai_assist(request: Request):
+    if not request.session['user_id']:
+        return {"message":f'{False}'}
+
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
     user_answers = json.loads(request.session.get('user_answers'))
@@ -122,6 +125,9 @@ async def ai_assist(request: Request):
 
 @app.get("/ai-assist/journey")
 async def ai_assist(request: Request):
+    if not request.session['user_id']:
+        return {"message":f'{False}'}
+
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
     user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
@@ -154,6 +160,9 @@ async def ai_assist(request: Request):
 
 @app.get("/ai-assist/explore/{thought}")
 async def ai_assist(request: Request, thought: str):
+    if not request.session['user_id']:
+        return {"message":f'{False}'}
+
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
     # user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
@@ -198,6 +207,9 @@ async def journal_entry(request: Request):
     
 @app.get("/plot/journey/html")
 async def get_plot(request: Request):
+    if not request.session['user_id']:
+        return {"message":f'{False}'}
+
     user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
