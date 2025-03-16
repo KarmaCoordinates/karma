@@ -63,23 +63,19 @@ async def get_token(request: Request, userId: UserIdentifier):
 
 @app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
-    # logging.error(f'''_user_id:{request.session['_user_id']}, session_token:{request.session.get('_token')}, request_token:{token}''')
     b_valid = token == request.session.get('_token')
 
     if b_valid:
         request.session['user_id'] = request.session.get('_user_id')
-
         user_answers = db.query(request.session.get('user_id'), 'latest')
         if not user_answers or user_answers == '[]' or user_answers == 'null':
             user_answers = [{'date':str(time.time()), 'email':request.session['user_id']}]
-
         request.session['user_answers'] = json.dumps(user_answers, cls=_utils.DecimalEncoder)
-
-        request.session['_token'] = None
-        request.session['_user_id'] = None
     else:
-        request.session['_token'] = None
-        request.session['_user_id'] = None
+        request.session['user_id'] = None
+
+    request.session['_token'] = None
+    request.session['_user_id'] = None
 
     return f'{{"message":"{b_valid}"}}'
 
