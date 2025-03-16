@@ -124,8 +124,8 @@ def _save_assessment(features_df_stats, category_scores, print_only=None):
         st.session_state.user_answers.update({'score_ai_analysis_query':score_ai_analysis_query, 'lives_to_moksha':lives_to_moksha})  
         if not print_only:          
             smf.save(None, 'assessment')
-    else:
-        st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
+    # else:
+    #     st.warning(f'Atleast {round(st.session_state.minimum_required_completion_percent)}\\% of assessment needs to be completed to see Karma Coordinates.')
 
     return percent_completed, score_ai_analysis_query
 
@@ -154,9 +154,9 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
         category_scores = _calc_category_scores(features_df=features_df, categories_df=categories_df)  
 
 
-        st.markdown(f'Karma Coordinates AI automatically updates your assessment by analyzing your journal entries!') 
+        # st.markdown(f'Karma Coordinates AI automatically updates your assessment by analyzing your journal entries!') 
         phl_toggle = st.empty()
-        manual_update = phl_toggle.toggle('Manually update assessment', key='toggle_assessment')
+        manual_update = False #phl_toggle.toggle('Manually update assessment', key='toggle_assessment')
         if manual_update:
             phl_manual_assessment = st.empty()
             return _user_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=phl_manual_assessment)
@@ -184,7 +184,7 @@ def _update_assessment_per_analysis(features_df, analysis):
 def assessment(placehoder=st.empty(), hide_assessment_questionnaire=False):
     _init()
     features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    with placehoder.container(border=True):
+    with placehoder.container(border=False):
         if hide_assessment_questionnaire:
             plh = st.empty()
             return _ai_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=plh)

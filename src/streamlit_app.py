@@ -32,12 +32,11 @@ def run_app():
     page_config(static_files_folder)
     smf.init()
     af.identity_msg()
-    hide_assessment_questionnaire = False
+    hide_assessment_questionnaire = True
     if st.session_state.auth:
         qps.retrieve_previous_assessment()
         if st.session_state.previous_user_answers:
             hide_assessment_questionnaire = True
-        # print(f'''jf.is_new(): {jf.is_new()}, st.session_state.previous_user_answers: {st.session_state.previous_user_answers}''')
         web_content.auth_overview(static_files_folder)
         openai_assistant_chat.prompt()
         st.subheader('Make a journal entry')
@@ -49,7 +48,7 @@ def run_app():
         # qz.take_quiz()
 
 
-    st.subheader('Calculate my Karma Coordinates')    
+    # st.subheader('Calculate my Karma Coordinates')    
     placehoder = st.empty()
     percent_completed, score_ai_analysis_query = qps.assessment(placehoder=placehoder, hide_assessment_questionnaire=hide_assessment_questionnaire)
     
