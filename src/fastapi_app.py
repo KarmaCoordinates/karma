@@ -10,6 +10,7 @@ import time
 from storage.boto_functions import send_email
 from pydantic import BaseModel
 from starlette.middleware import Middleware
+from fastapi.middleware.cors import CORSMiddleware
 # from starlette.middleware.sessions import SessionMiddleware
 from starlette_authlib.middleware import AuthlibMiddleware as SessionMiddleware
 import logging
@@ -30,6 +31,18 @@ class JournalEntry(BaseModel):
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(SessionMiddleware, secret_key="kc-0001-001")])
 
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:7000"
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # json.dumps -> python object to JSON string; for e.g. before loading into db or storing in request.session
 # json.loads -> JSON string to python object; for e.g. after reading from db
