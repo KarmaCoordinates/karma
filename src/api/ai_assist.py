@@ -127,25 +127,15 @@ def clickable_progress_chart(rows: str):
     
     json_file = StringIO(rows)
     df = pd.read_json(json_file)
-
     df = df[[db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]].dropna()
-    # df['Timeline'] = df['date'].astype(float).dt.strftime('%m/%d/%Y %H:%M')    
-    # df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
     df['Timeline'] = pd.to_datetime(df['date'])
     df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
-
-    fig = px.scatter(df, x='Timeline', y=db.Columns().lives_to_moksha, 
-            labels={
-                "lives_to_moksha": "Lives to Moksha"},
-            title="My progress", 
-            hover_data=df[['Journal']], trendline="ols")
 
     fig = go.Figure(data=[go.Scatter(x=df['Timeline'], y=df[db.Columns().lives_to_moksha], 
                                      text=df[db.Columns().journal_entry].str.slice(0, 50),
                                      mode='lines+markers',
                                      line=dict(color='green'),
                                      hovertemplate="<b>%{text}</b>")])
-
     fig.update_layout({
         'title_text':"My progress<br><sup>on path to Moksha</sup>",
         'plot_bgcolor':'lightgrey',
@@ -153,5 +143,5 @@ def clickable_progress_chart(rows: str):
         'xaxis_title':'Timeline',
         'yaxis_title':'Lives to Moksha'}
     )    
-    # fig.data[1].line.color = 'gold'
+
     return pio.to_html(fig, full_html=False)

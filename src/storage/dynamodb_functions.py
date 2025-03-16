@@ -38,12 +38,14 @@ def insert(user_activity_data):
         Item=latest_dict
     )
 
-def query(partition_key_value, sort_key_prefix=17):
+def query(partition_key_value, sort_key_prefix=17, ascending=True, numer_of_rows=250):
     try:
         dynamodb = boto3.resource(resource_name)
         table = dynamodb.Table(table_name)
         response = table.query(
-            KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).begins_with(str(sort_key_prefix))
+            KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).begins_with(str(sort_key_prefix)),
+            ScanIndexForward=ascending,
+            Limit=numer_of_rows
         )
         return response['Items']
     except:

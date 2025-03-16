@@ -6,6 +6,7 @@ import datetime
 import calendar
 import json
 from decimal import Decimal
+import time
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -139,6 +140,14 @@ def current_month_timestamp():
     start_timestamp = datetime.datetime.strptime(str(start), "%Y%m%d").timestamp()
     end_timestamp = datetime.datetime.strptime(str(end), "%Y%m%d").timestamp()
     return start_timestamp, end_timestamp
+
+
+def unix_epoc(months_ago=1):
+    today = datetime.date.today()
+    six_months_ago = today - datetime.timedelta(days=months_ago*30) #Approximating a month as 30 days
+    datetime_six_months_ago = datetime.datetime(six_months_ago.year, six_months_ago.month, six_months_ago.day, 0, 0, 0)
+    timestamp_six_months_ago = int(time.mktime(datetime_six_months_ago.timetuple()))
+    return timestamp_six_months_ago
 
 
 def main():

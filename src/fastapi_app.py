@@ -146,7 +146,7 @@ async def journal_entry(request: Request):
     
 @app.get("/plot/journey/html")
 async def get_plot(request: Request):
-    user_answers_rows = db.query(partition_key_value=request.session.get('user_id'))
+    user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
     user_answers_rows = json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)   
