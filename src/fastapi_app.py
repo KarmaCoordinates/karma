@@ -31,12 +31,8 @@ class JournalEntry(BaseModel):
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(SessionMiddleware, secret_key="kc-0001-001")])
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "http://localhost:8180",
-    "http://localhost:7000"
-]
+origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
