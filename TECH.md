@@ -35,7 +35,7 @@ sudo ln -s /snap/bin/certbot /usr/bin/certbot
 
 # https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
 
-sudo certbot --nginx -d karmacoordinates.org -d www.karmacoordinates.org
+sudo certbot --nginx -d karmacoordinates.org -d www.karmacoordinates.org -d api.karmacoordinates.org
 email: sdixit@ohioedge.com
 
 # route 8051 to 80 
