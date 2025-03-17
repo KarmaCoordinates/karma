@@ -140,11 +140,10 @@ async def ai_assist(request: Request):
     # journal_entry = user_answers[0].get('journal_entry')
     journal_entries = user_answers_rows[0]['journal_entry']
 
-    query = f'''Analyse impact of all journal entry'''
+    query = f'''Suggest activities to improve Karma Coordinates score'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the answers={user_answers_rows[0]}, 
-                    and the journal entries={user_answers_rows[0]['journal_entry']},
-                    Suggest local volunteering opportunities, local physical and mental well-being options, and local activities and events I can attend/participate in.''' 
+                    and all answers={user_answers_rows[0]}, 
+                    Suggest activities, events and volunteering opportunities to improve Karma Coordinates score.''' 
                     # Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
 
     client=_configs.get_config().openai_client        
