@@ -18,7 +18,7 @@ import cachetools
 from datetime import datetime, timedelta
 
 
-cache = cachetools.TTLCache(maxsize=1000, ttl=600)
+cache = cachetools.TTLCache(maxsize=1000, ttl=120)
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
