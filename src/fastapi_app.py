@@ -55,10 +55,9 @@ async def hello():
 async def get_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
     auth_code = create_access_token(userId.email, token, 1)
-    # cache[userId.email]={'token':token, 'auth_code':{auth_code}}
     b_email = send_email(userId.email, token)
     if not b_email:
-        return JSONResponse({"message": "Unable to send token"}, status_code=401)    
+        return JSONResponse({"message": "Unable to send token"}, status_code=500)    
     return JSONResponse({"Authorization": auth_code}, status_code=200)    
 
 
@@ -66,7 +65,7 @@ async def get_token(request: Request, userId: UserIdentifier):
 async def validate_token(request: Request, token: str):
 
     if not request.user.is_authenticated or token != cache.get(request.user.display_name)['otp']:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Failure"}, status_code=401)    
     
     current_datetime = datetime.fromtimestamp(time.time())
     days_to_add = 90
@@ -86,17 +85,17 @@ async def validate_token(request: Request, token: str):
 
     db.insert(user_activity_data=user_answers[0])
 
-    return JSONResponse({"message": "Authenticated"}, status_code=200)    
+    return JSONResponse({"message": "Successful"}, status_code=200)    
 
 
 @app.post("/journal-entry")
 async def journal_entry(request: Request, journalEntry: JournalEntry):
     if not request.user.is_authenticated:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Failure"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
     if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
 
     user_answers[0].pop('_journal_entry', None)
     user_answers[0].update({'journal_entry': journalEntry.journal_entry, 'date':str(time.time())})
@@ -109,11 +108,11 @@ async def journal_entry(request: Request, journalEntry: JournalEntry):
 @app.get("/ai-assist/reflect")
 async def ai_assist(request: Request):
     if not request.user.is_authenticated:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Failure"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
     if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
 
     journal_entry = user_answers[0].get('journal_entry')
     query = f'''Analyse impact of journal entry={journal_entry}'''
@@ -138,18 +137,17 @@ async def ai_assist(request: Request):
 @app.get("/ai-assist/journey")
 async def ai_assist(request: Request):
     if not request.user.is_authenticated:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Failure"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
     if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
 
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
     user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
-    # user_answers_rows = json.loads(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder))
 
     journal_entries = user_answers_rows[0]['journal_entry']
 
@@ -157,7 +155,6 @@ async def ai_assist(request: Request):
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                     and all answers={user_answers_rows[0]}, 
                     Suggest activities, events and volunteering opportunities to improve Karma Coordinates score.''' 
-                    # Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
 
     client=_configs.get_config().openai_client        
     assistant=_configs.get_config().openai_assistant
@@ -174,11 +171,11 @@ async def ai_assist(request: Request):
 @app.get("/ai-assist/explore/{thought}")
 async def ai_assist(request: Request, thought: str):
     if not request.user.is_authenticated:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Failure"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
     if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
 
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
@@ -186,7 +183,6 @@ async def ai_assist(request: Request, thought: str):
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                     and the thought={thought}
                     provide an answer and/or an insight and/or a solution''' 
-                    # Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
 
     client=_configs.get_config().openai_client        
     assistant=_configs.get_config().openai_assistant
@@ -203,27 +199,30 @@ async def ai_assist(request: Request, thought: str):
 @app.get("/score/latest")
 async def journal_entry(request: Request):
     if not request.user.is_authenticated:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Failure"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
     if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
 
     assessment_score = user_answers[0].pop('assessment_score', None)
     lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
-    assessment_percent_completion = int((len(user_answers)/50)*100)
+    assessment_percent_completion = int((len(user_answers[0])/50)*100)
+    print(f'1:{assessment_score}, 2:{lives_to_moksha}, 3:{assessment_percent_completion}')
 
-    return {'assessment_score':assessment_score, 'assessment_percent_completion':assessment_percent_completion, 'lives_to_moksha':{lives_to_moksha}}
+    return JSONResponse(json.dumps({"assessment_score":assessment_score, 
+                         "assessment_percent_completion":assessment_percent_completion, 
+                         "lives_to_moksha":lives_to_moksha}, cls=_utils.DecimalEncoder), status_code=200)
     
     
 @app.get("/plot/journey/html")
 async def get_plot(request: Request):
     if not request.user.is_authenticated:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Failure"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
     if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
 
     user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
