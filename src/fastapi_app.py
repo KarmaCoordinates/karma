@@ -14,11 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 import logging
 from security.jwt_auth import create_access_token, JWTAuthBackend
-import cachetools
+from security.jwt_auth import cache
 from datetime import datetime, timedelta
-
-
-cache = cachetools.TTLCache(maxsize=1000, ttl=120)
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
@@ -58,7 +55,7 @@ async def hello():
 async def get_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
     auth_code = create_access_token(userId.email, token, 1)
-    cache[userId.email]=token
+    # cache[userId.email]={'token':token, 'auth_code':{auth_code}}
     b_email = send_email(userId.email, token)
     if not b_email:
         return JSONResponse({"message": "Unable to send token"}, status_code=401)    
@@ -68,7 +65,7 @@ async def get_token(request: Request, userId: UserIdentifier):
 @app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
 
-    if not request.user.is_authenticated or token != cache.get(request.user.display_name):
+    if not request.user.is_authenticated or token != cache.get(request.user.display_name)['otp']:
         return JSONResponse({"message": "Not authenticated"}, status_code=401)    
     
     current_datetime = datetime.fromtimestamp(time.time())
@@ -78,9 +75,15 @@ async def validate_token(request: Request, token: str):
 
     user_answers = db.query(request.user.display_name, 'latest')
     if not user_answers or user_answers == '[]' or user_answers == 'null':
-        user_answers = [{'date':str(time.time()), 'expiration_date':str(expiration_timestamp), 'email':request.user.display_name}]
+        user_answers = [{'date':str(time.time()), 
+                         'auth_code' : cache.get(request.user.display_name)['auth_code'],
+                         'expiration_date':str(expiration_timestamp), 
+                         'email':request.user.display_name}]
     else:
-        user_answers[0].update({'expiration_date':str(expiration_timestamp), 'date':str(time.time())})
+        user_answers[0].update({'expiration_date':str(expiration_timestamp), 
+                                'auth_code' : cache.get(request.user.display_name)['auth_code'],
+                                'date':str(time.time())})
+
     db.insert(user_activity_data=user_answers[0])
 
     return JSONResponse({"message": "Authenticated"}, status_code=200)    
@@ -92,7 +95,8 @@ async def journal_entry(request: Request, journalEntry: JournalEntry):
         return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
-    # if expiration_date old throw error
+    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     user_answers[0].pop('_journal_entry', None)
     user_answers[0].update({'journal_entry': journalEntry.journal_entry, 'date':str(time.time())})
@@ -108,7 +112,8 @@ async def ai_assist(request: Request):
         return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
-    # if expiration_date old throw error
+    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     journal_entry = user_answers[0].get('journal_entry')
     query = f'''Analyse impact of journal entry={journal_entry}'''
@@ -136,7 +141,8 @@ async def ai_assist(request: Request):
         return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
-    # if expiration_date old throw error
+    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
@@ -171,7 +177,8 @@ async def ai_assist(request: Request, thought: str):
         return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
-    # if expiration_date old throw error
+    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
@@ -199,7 +206,8 @@ async def journal_entry(request: Request):
         return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
-    # if expiration_date old throw error
+    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     assessment_score = user_answers[0].pop('assessment_score', None)
     lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
@@ -214,7 +222,8 @@ async def get_plot(request: Request):
         return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     user_answers = db.query(request.user.display_name, 'latest')
-    # if expiration_date old throw error
+    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
     user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':

@@ -2,6 +2,9 @@ import datetime
 import jwt
 import _configs
 from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, SimpleUser
+import cachetools
+
+cache = cachetools.TTLCache(maxsize=1000, ttl=120)
 
 class JWTAuthBackend(AuthenticationBackend):
     async def authenticate(self, conn):
@@ -17,6 +20,8 @@ class JWTAuthBackend(AuthenticationBackend):
             return
         
         payload = decode_token(token)
+        payload['auth_code']=token
+        cache[payload["sub"]] = payload
         user = SimpleUser(payload["sub"])
 
         return AuthCredentials(["authenticated"]), user
