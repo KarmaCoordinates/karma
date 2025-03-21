@@ -68,7 +68,7 @@ def __calc_category_score(features_df, categories_df, user_answers):
     return category_score
 
 
-async def __update_ai_assessment(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, analysis):
+async def __update_ai_assessment(request: Request, user_answers, features_df: DataFrame, categories_df: DataFrame, features_df_stats, analysis):
     ai_assessment = {}
     rx = r'(\{[^{}]+\})'
     matches = re.findall(rx, analysis)
@@ -84,7 +84,6 @@ async def __update_ai_assessment(request: Request, features_df: DataFrame, categ
 
 
         if (ai_assessment):
-            user_answers = json.loads(request.session.get('user_answers'))
             user_answers[0].update(ai_assessment)
             user_answers[0].update({'date':str(time.time())})
 
@@ -99,10 +98,8 @@ async def __update_ai_assessment(request: Request, features_df: DataFrame, categ
 
             db.insert(user_activity_data=user_answers[0])
 
-            request.session['user_answers'] = json.dumps(user_answers, cls=_utils.DecimalEncoder)
 
-
-async def stream_assistant_response(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
+async def stream_assistant_response(request: Request, user_answers, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
     async_client=_configs.get_config().openai_async_client
 
     stream = async_client.beta.threads.runs.stream(
@@ -118,7 +115,7 @@ async def stream_assistant_response(request: Request, features_df: DataFrame, ca
             yield f"{text}"
             # yield f"data: {text}\n\n"
 
-    asyncio.create_task(__update_ai_assessment(request, features_df, categories_df, features_df_stats, complete_text))
+    asyncio.create_task(__update_ai_assessment(request, user_answers, features_df, categories_df, features_df_stats, complete_text))
 
 async def stream_ai_assist_explore_response(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
     async_client=_configs.get_config().openai_async_client

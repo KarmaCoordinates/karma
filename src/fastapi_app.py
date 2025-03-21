@@ -46,8 +46,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# json.dumps -> serialize; python object to JSON string; for e.g. before loading into db or storing in request.session
-# json.loads -> deserialize; JSON string to python object; for e.g. after reading from db
+# json.dumps -> serialize; python object to JSON string; 
+# json.loads -> deserialize; JSON string to python object; 
 
 @app.get("/")
 async def hello():    
@@ -78,7 +78,7 @@ async def validate_token(request: Request, token: str):
 
     user_answers = db.query(request.user.display_name, 'latest')
     if not user_answers or user_answers == '[]' or user_answers == 'null':
-        user_answers = [{'date':str(time.time()), 'expiration_date':str(expiration_timestamp), 'email':request.session['user_id']}]
+        user_answers = [{'date':str(time.time()), 'expiration_date':str(expiration_timestamp), 'email':request.user.display_name}]
     else:
         user_answers[0].update({'expiration_date':str(expiration_timestamp), 'date':str(time.time())})
     db.insert(user_activity_data=user_answers[0])
@@ -127,7 +127,7 @@ async def ai_assist(request: Request):
         role="user",
         content=ai_query
     )
-    return StreamingResponse(stream_assistant_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
+    return StreamingResponse(stream_assistant_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
 @app.get("/ai-assist/journey")
@@ -142,7 +142,7 @@ async def ai_assist(request: Request):
 
     user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
-        user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
+        user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
     # user_answers_rows = json.loads(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder))
 
     journal_entries = user_answers_rows[0]['journal_entry']
@@ -162,7 +162,7 @@ async def ai_assist(request: Request):
         role="user",
         content=ai_query
     )
-    return StreamingResponse(stream_assistant_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
+    return StreamingResponse(stream_assistant_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
 @app.get("/ai-assist/explore/{thought}")
@@ -174,15 +174,6 @@ async def ai_assist(request: Request, thought: str):
     # if expiration_date old throw error
 
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-
-    # user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
-    # if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
-    #     user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
-    # user_answers_rows = json.loads(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder))
-
-    # user_answers = json.loads(request.session.get('user_answers'))
-    # journal_entry = user_answers[0].get('journal_entry')
-    # journal_entries = user_answers_rows[0]['journal_entry']
 
     query = f'''Analyse impact of all journal entry'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
@@ -227,6 +218,6 @@ async def get_plot(request: Request):
 
     user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
-        user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
+        user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
 
     return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)))
