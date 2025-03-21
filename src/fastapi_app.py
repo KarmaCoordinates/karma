@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import StreamingResponse, HTMLResponse
+from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
 from api.ai_assist import cache_questionnaire, stream_assistant_response, clickable_progress_chart, stream_ai_assist_explore_response
 import _configs
 import _utils
@@ -11,9 +11,16 @@ from storage.boto_functions import send_email
 from pydantic import BaseModel
 from starlette.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
-# from starlette.middleware.sessions import SessionMiddleware
-from starlette_authlib.middleware import AuthlibMiddleware as SessionMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, SimpleUser
+from functools import lru_cache 
 import logging
+from security.jwt_auth import create_access_token, decode_token, JWTAuthBackend
+import cachetools
+from datetime import datetime, timedelta
+
+
+cache = cachetools.TTLCache(maxsize=1000, ttl=600)
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
@@ -29,7 +36,7 @@ class JournalEntry(BaseModel):
 
 
 app = FastAPI()
-app = FastAPI(middleware=[Middleware(SessionMiddleware, secret_key="kc-0001-001")])
+app = FastAPI(middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())])
 
 origins = ["*"]
 
@@ -41,8 +48,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# json.dumps -> python object to JSON string; for e.g. before loading into db or storing in request.session
-# json.loads -> JSON string to python object; for e.g. after reading from db
+# json.dumps -> serialize; python object to JSON string; for e.g. before loading into db or storing in request.session
+# json.loads -> deserialize; JSON string to python object; for e.g. after reading from db
 
 @app.get("/")
 async def hello():    
@@ -52,59 +59,64 @@ async def hello():
 @app.post("/get-token")
 async def get_token(request: Request, userId: UserIdentifier):
     token = secrets.token_hex(4)  
-    request.session['_token'] = token
-    request.session['_user_id'] = userId.email
+    auth_code = create_access_token(userId.email, token, 1)
+    cache[userId.email]=token
     b_email = send_email(userId.email, token)
-    return f'{{"message":"{b_email}"}}'
+    if not b_email:
+        return JSONResponse({"message": "Unable to send token"}, status_code=401)    
+    return JSONResponse({"Authorization": auth_code}, status_code=200)    
 
 
 @app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
-    b_valid = token == request.session.get('_token')
 
-    if b_valid:
-        request.session['user_id'] = request.session.get('_user_id')
-        user_answers = db.query(request.session.get('user_id'), 'latest')
-        if not user_answers or user_answers == '[]' or user_answers == 'null':
-            user_answers = [{'date':str(time.time()), 'email':request.session['user_id']}]
-        request.session['user_answers'] = json.dumps(user_answers, cls=_utils.DecimalEncoder)
+    if not request.user.is_authenticated or token != cache.get(request.user.display_name):
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+    
+    current_datetime = datetime.fromtimestamp(time.time())
+    days_to_add = 90
+    expiration_datetime = current_datetime + timedelta(days=days_to_add)
+    expiration_timestamp = expiration_datetime.timestamp()
+
+    user_answers = db.query(request.user.display_name, 'latest')
+    if not user_answers or user_answers == '[]' or user_answers == 'null':
+        user_answers = [{'date':str(time.time()), 'expiration_date':str(expiration_timestamp), 'email':request.session['user_id']}]
     else:
-        request.session['user_id'] = None
+        user_answers[0].update({'expiration_date':str(expiration_timestamp), 'date':str(time.time())})
+    db.insert(user_activity_data=user_answers[0])
 
-    request.session['_token'] = None
-    request.session['_user_id'] = None
-
-    return f'{{"message":"{b_valid}"}}'
+    return JSONResponse({"message": "Authenticated"}, status_code=200)    
 
 
 @app.post("/journal-entry")
 async def journal_entry(request: Request, journalEntry: JournalEntry):
-    if request.session.get('user_id'):
-        user_answers = json.loads(request.session.get('user_answers'))
-        user_answers[0].pop('_journal_entry', None)
-        user_answers[0].update({'journal_entry': journalEntry.journal_entry, 'date':str(time.time())})
+    if not request.user.is_authenticated:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
-        db.insert(user_activity_data=user_answers[0])
-        request.session['user_answers'] = json.dumps(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
+    user_answers = db.query(request.user.display_name, 'latest')
+    # if expiration_date old throw error
 
-        return {"message":f"{True}"}
-    else: 
-        return {"message":f'{False}'}
+    user_answers[0].pop('_journal_entry', None)
+    user_answers[0].update({'journal_entry': journalEntry.journal_entry, 'date':str(time.time())})
+
+    db.insert(user_activity_data=user_answers[0])
+
+    return JSONResponse({"message": "Successful"}, status_code=200)    
 
 
 @app.get("/ai-assist/reflect")
 async def ai_assist(request: Request):
-    if not request.session['user_id']:
-        return {"message":f'{False}'}
+    if not request.user.is_authenticated:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
-    features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
+    user_answers = db.query(request.user.display_name, 'latest')
+    # if expiration_date old throw error
 
-    user_answers = json.loads(request.session.get('user_answers'))
     journal_entry = user_answers[0].get('journal_entry')
-
     query = f'''Analyse impact of journal entry={journal_entry}'''
+    features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the answers={json.dumps(user_answers[0])}, 
+                    and the answers={user_answers[0]}, 
                     which answers get changed due to the new journal entry={journal_entry}?
                     Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
 
@@ -122,18 +134,19 @@ async def ai_assist(request: Request):
 
 @app.get("/ai-assist/journey")
 async def ai_assist(request: Request):
-    if not request.session['user_id']:
-        return {"message":f'{False}'}
+    if not request.user.is_authenticated:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+
+    user_answers = db.query(request.user.display_name, 'latest')
+    # if expiration_date old throw error
 
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
-    user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
-    user_answers_rows = json.loads(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder))
+    # user_answers_rows = json.loads(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder))
 
-    # user_answers = json.loads(request.session.get('user_answers'))
-    # journal_entry = user_answers[0].get('journal_entry')
     journal_entries = user_answers_rows[0]['journal_entry']
 
     query = f'''Suggest activities to improve Karma Coordinates score'''
@@ -156,8 +169,11 @@ async def ai_assist(request: Request):
 
 @app.get("/ai-assist/explore/{thought}")
 async def ai_assist(request: Request, thought: str):
-    if not request.session['user_id']:
-        return {"message":f'{False}'}
+    if not request.user.is_authenticated:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+
+    user_answers = db.query(request.user.display_name, 'latest')
+    # if expiration_date old throw error
 
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
@@ -190,24 +206,29 @@ async def ai_assist(request: Request, thought: str):
 
 @app.get("/score/latest")
 async def journal_entry(request: Request):
-    if request.session.get('user_id'):
-        request.session['user_answers'] = json.dumps(db.query(request.session.get('user_id'), 'latest'), cls=_utils.DecimalEncoder)
-        user_answers = json.loads(request.session.get('user_answers'))
-        assessment_score = user_answers[0].pop('assessment_score', None)
-        lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
-        assessment_percent_completion = int((len(user_answers)/50)*100)
-        return {'assessment_score':assessment_score, 'assessment_percent_completion':assessment_percent_completion, 'lives_to_moksha':{lives_to_moksha}}
-    else: 
-        return {"message":f'{False}'}
+    if not request.user.is_authenticated:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
+
+    user_answers = db.query(request.user.display_name, 'latest')
+    # if expiration_date old throw error
+
+    assessment_score = user_answers[0].pop('assessment_score', None)
+    lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
+    assessment_percent_completion = int((len(user_answers)/50)*100)
+
+    return {'assessment_score':assessment_score, 'assessment_percent_completion':assessment_percent_completion, 'lives_to_moksha':{lives_to_moksha}}
     
     
 @app.get("/plot/journey/html")
 async def get_plot(request: Request):
-    if not request.session['user_id']:
-        return {"message":f'{False}'}
+    if not request.user.is_authenticated:
+        return JSONResponse({"message": "Not authenticated"}, status_code=401)    
 
-    user_answers_rows = db.query(partition_key_value=request.session.get('user_id'), sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    user_answers = db.query(request.user.display_name, 'latest')
+    # if expiration_date old throw error
+
+    user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.session['user_id']}]
-    user_answers_rows = json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)   
-    return HTMLResponse(clickable_progress_chart(user_answers_rows))
+
+    return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)))
