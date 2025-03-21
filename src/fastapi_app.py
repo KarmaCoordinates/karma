@@ -12,10 +12,8 @@ from pydantic import BaseModel
 from starlette.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
-from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, SimpleUser
-from functools import lru_cache 
 import logging
-from security.jwt_auth import create_access_token, decode_token, JWTAuthBackend
+from security.jwt_auth import create_access_token, JWTAuthBackend
 import cachetools
 from datetime import datetime, timedelta
 

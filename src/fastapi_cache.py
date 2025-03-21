@@ -1,9 +1,5 @@
-import _utils
 import storage.dynamodb_functions as db
-import json
 import time
-from storage.boto_functions import send_email
-from pydantic import BaseModel
 from functools import lru_cache 
 import logging
 

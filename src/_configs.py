@@ -37,9 +37,8 @@ def get_config():
         smtp_username = secrets_app.get_value('SMTP_USERNAME')
         smtp_password = secrets_app.get_value('SMTP_PASSWORD')
         sender_email = secrets_app.get_value('SENDER_EMAIL')
-        #TODO move to secret file
-        jwt_secret='kc-0001-001'
-        jwt_algorithm='HS256'
+        jwt_secret = secrets_app.get_value('JWT_SECRET')
+        jwt_algorithm = secrets_app.get_value('JWT_ALGORITHM')
 
 
         return Configuration(openai_client=client, openai_async_client=async_client, openai_assistant=assistant, stripe_api_key=stripe_api_key,

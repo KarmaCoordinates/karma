@@ -25,6 +25,5 @@ mangum
 fastapi-sessions
 starlette
 itsdangerous
-starlette-authlib
 pyjwt
 cachetools

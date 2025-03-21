@@ -1,6 +1,6 @@
-import storage.s3_functions as s3f
 import pandas as pd
 from functools import lru_cache
+from storage import s3_functions as s3f
 
 secrets_data_file = 'kc_secrets.txt'
 bucket_name = 'karmacoordinates'
