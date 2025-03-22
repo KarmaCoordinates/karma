@@ -32,8 +32,6 @@ class JournalEntry(BaseModel):
 
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())])
-
-# Define allowed origins properly
 origins = [
     "http://localhost:8100",
     "https://localhost"
@@ -45,6 +43,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/")
 async def hello():    
