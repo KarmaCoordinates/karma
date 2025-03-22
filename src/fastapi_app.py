@@ -33,7 +33,7 @@ class JournalEntry(BaseModel):
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())])
 
-origins = ["*"]
+origins = ["https://localhost:8100"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -42,9 +42,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# json.dumps -> serialize; python object to JSON string; 
-# json.loads -> deserialize; JSON string to python object; 
 
 @app.get("/")
 async def hello():    
