@@ -33,8 +33,11 @@ class JournalEntry(BaseModel):
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())])
 
-origins = ["http://localhost:8100", "https://localhost"]
-
+# Define allowed origins properly
+origins = [
+    "http://localhost:8100",
+    "https://localhost"
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -45,7 +48,7 @@ app.add_middleware(
 
 @app.get("/")
 async def hello():    
-    return {"message":"Welcome to Karam Coordinates API"}
+    return JSONResponse({"message":"Welcome to Karam Coordinates API"}, status_code=200)
 
 
 @app.post("/get-token")
