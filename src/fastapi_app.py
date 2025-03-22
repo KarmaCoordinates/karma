@@ -208,7 +208,6 @@ async def journal_entry(request: Request):
     assessment_score = user_answers[0].pop('assessment_score', None)
     lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
     assessment_percent_completion = int((len(user_answers[0])/50)*100)
-    print(f'1:{assessment_score}, 2:{lives_to_moksha}, 3:{assessment_percent_completion}')
 
     return JSONResponse(json.dumps({"assessment_score":assessment_score, 
                          "assessment_percent_completion":assessment_percent_completion, 
