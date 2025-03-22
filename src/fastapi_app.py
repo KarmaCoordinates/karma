@@ -33,7 +33,7 @@ class JournalEntry(BaseModel):
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())])
 
-origins = ["http://localhost:8100, https://localhost"]
+origins = ["http://localhost:8100", "https://localhost"]
 
 app.add_middleware(
     CORSMiddleware,
