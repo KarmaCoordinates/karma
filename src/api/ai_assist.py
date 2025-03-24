@@ -157,4 +157,4 @@ def clickable_progress_chart(rows: str):
         'yaxis_title':'Lives to Moksha'}
     )    
 
-    return pio.to_html(fig, full_html=False)
+    return pio.to_json(fig)
