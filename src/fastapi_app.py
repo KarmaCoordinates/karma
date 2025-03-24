@@ -16,6 +16,8 @@ import logging
 from security.jwt_auth import create_access_token, JWTAuthBackend
 from security.jwt_auth import cache
 from datetime import datetime, timedelta
+from pydantic import BaseModel, field_validator, ValidationError
+from typing import Any
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
@@ -30,8 +32,20 @@ class JournalEntry(BaseModel):
     journal_entry: str
 
 
-class Thought(BaseModel):
-    thought: str
+class Question(BaseModel):
+    question: str | None = None
+    # question: dict[str, Any]
+
+    # @field_validator("question")
+    # @classmethod
+    # def parse_json_string(cls, value):
+    #     if isinstance(value, str):
+    #         try:
+    #             print(f'value:{value}')
+    #             return json.loads(value)
+    #         except json.JSONDecodeError as e:
+    #             raise ValueError(f"Invalid JSON string: {e}")
+    #     return value    
 
 
 app = FastAPI()
@@ -55,10 +69,10 @@ async def hello():
 
 
 @app.post("/get-token")
-async def get_token(request: Request, userId: UserIdentifier):
+async def get_token(request: Request, user_id: UserIdentifier):
     token = secrets.token_hex(4)  
-    auth_code = create_access_token(userId.email, token, 1)
-    b_email = send_email(userId.email, token)
+    auth_code = create_access_token(user_id.email, token, 1)
+    b_email = send_email(user_id.email, token)
     if not b_email:
         return JSONResponse({"message": "Unable to send token"}, status_code=500)    
     return JSONResponse({"Authorization": auth_code}, status_code=200)    
@@ -92,7 +106,7 @@ async def validate_token(request: Request, token: str):
 
 
 @app.post("/journal-entry")
-async def journal_entry(request: Request, journalEntry: JournalEntry):
+async def journal_entry(request: Request, journal_entry: JournalEntry):
     if not request.user.is_authenticated:
         return JSONResponse({"message": "Failure"}, status_code=401)    
 
@@ -101,7 +115,7 @@ async def journal_entry(request: Request, journalEntry: JournalEntry):
         return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
 
     user_answers[0].pop('_journal_entry', None)
-    user_answers[0].update({'journal_entry': journalEntry.journal_entry, 'date':str(time.time())})
+    user_answers[0].update({'journal_entry': journal_entry.journal_entry, 'date':str(time.time())})
 
     db.insert(user_activity_data=user_answers[0])
 
@@ -171,34 +185,6 @@ async def ai_assist(request: Request):
     return StreamingResponse(stream_assistant_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
-@app.post("/ai-assist/explore")
-async def ai_assist(request: Request, thought: Thought):
-    if not request.user.is_authenticated:
-        return JSONResponse({"message": "Failure"}, status_code=401)    
-
-    user_answers = db.query(request.user.display_name, 'latest')
-    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
-
-    features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-
-    query = f'''Analyse impact of all journal entry'''
-    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the thought={thought}
-                    provide an answer and/or an insight and/or a solution''' 
-
-    client=_configs.get_config().openai_client        
-    assistant=_configs.get_config().openai_assistant
-    thread = client.beta.threads.create()
-
-    client.beta.threads.messages.create(
-        thread_id=thread.id,
-        role="user",
-        content=ai_query
-    )
-    return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
-
-
 @app.get("/score/latest")
 async def journal_entry(request: Request):
     if not request.user.is_authenticated:
@@ -231,3 +217,34 @@ async def get_plot(request: Request):
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
 
     return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)))
+
+
+@app.post("/ai-assist/explore")
+async def ai_assist(request: Request, question: Question):
+    print(f'{question}')
+    if not request.user.is_authenticated:
+        return JSONResponse({"message": "Failure"}, status_code=401)    
+
+    user_answers = db.query(request.user.display_name, 'latest')
+    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
+        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
+
+    features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
+
+    query = f'''Analyse impact of all journal entry'''
+    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
+                    and the thought={question}
+                    provide an answer and/or an insight and/or a solution''' 
+
+    client=_configs.get_config().openai_client        
+    assistant=_configs.get_config().openai_assistant
+    thread = client.beta.threads.create()
+
+    client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=ai_query
+    )
+    return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
+
+

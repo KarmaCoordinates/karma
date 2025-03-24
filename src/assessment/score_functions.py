@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import _constants
 
 def _calculate_siddhi_influence(y, y_min=0, y_max=22.5, x_min=0.01, x_max=0.02):
     """
@@ -95,9 +96,8 @@ def calculate_lives(y, y_min, y_max, steepness):
         return None
 
 def calculate_karma_coordinates(category_scores, score_range):
-    # print(f'category siddhi: {category_scores['Siddhi (सिद्धि)']}')
     total_score = sum(category_scores.values())
-    siddhi_score = category_scores['Siddhi (सिद्धि)']
+    siddhi_score = category_scores.get(_constants.CATEGORY_SIDDHI)
     y_min = score_range['minimum_score']
     y_max = score_range['maximum_score']
     steepness_min=0.01
