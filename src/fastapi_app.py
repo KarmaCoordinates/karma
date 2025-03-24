@@ -30,6 +30,10 @@ class JournalEntry(BaseModel):
     journal_entry: str
 
 
+class Thought(BaseModel):
+    thought: str
+
+
 app = FastAPI()
 app = FastAPI(middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())])
 origins = [
@@ -167,8 +171,8 @@ async def ai_assist(request: Request):
     return StreamingResponse(stream_assistant_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
-@app.get("/ai-assist/explore/{thought}")
-async def ai_assist(request: Request, thought: str):
+@app.post("/ai-assist/explore")
+async def ai_assist(request: Request, thought: Thought):
     if not request.user.is_authenticated:
         return JSONResponse({"message": "Failure"}, status_code=401)    
 
