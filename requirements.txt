@@ -27,3 +27,4 @@ starlette
 itsdangerous
 pyjwt
 cachetools
+ip2geotools

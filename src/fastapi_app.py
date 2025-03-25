@@ -16,7 +16,7 @@ import logging
 from security.jwt_auth import create_access_token, JWTAuthBackend
 from security.jwt_auth import cache
 from pydantic import BaseModel, field_validator, ValidationError
-from typing import Any
+from ip2geotools.databases.noncommercial import DbIpCity
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
@@ -169,7 +169,7 @@ async def ai_assist(request: Request):
         role="user",
         content=ai_query
     )
-    return StreamingResponse(stream_ai_assist_explore_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
+    return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
 @app.get("/score/latest")
@@ -207,13 +207,7 @@ async def get_plot(request: Request):
 
 
 @app.post("/ai-assist/explore")
-# async def ai_assist(request: Request, question: Question):
 async def ai_assist(request: Request, question: Question):
-    # question = await request.json()
-    # question = json.loads(question)
-    # print(f'body:{request.body}')
-    # question = json.loads(request.body)
-    # print(f'{question}')
     if not request.user.is_authenticated:
         return JSONResponse({"message": "Failure"}, status_code=401)    
 
@@ -242,5 +236,8 @@ async def ai_assist(request: Request, question: Question):
 
 def __client_ip(request: Request):
     client_ip = request.headers.get("X-Forwarded-For") or request.client.host
-    return {"client_ip": client_ip}
+    if client_ip:
+        response = DbIpCity.get(client_ip, api_key='free')
+        # print(f'geolocation"{response.to_json()}')
+    return {"client_ip": client_ip, "client_ip_location":response}
 
