@@ -97,7 +97,7 @@ async def __update_ai_assessment(request: Request, user_answers, features_df: Da
             db.insert(user_activity_data=user_answers[0])
 
 
-async def stream_assistant_response(request: Request, user_answers, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
+async def stream_ai_assist_reflect_response(request: Request, user_answers, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
     async_client=__configs.get_config().openai_async_client
 
     stream = async_client.beta.threads.runs.stream(

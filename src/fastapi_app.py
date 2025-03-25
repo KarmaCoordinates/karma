@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
-from api.ai_assist import cache_questionnaire, stream_assistant_response, clickable_progress_chart, stream_ai_assist_explore_response
+from api.ai_assist import cache_questionnaire, stream_ai_assist_reflect_response, clickable_progress_chart, stream_ai_assist_explore_response
 import __configs
 import __utils
 import storage.dynamodb_functions as db
@@ -73,7 +73,7 @@ async def validate_token(request: Request, token: str):
     
     expiration_timestamp = __utils.future_timestamp(90)
     user_answers = db.query(request.user.display_name, 'latest')
-    client_ip =  get_client_ip(request)['client_ip']
+    client_ip =  __client_ip(request)['client_ip']
 
     if not user_answers or user_answers == '[]' or user_answers == 'null':
         user_answers = [{'date':str(time.time()), 
@@ -135,7 +135,7 @@ async def ai_assist(request: Request):
         role="user",
         content=ai_query
     )
-    return StreamingResponse(stream_assistant_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
+    return StreamingResponse(stream_ai_assist_reflect_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
 @app.get("/ai-assist/journey")
@@ -169,7 +169,7 @@ async def ai_assist(request: Request):
         role="user",
         content=ai_query
     )
-    return StreamingResponse(stream_assistant_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
+    return StreamingResponse(stream_ai_assist_explore_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
 @app.get("/score/latest")
@@ -240,7 +240,7 @@ async def ai_assist(request: Request, question: Question):
     return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
-def get_client_ip(request: Request):
+def __client_ip(request: Request):
     client_ip = request.headers.get("X-Forwarded-For") or request.client.host
     return {"client_ip": client_ip}
 
