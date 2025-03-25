@@ -155,11 +155,15 @@ async def ai_assist(request: Request):
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
 
     journal_entries = user_answers_rows[0]['journal_entry']
+    client_ip_details = user_answers[0]['client_ip_details']
+
+    print(f'client_ip_details:{client_ip_details}')
 
     query = f'''Suggest activities to improve Karma Coordinates score'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                     and all answers={user_answers_rows[0]}, 
-                    Suggest activities, events and volunteering opportunities to improve Karma Coordinates score.''' 
+                    and geographic location={client_ip_details}
+                    Suggest activities, events and volunteering opportunities with dates and locations to improve Karma Coordinates score.''' 
 
     client=__configs.get_config().openai_client        
     assistant=__configs.get_config().openai_assistant
