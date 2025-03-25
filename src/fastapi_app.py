@@ -157,8 +157,6 @@ async def ai_assist(request: Request):
     journal_entries = user_answers_rows[0]['journal_entry']
     client_ip_details = user_answers[0]['client_ip_details']
 
-    print(f'client_ip_details:{client_ip_details}')
-
     query = f'''Suggest activities to improve Karma Coordinates score'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                     and all answers={user_answers_rows[0]}, 
