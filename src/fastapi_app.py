@@ -220,8 +220,13 @@ async def get_plot(request: Request):
 
 
 @app.post("/ai-assist/explore")
+# async def ai_assist(request: Request, question: Question):
 async def ai_assist(request: Request, question: Question):
-    print(f'{question}')
+    # question = await request.json()
+    # question = json.loads(question)
+    # print(f'body:{request.body}')
+    # question = json.loads(request.body)
+    # print(f'{question}')
     if not request.user.is_authenticated:
         return JSONResponse({"message": "Failure"}, status_code=401)    
 
