@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
 from api.ai_assist import cache_questionnaire, stream_assistant_response, clickable_progress_chart, stream_ai_assist_explore_response
-import _configs
-import _utils
+import __configs
+import __utils
 import storage.dynamodb_functions as db
 import json
 import secrets
@@ -71,7 +71,7 @@ async def validate_token(request: Request, token: str):
     if not request.user.is_authenticated or token != cache.get(request.user.display_name)['otp']:
         return JSONResponse({"message": "Failure"}, status_code=401)    
     
-    expiration_timestamp = _utils.future_timestamp(90)
+    expiration_timestamp = __utils.future_timestamp(90)
     user_answers = db.query(request.user.display_name, 'latest')
     client_ip =  get_client_ip(request)['client_ip']
 
@@ -126,8 +126,8 @@ async def ai_assist(request: Request):
                     which answers get changed due to the new journal entry={journal_entry}?
                     Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
 
-    client=_configs.get_config().openai_client        
-    assistant=_configs.get_config().openai_assistant
+    client=__configs.get_config().openai_client        
+    assistant=__configs.get_config().openai_assistant
     thread = client.beta.threads.create()
 
     client.beta.threads.messages.create(
@@ -149,7 +149,7 @@ async def ai_assist(request: Request):
 
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
 
-    user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(__utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
 
@@ -160,8 +160,8 @@ async def ai_assist(request: Request):
                     and all answers={user_answers_rows[0]}, 
                     Suggest activities, events and volunteering opportunities to improve Karma Coordinates score.''' 
 
-    client=_configs.get_config().openai_client        
-    assistant=_configs.get_config().openai_assistant
+    client=__configs.get_config().openai_client        
+    assistant=__configs.get_config().openai_assistant
     thread = client.beta.threads.create()
 
     client.beta.threads.messages.create(
@@ -187,7 +187,7 @@ async def journal_entry(request: Request):
 
     return JSONResponse(json.dumps({"assessment_score":assessment_score, 
                          "assessment_percent_completion":assessment_percent_completion, 
-                         "lives_to_moksha":lives_to_moksha}, cls=_utils.DecimalEncoder).encode('ascii').decode('unicode-escape'), status_code=200)
+                         "lives_to_moksha":lives_to_moksha}, cls=__utils.DecimalEncoder).encode('ascii').decode('unicode-escape'), status_code=200)
     
     
 @app.get("/plot/journey/json")
@@ -199,11 +199,11 @@ async def get_plot(request: Request):
     if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
         return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
 
-    user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(__utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
 
-    return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)))
+    return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=__utils.DecimalEncoder)))
 
 
 @app.post("/ai-assist/explore")
@@ -228,8 +228,8 @@ async def ai_assist(request: Request, question: Question):
                     and the thought={question}
                     provide an answer and/or an insight and/or a solution''' 
 
-    client=_configs.get_config().openai_client        
-    assistant=_configs.get_config().openai_assistant
+    client=__configs.get_config().openai_client        
+    assistant=__configs.get_config().openai_assistant
     thread = client.beta.threads.create()
 
     client.beta.threads.messages.create(

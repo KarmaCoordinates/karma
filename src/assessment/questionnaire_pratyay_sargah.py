@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import storage.s3_functions as s3f
 import assessment.score_functions as sf
-import _configs
+import __configs
 import random
 import storage.dynamodb_functions as db
 import streamlit_functions.state_mgmt_functions as smf
@@ -13,7 +13,7 @@ import ast
 import journal.journal_functions as jf
 
 @st.cache_data
-def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
+def __cache_questionnaire(bucket_name, features_data_dict_object_key, categories_data_dict_object_key):
     features_df = s3f.cache_csv_from_s3(bucket_name=bucket_name, object_key=features_data_dict_object_key)
     key_value_columns = ['Option_1', 'Value_1', 'Option_2', 'Value_2', 'Option_3', 'Value_3', 'Option_4', 'Value_4']
     features_df['options_dict'] = [{ k: v for k, v in zip(row[::2], row[1::2]) if pd.notna(k) and pd.notna(v) } for row in features_df[key_value_columns].values]
@@ -28,22 +28,22 @@ def _cache_questionnaire(bucket_name, features_data_dict_object_key, categories_
     return features_df, categories_df, {'minimum_score':minimum_score, 'maximum_score':maximum_score, 'number_of_questions':len(features_df)}
 
 
-def _init():    
+def __init():    
     if 'user_answers' not in st.session_state:
         st.session_state['user_answers'] = {}
 
     if  'minimum_required_completion_percent' not in st.session_state:
-        st.session_state['minimum_required_completion_percent'] = _configs.get_config().minimum_assessment_completion_percent
+        st.session_state['minimum_required_completion_percent'] = __configs.get_config().minimum_assessment_completion_percent
 
     if 'ai_analysis_requested' not in st.session_state:
         st.session_state['ai_analysis_requested'] = False
  
 
-def _cache_user_answer(question):
+def __cache_user_answer(question):
     st.session_state.user_answers.update({question:st.session_state[question]})
 
 
-def _calc_category_scores_user_selection(features_df, categories_df):
+def __calc_category_scores_user_selection(features_df, categories_df):
     category_scores={}
     for category_tpl in categories_df.itertuples():
         category_scores[category_tpl.category_name] = 0
@@ -59,7 +59,7 @@ def _calc_category_scores_user_selection(features_df, categories_df):
                 else:
                     default_selected_option = feature_tpl.options_list[default_index]
 
-            selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, index=default_index, key=feature_tpl.Question, on_change=_cache_user_answer, args={feature_tpl.Question})
+            selected_option = st.radio(feature_tpl.Question, feature_tpl.options_list, index=default_index, key=feature_tpl.Question, on_change=__cache_user_answer, args={feature_tpl.Question})
 
             selected_option_score = feature_tpl.options_dict.get(selected_option) 
             category_scores[category_tpl.category_name] += selected_option_score
@@ -67,7 +67,7 @@ def _calc_category_scores_user_selection(features_df, categories_df):
     return category_scores
 
 
-def _calc_category_scores(features_df, categories_df):
+def __calc_category_scores(features_df, categories_df):
     category_scores={}
     for category_tpl in categories_df.itertuples():
         category_scores[category_tpl.category_name] = 0
@@ -87,7 +87,7 @@ def _calc_category_scores(features_df, categories_df):
 
     return category_scores
 
-def _get_score_analysis_query(category_scores):
+def __get_score_analysis_query(category_scores):
     clarity_of_thinking_index = sum(category_scores.values())
     score_md = ''
     for category, score in category_scores.items():
@@ -106,10 +106,10 @@ def retrieve_previous_assessment():
             st.session_state.user_answers = {**response[0], **st.session_state.user_answers}
             st.session_state.previous_user_answers = True
 
-def _save_assessment(features_df_stats, category_scores, print_only=None):
+def __save_assessment(features_df_stats, category_scores, print_only=None):
     st.divider()
     plh_kc = st.empty()
-    score_ai_analysis_query = _get_score_analysis_query(category_scores)     
+    score_ai_analysis_query = __get_score_analysis_query(category_scores)     
     percent_completed = len(st.session_state.user_answers) * 100 / features_df_stats['number_of_questions']
     if percent_completed > st.session_state.minimum_required_completion_percent:
         st.session_state['karma_coordinates'] = category_scores
@@ -130,13 +130,13 @@ def _save_assessment(features_df_stats, category_scores, print_only=None):
     return percent_completed, score_ai_analysis_query
 
 
-def _user_assessment(features_df, categories_df, features_df_stats, category_scores={}, placehoder=st.empty()):
+def __user_assessment(features_df, categories_df, features_df_stats, category_scores={}, placehoder=st.empty()):
     with placehoder.container():   
-        category_scores = _calc_category_scores_user_selection(features_df, categories_df)  
-        return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, )
+        category_scores = __calc_category_scores_user_selection(features_df, categories_df)  
+        return __save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, )
 
 
-def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.empty()):
+def __ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.empty()):
     with placehoder.container():   
         if jf.is_new():
             query = f'''Analyse impact of journal entry={st.session_state.user_answers['journal_entry']}'''
@@ -149,9 +149,9 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
             analysis = oac.get_assistant_answer_from_cache(query)
 
             if analysis:
-                _update_assessment_per_analysis(features_df, analysis)
+                __update_assessment_per_analysis(features_df, analysis)
             
-        category_scores = _calc_category_scores(features_df=features_df, categories_df=categories_df)  
+        category_scores = __calc_category_scores(features_df=features_df, categories_df=categories_df)  
 
 
         # st.markdown(f'Karma Coordinates AI automatically updates your assessment by analyzing your journal entries!') 
@@ -159,15 +159,15 @@ def _ai_assessment(features_df, categories_df, features_df_stats, placehoder=st.
         manual_update = False #phl_toggle.toggle('Manually update assessment', key='toggle_assessment')
         if manual_update:
             phl_manual_assessment = st.empty()
-            return _user_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=phl_manual_assessment)
+            return __user_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=phl_manual_assessment)
 
         else:
             if jf.is_new():
-                return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
+                return __save_assessment(category_scores=category_scores, features_df_stats=features_df_stats)
             else:
-                return _save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, print_only=True)
+                return __save_assessment(category_scores=category_scores, features_df_stats=features_df_stats, print_only=True)
 
-def _update_assessment_per_analysis(features_df, analysis):
+def __update_assessment_per_analysis(features_df, analysis):
     rx = r'(\{[^{}]+\})'
     matches = re.findall(rx, analysis)
     if matches and len(matches) > 0:                
@@ -182,15 +182,15 @@ def _update_assessment_per_analysis(features_df, analysis):
 
 
 def assessment(placehoder=st.empty(), hide_assessment_questionnaire=False):
-    _init()
-    features_df, categories_df, features_df_stats = _cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
+    __init()
+    features_df, categories_df, features_df_stats = __cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     with placehoder.container(border=False):
         if hide_assessment_questionnaire:
             plh = st.empty()
-            return _ai_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=plh)
+            return __ai_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=plh)
         else:
             plh = st.empty()
-            return _user_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=plh)
+            return __user_assessment(features_df=features_df, categories_df=categories_df, features_df_stats=features_df_stats, placehoder=plh)
 
 
 

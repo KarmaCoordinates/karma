@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit_functions.state_mgmt_functions as smf
 import storage.dynamodb_functions as db
-import _utils
+import __utils
 
 def _init():    
     if 'journal_entry' not in st.session_state.user_answers:
@@ -34,8 +34,8 @@ def is_new():
         return True
 
 def previous_month_journal_entries():
-    return db.query_by_sort_key_between(st.session_state._enter_email, *_utils.previous_month_timestamp())
+    return db.query_by_sort_key_between(st.session_state._enter_email, *__utils.previous_month_timestamp())
     # print(f'items: {items_df['journal_entry']}')
 
 def current_month_journal_entries():
-    return db.query_by_sort_key_between(st.session_state._enter_email, *_utils.current_month_timestamp())
+    return db.query_by_sort_key_between(st.session_state._enter_email, *__utils.current_month_timestamp())

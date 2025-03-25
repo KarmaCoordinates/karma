@@ -1,8 +1,8 @@
 import smtplib
 import boto3
 
-import _configs
-from _utils import is_valid_email
+import __configs
+from __utils import is_valid_email
 
 def sms_opt_in(number):
     response = boto3.client('sns').opt_in_phone_number(
@@ -25,11 +25,11 @@ def send_email(recipient, token):
 
     try:
         # Setup the SMTP server
-        smtp_server = _configs.get_config().smtp_server
-        smtp_port = _configs.get_config().smtp_port
-        smtp_username = _configs.get_config().smtp_username
-        sender_email = _configs.get_config().sender_email
-        smtp_password = _configs.get_config().smtp_password
+        smtp_server = __configs.get_config().smtp_server
+        smtp_port = __configs.get_config().smtp_port
+        smtp_username = __configs.get_config().smtp_username
+        sender_email = __configs.get_config().sender_email
+        smtp_password = __configs.get_config().smtp_password
 
         # Create the email content
         subject = "KarmaCoordinates 2FA Token"

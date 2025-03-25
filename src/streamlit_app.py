@@ -1,5 +1,5 @@
 import ai.model_functions as model_functions
-import web_content 
+import streamlit_content 
 import streamlit as st
 import storage.s3_functions as s3f
 import ai.openai_assistant_chat as openai_assistant_chat
@@ -31,7 +31,7 @@ def run_app():
     static_files_folder = '.static'
     page_config(static_files_folder)
     smf.init()
-    web_content.overview(static_files_folder)
+    streamlit_content.overview(static_files_folder)
     af.identity_msg()
     hide_assessment_questionnaire = True
     if st.session_state.auth:
@@ -45,7 +45,7 @@ def run_app():
     else:
         # web_content.overview(static_files_folder)
         # openai_assistant_chat.prompt()
-        web_content.background(static_files_folder)
+        streamlit_content.background(static_files_folder)
         # qz.take_quiz()
 
     openai_assistant_chat.prompt()
@@ -84,10 +84,10 @@ def run_app():
     if st.session_state.auth:
         st.subheader('Your feedback')
         with st.container(border=True):
-            web_content.request_feedback_note()
+            streamlit_content.request_feedback_note()
             ff.user_feedback(st.session_state.user_answers, percent_completed)
 
-    web_content.sankhya_references(static_files_folder)
+    streamlit_content.sankhya_references(static_files_folder)
     sp.subscribe()
 
 

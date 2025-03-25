@@ -5,7 +5,7 @@ import streamlit_functions.state_mgmt_functions as sf
 import storage.dynamodb_functions as db
 import time
 import streamlit_functions.state_mgmt_functions as smf
-import _configs
+import __configs
 
 def _init(user_answers):
 
@@ -16,7 +16,7 @@ def _init(user_answers):
         user_answers.update({'feedback' : None})
 
     if  'minimum_required_completion_percent' not in st.session_state:
-        st.session_state['minimum_required_completion_percent'] = _configs.get_config().minimum_assessment_completion_percent
+        st.session_state['minimum_required_completion_percent'] = __configs.get_config().minimum_assessment_completion_percent
 
 
 # # IMP: Reading the data back that is saved by this method

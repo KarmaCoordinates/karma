@@ -1,4 +1,4 @@
-import _utils, _configs
+import __utils, __configs
 import assessment.score_functions as sf
 import storage.dynamodb_functions as db
 from fastapi import Request
@@ -98,7 +98,7 @@ async def __update_ai_assessment(request: Request, user_answers, features_df: Da
 
 
 async def stream_assistant_response(request: Request, user_answers, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
-    async_client=_configs.get_config().openai_async_client
+    async_client=__configs.get_config().openai_async_client
 
     stream = async_client.beta.threads.runs.stream(
         assistant_id=assistant_id,
@@ -116,7 +116,7 @@ async def stream_assistant_response(request: Request, user_answers, features_df:
     asyncio.create_task(__update_ai_assessment(request, user_answers, features_df, categories_df, features_df_stats, complete_text))
 
 async def stream_ai_assist_explore_response(request: Request, features_df: DataFrame, categories_df: DataFrame, features_df_stats, assistant_id, thread_id):
-    async_client=_configs.get_config().openai_async_client
+    async_client=__configs.get_config().openai_async_client
 
     stream = async_client.beta.threads.runs.stream(
         assistant_id=assistant_id,
@@ -140,7 +140,7 @@ def clickable_progress_chart(rows: str):
     df = pd.read_json(json_file)
     df = df[[db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]].dropna()
     df['Timeline'] = pd.to_datetime(df['date'])
-    df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
+    df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: __utils.insert_line_breaks(x))
 
     fig = go.Figure(data=[go.Scatter(x=df['Timeline'], y=df[db.Columns().lives_to_moksha], 
                                      text=df[db.Columns().journal_entry].str.slice(0, 50),

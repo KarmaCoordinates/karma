@@ -7,13 +7,13 @@ import streamlit_functions.state_mgmt_functions as sf
 import statsmodels as sm
 import plotly.express as px
 from streamlit_plotly_events import plotly_events
-import _utils
+import __utils
 import scipy.stats as stats
 import plotly.graph_objects as go
 
 def progress_chart():    
     email=st.session_state[sf.get_session_vars()._enter_email]
-    rows = db.query(partition_key_value=email, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    rows = db.query(partition_key_value=email, sort_key_prefix=str(__utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if rows is None:
         return
     df = pd.DataFrame(rows)
@@ -30,7 +30,7 @@ def progress_chart():
 
 def clickable_progress_chart():
     email=st.session_state[sf.get_session_vars()._enter_email]
-    rows = db.query(partition_key_value=email, sort_key_prefix=str(_utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    rows = db.query(partition_key_value=email, sort_key_prefix=str(__utils.unix_epoc(months_ago=6))[:2], ascending=False)
 
     if rows is None:
         return
@@ -38,7 +38,7 @@ def clickable_progress_chart():
     df = df[[db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]]
     # df['Timeline'] = df['date'].astype(float).dt.strftime('%m/%d/%Y %H:%M')    
     df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
-    df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: _utils.insert_line_breaks(x))
+    df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: __utils.insert_line_breaks(x))
 
     fig = px.scatter(df, x='Timeline', y=db.Columns().lives_to_moksha, 
             labels={

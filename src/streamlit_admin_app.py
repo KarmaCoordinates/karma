@@ -1,7 +1,7 @@
 import streamlit as st
 import storage.s3_functions as s3f
 import ai.model_functions as model_functions
-import web_content 
+import streamlit_content 
 
 @st.cache_data
 def cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file):
@@ -22,7 +22,7 @@ def run_app():
     pickled_model_data_file = 'kc_model_finalized.sav'
 
     resources_folder = 'resources'
-    web_content.background(resources_folder)
+    streamlit_content.background(resources_folder)
 
     model_choice = 'RandomForest'
     df, columns, categorical_cols, model, label_encoder, accuracy, conf_matrix = cache_model(model_choice, bucket_name, features_data_file, pickled_model_data_file)
