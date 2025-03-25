@@ -1,8 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
 from api.ai_assist import cache_questionnaire, stream_ai_assist_reflect_response, clickable_progress_chart, stream_ai_assist_explore_response
-import __configs
-import __utils
+import __configs, __utils, __constants
 import storage.dynamodb_functions as db
 import json
 import secrets
@@ -185,7 +184,7 @@ async def journal_entry(request: Request):
 
     assessment_score = user_answers[0].pop('assessment_score', None)
     lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
-    assessment_percent_completion = int((len(user_answers[0])/50)*100)
+    assessment_percent_completion = int((len(user_answers[0])/__constants.NUMBER_OF_ASSESSMENT_QUESTIONS)*100)
 
     return JSONResponse(json.dumps({"assessment_score":assessment_score, 
                          "assessment_percent_completion":assessment_percent_completion, 
