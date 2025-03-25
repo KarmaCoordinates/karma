@@ -200,10 +200,10 @@ async def journal_entry(request: Request):
 
     return JSONResponse(json.dumps({"assessment_score":assessment_score, 
                          "assessment_percent_completion":assessment_percent_completion, 
-                         "lives_to_moksha":lives_to_moksha}, cls=_utils.DecimalEncoder), status_code=200)
+                         "lives_to_moksha":lives_to_moksha}, cls=_utils.DecimalEncoder).encode('ascii').decode('unicode-escape'), status_code=200)
     
     
-@app.get("/plot/journey/html")
+@app.get("/plot/journey/json")
 async def get_plot(request: Request):
     if not request.user.is_authenticated:
         return JSONResponse({"message": "Failure"}, status_code=401)    
@@ -216,7 +216,7 @@ async def get_plot(request: Request):
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
 
-    return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)))
+    return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder).encode('ascii').decode('unicode-escape')))
 
 
 @app.post("/ai-assist/explore")
