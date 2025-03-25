@@ -1,0 +1,4 @@
+CATEGORY_SIDDHI='Siddhi (सिद्धि)'
+CATEGORY_VIPARYAYAH='Viparyayah (विपर्यय)'
+CATEGORY_ASHAKTI='Aśakti (अशक्ति)'
+CATEGORY_TUSHTI='Tuṣṭi (तुष्टि)'

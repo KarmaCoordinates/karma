@@ -5,12 +5,10 @@ from fastapi import Request
 from pandas import DataFrame
 import pandas as pd
 import ast
-import json
 import re
 import time
 import storage.s3_functions as s3f
 import asyncio
-import plotly.express as px
 import plotly.io as pio
 import plotly.graph_objects as go
 from io import StringIO

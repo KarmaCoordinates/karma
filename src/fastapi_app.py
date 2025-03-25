@@ -15,7 +15,6 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 import logging
 from security.jwt_auth import create_access_token, JWTAuthBackend
 from security.jwt_auth import cache
-from datetime import datetime, timedelta
 from pydantic import BaseModel, field_validator, ValidationError
 from typing import Any
 
@@ -34,18 +33,6 @@ class JournalEntry(BaseModel):
 
 class Question(BaseModel):
     question: str | None = None
-    # question: dict[str, Any]
-
-    # @field_validator("question")
-    # @classmethod
-    # def parse_json_string(cls, value):
-    #     if isinstance(value, str):
-    #         try:
-    #             print(f'value:{value}')
-    #             return json.loads(value)
-    #         except json.JSONDecodeError as e:
-    #             raise ValueError(f"Invalid JSON string: {e}")
-    #     return value    
 
 
 app = FastAPI()
@@ -84,22 +71,22 @@ async def validate_token(request: Request, token: str):
     if not request.user.is_authenticated or token != cache.get(request.user.display_name)['otp']:
         return JSONResponse({"message": "Failure"}, status_code=401)    
     
-    current_datetime = datetime.fromtimestamp(time.time())
-    days_to_add = 90
-    expiration_datetime = current_datetime + timedelta(days=days_to_add)
-    expiration_timestamp = expiration_datetime.timestamp()
-
+    expiration_timestamp = _utils.future_timestamp(90)
     user_answers = db.query(request.user.display_name, 'latest')
+    client_ip =  get_client_ip(request)['client_ip']
+
     if not user_answers or user_answers == '[]' or user_answers == 'null':
         user_answers = [{'date':str(time.time()), 
                          'auth_code' : cache.get(request.user.display_name)['auth_code'],
                          'expiration_date':str(expiration_timestamp), 
-                         'email':request.user.display_name}]
+                         'email':request.user.display_name,
+                         'client_ip':client_ip}]
     else:
         user_answers[0].update({'expiration_date':str(expiration_timestamp), 
                                 'auth_code' : cache.get(request.user.display_name)['auth_code'],
-                                'date':str(time.time())})
-
+                                'date':str(time.time()),
+                                'client_ip':client_ip})
+    
     db.insert(user_activity_data=user_answers[0])
 
     return JSONResponse({"message": "Successful"}, status_code=200)    
@@ -216,7 +203,7 @@ async def get_plot(request: Request):
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
 
-    return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder).encode('ascii').decode('unicode-escape')))
+    return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=_utils.DecimalEncoder)))
 
 
 @app.post("/ai-assist/explore")
@@ -252,4 +239,8 @@ async def ai_assist(request: Request, question: Question):
     )
     return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
+
+def get_client_ip(request: Request):
+    client_ip = request.headers.get("X-Forwarded-For") or request.client.host
+    return {"client_ip": client_ip}
 

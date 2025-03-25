@@ -2,11 +2,11 @@ import re
 import pandas as pd
 import numpy as np
 from urllib import request
-import datetime
 import calendar
 import json
 from decimal import Decimal
 import time
+from datetime import datetime, timedelta, date
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -109,9 +109,9 @@ def is_valid_email(email):
 
 
 def previous_month():
-    today = datetime.date.today()
+    today = date.today()
     first = today.replace(day=1)
-    last_month = first - datetime.timedelta(days=1)
+    last_month = first - timedelta(days=1)
     return last_month.strftime("%Y%m")
 
 
@@ -126,28 +126,34 @@ def get_start_end_month(input_yyyymm):
 
 def previous_month_timestamp():
     start, end = get_start_end_month(previous_month())
-    start_timestamp = datetime.datetime.strptime(str(start), "%Y%m%d").timestamp()
-    end_timestamp = datetime.datetime.strptime(str(end), "%Y%m%d").timestamp()
+    start_timestamp = datetime.strptime(str(start), "%Y%m%d").timestamp()
+    end_timestamp = datetime.strptime(str(end), "%Y%m%d").timestamp()
     return start_timestamp, end_timestamp
 
 
 def current_month():
-    today = datetime.date.today()
+    today = date.today()
     return today.strftime("%Y%m")
 
 def current_month_timestamp():
     start, end = get_start_end_month(current_month())
-    start_timestamp = datetime.datetime.strptime(str(start), "%Y%m%d").timestamp()
-    end_timestamp = datetime.datetime.strptime(str(end), "%Y%m%d").timestamp()
+    start_timestamp = datetime.strptime(str(start), "%Y%m%d").timestamp()
+    end_timestamp = datetime.strptime(str(end), "%Y%m%d").timestamp()
     return start_timestamp, end_timestamp
 
 
 def unix_epoc(months_ago=1):
-    today = datetime.date.today()
-    six_months_ago = today - datetime.timedelta(days=months_ago*30) #Approximating a month as 30 days
-    datetime_six_months_ago = datetime.datetime(six_months_ago.year, six_months_ago.month, six_months_ago.day, 0, 0, 0)
+    today = date.today()
+    six_months_ago = today - timedelta(days=months_ago*30) #Approximating a month as 30 days
+    datetime_six_months_ago = datetime(six_months_ago.year, six_months_ago.month, six_months_ago.day, 0, 0, 0)
     timestamp_six_months_ago = int(time.mktime(datetime_six_months_ago.timetuple()))
     return timestamp_six_months_ago
+
+def future_timestamp(days_in_future: int):
+    current_datetime = datetime.fromtimestamp(time.time())
+    expiration_datetime = current_datetime + timedelta(days=days_in_future)
+    expiration_timestamp = expiration_datetime.timestamp()
+    return expiration_timestamp
 
 
 def main():
