@@ -13,7 +13,7 @@ import journal.journal_functions as jf
 import analytics.plot_functions as pf
 import storage.dynamodb_functions as db
 import streamlit_functions.state_mgmt_functions as smf
-import quiz as qz
+import assessment.quiz as qz
 
 
 def page_config(static_files_folder):
