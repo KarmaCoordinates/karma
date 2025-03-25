@@ -73,19 +73,21 @@ async def validate_token(request: Request, token: str):
     
     expiration_timestamp = __utils.future_timestamp(90)
     user_answers = db.query(request.user.display_name, 'latest')
-    client_ip =  __client_ip(request)['client_ip']
+    client_ip_details =  __client_ip_details(request) 
+    if client_ip_details:
+        client_ip_details =  json.loads(__client_ip_details(request).to_json())
 
     if not user_answers or user_answers == '[]' or user_answers == 'null':
         user_answers = [{'date':str(time.time()), 
                          'auth_code' : cache.get(request.user.display_name)['auth_code'],
                          'expiration_date':str(expiration_timestamp), 
                          'email':request.user.display_name,
-                         'client_ip':client_ip}]
+                         'client_ip_details':client_ip_details}]
     else:
         user_answers[0].update({'expiration_date':str(expiration_timestamp), 
                                 'auth_code' : cache.get(request.user.display_name)['auth_code'],
                                 'date':str(time.time()),
-                                'client_ip':client_ip})
+                                'client_ip_details':client_ip_details})
     
     db.insert(user_activity_data=user_answers[0])
 
@@ -234,10 +236,9 @@ async def ai_assist(request: Request, question: Question):
     return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
-def __client_ip(request: Request):
+def __client_ip_details(request: Request):
     client_ip = request.headers.get("X-Forwarded-For") or request.client.host
     if client_ip:
         response = DbIpCity.get(client_ip, api_key='free')
-        # print(f'geolocation"{response.to_json()}')
-    return {"client_ip": client_ip, "client_ip_location":response}
+    return response
 
