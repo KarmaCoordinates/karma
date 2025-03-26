@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
 from api.ai_assist import cache_questionnaire, stream_ai_assist_reflect_response, clickable_progress_chart, stream_ai_assist_explore_response
 import __configs, __utils, __constants
@@ -66,7 +66,6 @@ async def get_token(request: Request, user_id: UserIdentifier):
 
 @app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
-
     if not request.user.is_authenticated or token != cache.get(request.user.display_name)['otp']:
         return JSONResponse({"message": "Failure"}, status_code=401)    
     
@@ -86,39 +85,23 @@ async def validate_token(request: Request, token: str):
         user_answers[0].update({'expiration_date':str(expiration_timestamp), 
                                 'auth_code' : cache.get(request.user.display_name)['auth_code'],
                                 'date':str(time.time()),
-                                'client_ip_details':client_ip_details})
-    
+                                'client_ip_details':client_ip_details})    
     db.insert(user_activity_data=user_answers[0])
-
     return JSONResponse({"message": "Successful"}, status_code=200)    
 
 
 @app.post("/journal-entry")
 async def journal_entry(request: Request, journal_entry: JournalEntry):
-    if not request.user.is_authenticated:
-        return JSONResponse({"message": "Failure"}, status_code=401)    
-
-    user_answers = db.query(request.user.display_name, 'latest')
-    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
-
+    user_answers = await __user_latest_record(request)
     user_answers[0].pop('_journal_entry', None)
     user_answers[0].update({'journal_entry': journal_entry.journal_entry, 'date':str(time.time())})
-
     db.insert(user_activity_data=user_answers[0])
-
     return JSONResponse({"message": "Successful"}, status_code=200)    
 
 
 @app.get("/ai-assist/reflect")
 async def ai_assist(request: Request):
-    if not request.user.is_authenticated:
-        return JSONResponse({"message": "Failure"}, status_code=401)    
-
-    user_answers = db.query(request.user.display_name, 'latest')
-    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
-
+    user_answers = await __user_latest_record(request)
     journal_entry = user_answers[0].get('journal_entry')
     query = f'''Analyse impact of journal entry={journal_entry}'''
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
@@ -126,11 +109,9 @@ async def ai_assist(request: Request):
                     and the answers={user_answers[0]}, 
                     which answers get changed due to the new journal entry={journal_entry}?
                     Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
-
     client=__configs.get_config().openai_client        
     assistant=__configs.get_config().openai_assistant
     thread = client.beta.threads.create()
-
     client.beta.threads.messages.create(
         thread_id=thread.id,
         role="user",
@@ -141,32 +122,21 @@ async def ai_assist(request: Request):
 
 @app.get("/ai-assist/journey")
 async def ai_assist(request: Request):
-    if not request.user.is_authenticated:
-        return JSONResponse({"message": "Failure"}, status_code=401)    
-
-    user_answers = db.query(request.user.display_name, 'latest')
-    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
-
+    user_answers = await __user_latest_record(request)
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-
     user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(__utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
-
     journal_entries = user_answers_rows[0]['journal_entry']
     client_ip_details = user_answers[0]['client_ip_details']
-
     query = f'''Suggest activities to improve Karma Coordinates score'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                     and all answers={user_answers_rows[0]}, 
                     and geographic location={client_ip_details}
                     Suggest activities, events and volunteering opportunities with dates and locations to improve Karma Coordinates score.''' 
-
     client=__configs.get_config().openai_client        
     assistant=__configs.get_config().openai_assistant
     thread = client.beta.threads.create()
-
     client.beta.threads.messages.create(
         thread_id=thread.id,
         role="user",
@@ -177,17 +147,10 @@ async def ai_assist(request: Request):
 
 @app.get("/score/latest")
 async def journal_entry(request: Request):
-    if not request.user.is_authenticated:
-        return JSONResponse({"message": "Failure"}, status_code=401)    
-
-    user_answers = db.query(request.user.display_name, 'latest')
-    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
-
+    user_answers = await __user_latest_record(request)
     assessment_score = user_answers[0].pop('assessment_score', None)
     lives_to_moksha = user_answers[0].pop('lives_to_moksha', None)
     assessment_percent_completion = int((len(user_answers[0])/__constants.NUMBER_OF_ASSESSMENT_QUESTIONS)*100)
-
     return JSONResponse(json.dumps({"assessment_score":assessment_score, 
                          "assessment_percent_completion":assessment_percent_completion, 
                          "lives_to_moksha":lives_to_moksha}, cls=__utils.DecimalEncoder).encode('ascii').decode('unicode-escape'), status_code=200)
@@ -195,40 +158,24 @@ async def journal_entry(request: Request):
     
 @app.get("/plot/journey/json")
 async def get_plot(request: Request):
-    if not request.user.is_authenticated:
-        return JSONResponse({"message": "Failure"}, status_code=401)    
-
-    user_answers = db.query(request.user.display_name, 'latest')
-    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
-
+    user_answers = await __user_latest_record(request)
     user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(__utils.unix_epoc(months_ago=6))[:2], ascending=False)
     if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
-
     return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=__utils.DecimalEncoder)))
 
 
 @app.post("/ai-assist/explore")
 async def ai_assist(request: Request, question: Question):
-    if not request.user.is_authenticated:
-        return JSONResponse({"message": "Failure"}, status_code=401)    
-
-    user_answers = db.query(request.user.display_name, 'latest')
-    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
-        return JSONResponse({"message": "Token Mismatch"}, status_code=401)    
-
+    user_answers = await __user_latest_record(request)
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-
     query = f'''Analyse impact of all journal entry'''
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                     and the thought={question}
                     provide an answer and/or an insight and/or a solution''' 
-
     client=__configs.get_config().openai_client        
     assistant=__configs.get_config().openai_assistant
     thread = client.beta.threads.create()
-
     client.beta.threads.messages.create(
         thread_id=thread.id,
         role="user",
@@ -237,9 +184,23 @@ async def ai_assist(request: Request, question: Question):
     return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
+async def __user_latest_record(request: Request):
+    if not request.user.is_authenticated:
+        raise HTTPException(status_code=401, detail="Failure")
+    user_answers = db.query(request.user.display_name, 'latest')
+    if not user_answers[0]['auth_code'] or user_answers[0]['auth_code'] != cache.get(request.user.display_name)['auth_code']:
+        raise HTTPException(status_code=401, detail="Token Mismatch")
+    return user_answers
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc):
+        return JSONResponse(status_code=exc.status_code, content={"message": exc.detail},
+    )
+
+
 def __client_ip_details(request: Request):
     client_ip = request.headers.get("X-Forwarded-For") or request.client.host
     if client_ip:
         response = DbIpCity.get(client_ip, api_key='free')
     return response
-
