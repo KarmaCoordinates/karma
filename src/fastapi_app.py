@@ -38,7 +38,9 @@ app = FastAPI()
 app = FastAPI(middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())])
 origins = [
     "http://localhost:8100",
-    "https://localhost"
+    "https://localhost",
+    "http://localhost",
+    "capacitor://localhost"
 ]
 app.add_middleware(
     CORSMiddleware,
