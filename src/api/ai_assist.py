@@ -150,12 +150,11 @@ def clickable_progress_chart(rows: str):
     fig = go.Figure(data=[go.Scatter(x=df['Timeline'], y=df[db.Columns().lives_to_moksha], 
                                      text=df[db.Columns().journal_entry].str.slice(0, 50),
                                      mode='lines+markers',
-                                     line=dict(color='green'),
+                                     line=dict(color='gold'),
                                      hovertemplate="<b>%{text}</b>")],
                                      layout=layout)
     fig.update_layout({
         'title_text':"My progress<br><sup>on path to Moksha</sup>",
-        # 'plot_bgcolor':'lightgrey',
         'hoverlabel.align':'left',
         'xaxis_title':'Timeline',
         'yaxis_title':'Lives to Moksha'}
