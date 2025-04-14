@@ -39,10 +39,18 @@ def clickable_progress_chart():
     # df['Timeline'] = df['date'].astype(float).dt.strftime('%m/%d/%Y %H:%M')    
     df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
     df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: __utils.insert_line_breaks(x))
-        
+
+    # Choose theme based on mode (you can set this dynamically)
+    is_dark_mode = True  # Or detect from app settings
+    template = "plotly_dark" if is_dark_mode else "plotly_white"
+
     fig = px.scatter(df, x='Timeline', y=db.Columns().lives_to_moksha, 
-            hover_data=df[['Journal']], trendline='expanding')
+            hover_data=df[['Journal']], trendline='expanding', template=template)
     
+    # fig.update_traces(marker=dict(size=4,
+    #                           line=dict(width=4,
+    #                                     color='DarkSlateGrey')),
+    #               selector=dict(mode='markers'))    
     fig.update_layout({
         'paper_bgcolor':'rgba(0,0,0,0)',
         'plot_bgcolor':'rgba(0,0,0,0)',
@@ -53,9 +61,8 @@ def clickable_progress_chart():
     )    
     fig.data[1].line.color = 'gold'
 
-    
-
     selected_points = plotly_events(fig, click_event=True, hover_event=False, key="my_progress_chart")
+
     # if selected_points:
     #     print(f'selected: {selected_points[0]['pointIndex']}')
 

@@ -155,7 +155,7 @@ def clickable_progress_chart(rows: str):
                                      layout=layout)
     fig.update_layout({
         'title_text':"My progress<br><sup>on path to Moksha</sup>",
-        'plot_bgcolor':'lightgrey',
+        # 'plot_bgcolor':'lightgrey',
         'hoverlabel.align':'left',
         'xaxis_title':'Timeline',
         'yaxis_title':'Lives to Moksha'}
