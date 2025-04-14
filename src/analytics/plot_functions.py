@@ -4,12 +4,12 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import streamlit_functions.state_mgmt_functions as sf
-import statsmodels as sm
 import plotly.express as px
 from streamlit_plotly_events import plotly_events
 import __utils
 import scipy.stats as stats
 import plotly.graph_objects as go
+import statsmodels.api as sm
 
 def progress_chart():    
     email=st.session_state[sf.get_session_vars()._enter_email]
@@ -39,24 +39,78 @@ def clickable_progress_chart():
     # df['Timeline'] = df['date'].astype(float).dt.strftime('%m/%d/%Y %H:%M')    
     df['Timeline'] = pd.to_datetime(pd.to_numeric(df['date'], errors='coerce'), unit='s', )
     df['Journal'] = df[db.Columns().journal_entry].apply(lambda x: __utils.insert_line_breaks(x))
-
+        
     fig = px.scatter(df, x='Timeline', y=db.Columns().lives_to_moksha, 
-            labels={
-                "lives_to_moksha": "Lives to Moksha"},
-            title="My progress", 
-            hover_data=df[['Journal']], trendline="ols")
+            hover_data=df[['Journal']], trendline='expanding')
     
     fig.update_layout({
-        'plot_bgcolor':'white',
+        'paper_bgcolor':'rgba(0,0,0,0)',
+        'plot_bgcolor':'rgba(0,0,0,0)',
         'hoverlabel.align':'left',
+        'title':'My progress', 
         'xaxis_title':'Timeline',
         'yaxis_title':'Lives to Moksha'}
     )    
     fig.data[1].line.color = 'gold'
 
+    
+
     selected_points = plotly_events(fig, click_event=True, hover_event=False, key="my_progress_chart")
     # if selected_points:
     #     print(f'selected: {selected_points[0]['pointIndex']}')
+
+    # # Create figure
+    # layout = go.Layout(
+    #     paper_bgcolor='rgba(0,0,0,0)',
+    #     plot_bgcolor='rgba(0,0,0,0)'
+    # )    
+
+    # # Convert categorical x-axis to numeric values for regression
+    # # x_numeric = np.arange(len(df['Timeline']))
+    # # print(df['Timeline'])
+    # df = df.sort_values('Timeline', ascending=True).reset_index(drop=True)
+    # df['x_numeric'] = range(len(df))
+
+    # # df['x_numeric'] = df['Timeline'].apply(lambda x: x.timestamp())
+    # # df['x_numeric'] = df['Timeline'].map(pd.Timestamp.toordinal)
+    # print(df['x_numeric'])
+    # valid_df = df.dropna(subset=[db.Columns().lives_to_moksha])
+
+    # # Calculate trendline
+    # # Add a constant for the OLS model (for intercept)
+    # X = sm.add_constant(valid_df['x_numeric'])
+
+    # # Fit the OLS model
+    # model = sm.OLS(valid_df[db.Columns().lives_to_moksha].astype(float), X).fit()
+
+    # # Predict y values (the trendline)
+    # df['Trendline'] = model.predict(sm.add_constant(df['x_numeric']))
+
+    # # slope, intercept = np.polyfit(valid_df['x_numeric'], valid_df[db.Columns().lives_to_moksha].astype(float), 1)
+    # # df['Trendline'] = slope * df['x_numeric'] + intercept
+
+    # # Loop df columns and plot columns to the figure
+    # # for i in range(1, len(df.columns)):
+    # #     col_name = 'S'+ str(i)
+    # scatter_plot = go.Scatter(x=df['x_numeric'], y=df[db.Columns().lives_to_moksha],
+    #                     mode='markers', # 'lines' or 'markers'
+    #                     name="Lives",
+    #                     marker=dict(color='gray'),
+    #                     hovertext=df['Journal'])
+    
+    # trendline = go.Scatter(x=df['x_numeric'], y=df['Trendline'], mode='lines', name='Trendline', line=dict(color='gold', dash='dash'))
+        
+    # fig1 = go.Figure(data=[trendline, scatter_plot], layout=layout)
+    
+
+    # fig1.update_layout(title=f'My Progress',
+    #                 xaxis_title=f'Timeline',
+    #                 yaxis_title=f'Lives to Moksha')
+
+    # selected_points = plotly_events(fig1, click_event=True, hover_event=False, key="my_progress_chart2")
+
+    # fig1.show()   
+
 
 
 def bell_curve():
@@ -92,9 +146,13 @@ def bell_curve():
 
 
     # vline = go.scatter.Line([mean], width=3, dash="dash", color="green")
+    layout = go.Layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
+    )    
 
     # Create the figure
-    fig = go.Figure(data=[histogram, bell_curve])
+    fig = go.Figure(data=[histogram, bell_curve], layout=layout)
 
     fig.add_vline(x=mean, line_width=1, line_dash="dash", line_color="gold")
 

@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI, OpenAIError
+from openai import OpenAIError
 from openai.types.beta.assistant_stream_event import ThreadMessageDelta
 from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
 import time

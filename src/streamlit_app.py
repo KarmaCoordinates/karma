@@ -1,19 +1,14 @@
-import ai.model_functions as model_functions
 import streamlit_content 
 import streamlit as st
-import storage.s3_functions as s3f
-import ai.openai_assistant_chat as openai_assistant_chat
+import ai.openai_assistant_chat as osc
 import payment.stripe_payment as sp
 import assessment.questionnaire_pratyay_sargah as qps
 import feedback.feedback_functions as ff
 import analytics.pdf_functions as pdf
 import security.auth_functions as af
-import assessment.score_functions as sf
 import journal.journal_functions as jf
 import analytics.plot_functions as pf
-import storage.dynamodb_functions as db
 import streamlit_functions.state_mgmt_functions as smf
-import assessment.quiz as qz
 
 
 def page_config(static_files_folder):
@@ -48,7 +43,7 @@ def run_app():
         streamlit_content.background(static_files_folder)
         # qz.take_quiz()
 
-    openai_assistant_chat.prompt()
+    osc.prompt()
 
     # af.identity_msg()
 
@@ -72,8 +67,8 @@ def run_app():
             clicked = st.button('Show and explain my score')
             if clicked:
                 query = f'''Explain {score_ai_analysis_query}'''
-                openai_assistant_chat.prompt_specific(query=query, ai_query=query, plh=plh)     
-                analysis = openai_assistant_chat.get_assistant_answer_from_cache(query)
+                osc.prompt_specific(query=query, ai_query=query, plh=plh)     
+                analysis = osc.get_assistant_answer_from_cache(query)
 
         pdf.download_assessment_pdf(st.session_state.user_answers, st.session_state.karma_coordinates, analysis)
 

@@ -1,11 +1,9 @@
 import streamlit as st
 import base64
 from datetime import datetime, timezone, timedelta
-import fpdf
 from fpdf import FPDF
 import storage.dynamodb_functions as db
 import journal.journal_functions as jf
-import pandas as pd
 
 def create_assessment_pdf(data_dict, score, analysis):
     pdf = FPDF()
