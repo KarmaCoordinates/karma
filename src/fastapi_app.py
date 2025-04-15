@@ -171,10 +171,18 @@ async def get_plot(request: Request):
 async def ai_assist(request: Request, question: Question):
     user_answers = await __user_latest_record(request)
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    query = f'''Analyse impact of all journal entry'''
-    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and the thought={question}
-                    provide an answer and/or an insight and/or a solution''' 
+    user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(__utils.unix_epoc(months_ago=6))[:2], ascending=False)
+    if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
+        user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
+    journal_entries = user_answers_rows[0]['journal_entry']
+    client_ip_details = user_answers[0]['client_ip_details']
+
+    ai_query = f'''Answer the question={question}
+                    Within the context of
+                        questionnaire={features_df.to_csv()}, 
+                        user answers={user_answers_rows[0]}, 
+                        and journal entries={journal_entries}. 
+                    In addition, provide specific activities, events and volunteering opportunities with dates and within the location={client_ip_details} to improve Karma Coordinates score.''' 
     client=__configs.get_config().openai_client        
     assistant=__configs.get_config().openai_assistant
     thread = client.beta.threads.create()
