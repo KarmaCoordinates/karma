@@ -107,11 +107,12 @@ async def ai_assist(request: Request):
     journal_entry = user_answers[0].get('journal_entry')
     query = f'''Analyse impact of journal entry={journal_entry}'''
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
+    ai_query = f'''Give an Advice on journal_entry={journal_entry}.
+                In addition, 
+                    Given the questionnaire={features_df.to_csv()} 
                     and the answers={user_answers[0]}, 
                     which answers get changed due to the new journal entry={journal_entry}?
-                    Give impacted questions and changed answers (only from valid options of answers) as a dictionary.
-                In addition, give an Advice on journal_entry={journal_entry}'''
+                    Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
     
     client=__configs.get_config().openai_client        
     assistant=__configs.get_config().openai_assistant
