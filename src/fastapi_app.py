@@ -110,7 +110,9 @@ async def ai_assist(request: Request):
     ai_query = f'''Given the questionnaire={features_df.to_csv()} 
                     and the answers={user_answers[0]}, 
                     which answers get changed due to the new journal entry={journal_entry}?
-                    Give impacted questions and changed answers (only from valid options of answers) as a dictionary.'''
+                    Give impacted questions and changed answers (only from valid options of answers) as a dictionary.
+                In addition, give an Advice on journal_entry={journal_entry}'''
+    
     client=__configs.get_config().openai_client        
     assistant=__configs.get_config().openai_assistant
     thread = client.beta.threads.create()
@@ -120,31 +122,6 @@ async def ai_assist(request: Request):
         content=ai_query
     )
     return StreamingResponse(stream_ai_assist_reflect_response(request, user_answers, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
-
-
-@app.get("/ai-assist/journey")
-async def ai_assist(request: Request):
-    user_answers = await __user_latest_record(request)
-    features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    user_answers_rows = db.query(partition_key_value=request.user.display_name, sort_key_prefix=str(__utils.unix_epoc(months_ago=6))[:2], ascending=False)
-    if not user_answers_rows or user_answers_rows == '[]' or user_answers_rows == 'null':
-        user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
-    journal_entries = user_answers_rows[0]['journal_entry']
-    client_ip_details = user_answers[0]['client_ip_details']
-    query = f'''Suggest activities to improve Karma Coordinates score'''
-    ai_query = f'''Given the questionnaire={features_df.to_csv()} 
-                    and all answers={user_answers_rows[0]}, 
-                    and geographic location={client_ip_details}
-                    Suggest activities, events and volunteering opportunities with dates and locations to improve Karma Coordinates score.''' 
-    client=__configs.get_config().openai_client        
-    assistant=__configs.get_config().openai_assistant
-    thread = client.beta.threads.create()
-    client.beta.threads.messages.create(
-        thread_id=thread.id,
-        role="user",
-        content=ai_query
-    )
-    return StreamingResponse(stream_ai_assist_explore_response(request, features_df, categories_df, features_df_stats, assistant.id, thread.id))    
 
 
 @app.get("/score/latest")
