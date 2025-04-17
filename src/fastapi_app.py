@@ -108,26 +108,32 @@ async def ai_assist(request: Request):
     query = f'''Analyse impact of journal entry={journal_entry}'''
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
     ai_query = f'''
-        You are an assistant generating structured output. Your response must include **exactly these two section titles**, with the titles **verbatim** and clearly marked:
+        You are an assistant generating a structured response.
 
-        Title: Advice on Journal Entry  
-        Give advice based on this journal entry:  
-        "{journal_entry}"
+        Your response must include **exactly two sections**, with the following headers — and **only** the headers (no numbering, no "Title:"):
 
-        Title: Questions Impacted by the Journal Entry  
-        Given the questionnaire:  
-        {features_df.to_csv(index=False)}  
+        - Advice on Journal Entry  
+        - Questions Impacted by the Journal Entry
 
-        And the user's original answers:  
-        {user_answers[0]}  
+        Instructions:
 
-        Determine which answers may change due to the new journal entry:  
-        "{journal_entry}"  
+        1. Start with the header: Advice on Journal Entry  
+        Then, provide advice based on the journal entry: "{journal_entry}"
 
-        Return only the impacted questions and their newly suggested answers (only from valid answer options) in a Python dictionary.
+        2. Next, include the header: Questions Impacted by the Journal Entry
+        Then, based on the questionnaire:
+        {features_df.to_csv(index=False)}
 
-        ⚠️ Your response must **start with "Title: Advice on Journal Entry"** and then continue with **"Title: Questions Impacted by the Journal Entry"** exactly as written. Do not change the titles.
-        '''
+        And the user's original answers:
+        {user_answers[0]}
+
+        Identify which answers would change due to the journal entry: "{journal_entry}".
+        Only include the impacted questions and their new valid answers in a Python dictionary.
+
+        ⚠️ Do not number the sections.  
+        ⚠️ Do not include "Title:" anywhere in the response.  
+        ⚠️ Use **only the exact section headers as written** above.
+      '''
 
 
     
