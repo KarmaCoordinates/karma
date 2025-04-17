@@ -114,7 +114,7 @@ async def ai_assist(request: Request):
         Give advice based on this journal entry:  
         "{journal_entry}"
 
-        Title: Impacted Questions  
+        Title: Questions Impacted by the Journal Entry  
         Given the questionnaire:  
         {features_df.to_csv(index=False)}  
 
@@ -126,10 +126,10 @@ async def ai_assist(request: Request):
 
         Respond with:
         1. Only the impacted questions
-        2. New suggested answers (must be valid options from the questionnaire)
+        2. Current answer and the New suggested answers (must be valid options from the questionnaire)
         3. The output must be a Python dictionary
 
-        ⚠️ Your response must **start with "Title: Advice on Journal Entry"** and then continue with **"Title: Impacted Questions"** exactly as written. Do not change the titles.
+        ⚠️ Your response must **start with "Title: Advice on Journal Entry"** and then continue with **"Title: Questions Impacted by the Journal Entry"** exactly as written. Do not change the titles.
         '''
 
 
