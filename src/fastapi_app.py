@@ -124,10 +124,7 @@ async def ai_assist(request: Request):
         Determine which answers may change due to the new journal entry:  
         "{journal_entry}"  
 
-        Respond with:
-        1. Only the impacted questions
-        2. Current answer and the New suggested answers (must be valid options from the questionnaire)
-        3. The output must be a Python dictionary
+        Return only the impacted questions and their newly suggested answers (only from valid answer options) in a Python dictionary.
 
         ⚠️ Your response must **start with "Title: Advice on Journal Entry"** and then continue with **"Title: Questions Impacted by the Journal Entry"** exactly as written. Do not change the titles.
         '''
