@@ -107,23 +107,31 @@ async def ai_assist(request: Request):
     journal_entry = user_answers[0].get('journal_entry')
     query = f'''Analyse impact of journal entry={journal_entry}'''
     features_df, categories_df, features_df_stats = cache_questionnaire('karmacoordinates', 'karma_coordinates_features_data_dictionary.csv', 'karma_coordinates_categories_data_dictionary.csv')
-    ai_query = ai_query = f'''
-        Title: Advice on Journal Entry
-        Give advice based on the following journal entry:
+    ai_query = f'''
+        You are an assistant generating structured output. Your response must include **exactly these two section titles**, with the titles **verbatim** and clearly marked:
+
+        Title: Advice on Journal Entry  
+        Give advice based on this journal entry:  
         "{journal_entry}"
 
-        Title: Impacted Questions
-        Given the questionnaire:
-        {features_df.to_csv(index=False)}
+        Title: Impacted Questions  
+        Given the questionnaire:  
+        {features_df.to_csv(index=False)}  
 
-        And the user’s original answers:
-        {user_answers[0]}
+        And the user's original answers:  
+        {user_answers[0]}  
 
-        Which answers might change due to the new journal entry:
-        "{journal_entry}"?
+        Determine which answers may change due to the new journal entry:  
+        "{journal_entry}"  
 
-        Return only the impacted questions and their newly suggested answers (only from valid answer options) in a Python dictionary.
+        Respond with:
+        1. Only the impacted questions
+        2. New suggested answers (must be valid options from the questionnaire)
+        3. The output must be a Python dictionary
+
+        ⚠️ Your response must **start with "Title: Advice on Journal Entry"** and then continue with **"Title: Impacted Questions"** exactly as written. Do not change the titles.
         '''
+
 
     
     client=__configs.get_config().openai_client        
