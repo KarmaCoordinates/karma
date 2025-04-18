@@ -167,6 +167,10 @@ async def get_plot(request: Request):
         user_answers_rows = [{'date':str(time.time()), 'email':request.user.display_name}]
     return HTMLResponse(clickable_progress_chart(json.dumps(user_answers_rows, cls=__utils.DecimalEncoder)))
 
+@app.get("/ai-assist/popular-questions")
+async def popular_questions(request: Request):
+    return JSONResponse({"popular_questions": ['Based on my latest journal entry, how can I get better?', 'How can I improve my current Karma Coordinates score?' ]}, status_code=200)    
+
 
 @app.post("/ai-assist/explore")
 async def ai_assist(request: Request, question: Question):
