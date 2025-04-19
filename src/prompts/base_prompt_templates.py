@@ -3,13 +3,15 @@ POPULAR_QUESTIONS = {
         "Based on my latest journal entry, how can I get better?",
         "How can I improve my current Karma Coordinates score?",
         "What are the Sankrit shloka or karika relevant to my latest journal entry?",
+        "Will Karma Coordinates make me successful?",
     ]
 }
 QUESTIONS_TO_PROMPT = {
     "Based on my latest journal entry, how can I get better?": "question_and_activities",
     "How can I improve my current Karma Coordinates score?": "question_and_activities",
     "What are the Sankrit shloka or karika relevant to my latest journal entry?": "question_within_context",
-    "Reflect on the journal entry" : "reflect"
+    "Will Karma Coordinates make me successful?": "question",
+    "Reflect on the journal entry": "reflect",
 }
 
 PROMPT_TEMPLATES = {
@@ -40,7 +42,7 @@ PROMPT_TEMPLATES = {
 
         2. Next, include the header: Questions Impacted by the Journal Entry
         Then, based on the questionnaire:
-        {features_df.to_csv(index=False)}
+        {{features_df)}}
 
         And the user's original answers:
         {{user_answers}}
@@ -51,5 +53,5 @@ PROMPT_TEMPLATES = {
         ⚠️ Do not number the sections.  
         ⚠️ Do not include "Title:" anywhere in the response.  
         ⚠️ Use **only the exact section headers as written** above.
-      """
+      """,
 }
