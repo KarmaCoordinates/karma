@@ -76,7 +76,6 @@ async def __update_ai_assessment(request: Request, user_answers, features_df: Da
             matched_question = features_df.loc[features_df['Question'] == q]
             if len(matched_question) == 1:
                 ai_answer = updated_dict.get(q)
-                print(f'{q}:{ai_answer}')
                 if any(answer_option.startswith(ai_answer) for answer_option in matched_question.get('options_list').values[0]):
                     ai_assessment.update({q:ai_answer})
 
