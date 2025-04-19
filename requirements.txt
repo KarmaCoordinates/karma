@@ -28,3 +28,4 @@ itsdangerous
 pyjwt
 cachetools
 ip2geotools
+jinja2
