@@ -30,7 +30,7 @@ PROMPT_TEMPLATES = {
     "reflect": """
         You are an assistant generating a structured response.
 
-        Your response must include **exactly two sections**, with the following headers — and **only** the headers (no numbering, no "Title:"):
+        Your response must include **exactly two sections**, with the following headers — and **only** the headers (no numbering, no 'Title:'):
 
         ### Advice on Journal Entry  
         ### Questions Impacted by the Journal Entry

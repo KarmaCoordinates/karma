@@ -147,35 +147,35 @@ async def ai_assist(request: Request):
         "journal_entry": json.dumps(journal_entry, cls=__utils.DecimalEncoder),
     }
 
-    # ai_query = f"""
-    #     You are an assistant generating a structured response.
+    prompt = f"""
+        You are an assistant generating a structured response.
 
-    #     Your response must include **exactly two sections**, with the following headers — and **only** the headers (no numbering, no "Title:"):
+        Your response must include **exactly two sections**, with the following headers — and **only** the headers (no numbering, no "Title:"):
 
-    #     ### Advice on Journal Entry  
-    #     ### Questions Impacted by the Journal Entry
+        ### Advice on Journal Entry  
+        ### Questions Impacted by the Journal Entry
 
-    #     Instructions:
+        Instructions:
 
-    #     1. Start with the header: Advice on Journal Entry  
-    #     Then, provide advice based on the journal entry: "{journal_entry}"
+        1. Start with the header: Advice on Journal Entry  
+        Then, provide advice based on the journal entry: "{journal_entry}"
 
-    #     2. Next, include the header: Questions Impacted by the Journal Entry
-    #     Then, based on the questionnaire:
-    #     {features_df.to_csv(index=False)}
+        2. Next, include the header: Questions Impacted by the Journal Entry
+        Then, based on the questionnaire:
+        {features_df.to_csv(index=False)}
 
-    #     And the user's original answers:
-    #     {user_answers[0]}
+        And the user's original answers:
+        {user_answers[0]}
 
-    #     Identify which answers would change due to the journal entry: "{journal_entry}".
-    #     Only include the impacted questions and their new valid answers in a Python dictionary.
+        Identify which answers would change due to the journal entry: "{journal_entry}".
+        Only include the impacted questions and their new valid answers in a Python dictionary.
 
-    #     ⚠️ Do not number the sections.  
-    #     ⚠️ Do not include "Title:" anywhere in the response.  
-    #     ⚠️ Use **only the exact section headers as written** above.
-    #   """
+        ⚠️ Do not number the sections.  
+        ⚠️ Do not include "Title:" anywhere in the response.  
+        ⚠️ Use **only the exact section headers as written** above.
+      """
 
-    prompt = generate_prompt(prompt_key, variables)
+    # prompt = generate_prompt(prompt_key, variables)
 
     client = __configs.get_config().openai_client
     assistant = __configs.get_config().openai_assistant
