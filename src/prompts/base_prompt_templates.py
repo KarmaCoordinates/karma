@@ -3,14 +3,16 @@ POPULAR_QUESTIONS = {
         "Based on my latest journal entry, how can I get better?",
         "How can I improve my current Karma Coordinates score?",
         "What are the Sankrit shloka or karika relevant to my latest journal entry?",
-        "Will Karma Coordinates make me successful?",
+        "Based on my past assessment scores, what do I need to do to improve in my weakest area?",
+        "What questions are used for assessment?",
     ]
 }
 QUESTIONS_TO_PROMPT = {
-    "Based on my latest journal entry, how can I get better?": "question_and_activities",
-    "How can I improve my current Karma Coordinates score?": "question_and_activities",
-    "What are the Sankrit shloka or karika relevant to my latest journal entry?": "question_within_context",
-    "Will Karma Coordinates make me successful?": "question",
+    POPULAR_QUESTIONS.get("popular_questions")[0]: "question_and_activities",
+    POPULAR_QUESTIONS.get("popular_questions")[1]: "question_and_activities",
+    POPULAR_QUESTIONS.get("popular_questions")[2]: "question_within_context",
+    POPULAR_QUESTIONS.get("popular_questions")[3]: "question_and_activities_and_scores",
+    POPULAR_QUESTIONS.get("popular_questions")[4]: "question",
     "Reflect on the journal entry": "reflect",
 }
 
@@ -26,7 +28,16 @@ PROMPT_TEMPLATES = {
                         questionnaire={{features_df}}, 
                         user answers={{user_answers_rows}}, 
                         and journal entry={{journal_entry}}.""",
-    "question": """Answer the question={{question}}""",
+    "question_and_activities_and_scores": """Answer the question={{question}}
+                    Using past assessment scores={{assessment_scores}}.
+                    Compare and analyze the assessment scores,
+                    Present data in text tabular summary format propertly viewable on any device (including mobile).""",
+    "question": """Answer the question={{question}}
+                    If and only if asked or required, 
+                        use assessment scores={{assessment_scores}}, 
+                        compare and analyze the assessment scores,
+                        use assessment questions={{user_answers_rows}}
+                        and present data it text tabular summary format.""",
     "reflect": """
         You are an assistant generating a structured response.
 

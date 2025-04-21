@@ -23,6 +23,7 @@ from pydantic import BaseModel, field_validator, ValidationError
 from ip2geotools.databases.noncommercial import DbIpCity
 from prompts.base_prompt_templates import QUESTIONS_TO_PROMPT, POPULAR_QUESTIONS
 from prompts.prompt_engine import generate_prompt
+import pandas as pd
 
 temp_folder = ".tmp"
 logging.basicConfig(
@@ -68,8 +69,9 @@ async def hello():
         {"message": "Welcome to Karam Coordinates API"}, status_code=200
     )
 
+
 def __demo_account(email: str, token: str):
-    return email == 'sales@ohioedge.com' and token == '12a345b6'
+    return email == "sales@ohioedge.com" and token == "12a345b6"
 
 
 @app.post("/get-token")
@@ -84,9 +86,9 @@ async def get_token(request: Request, user_id: UserIdentifier):
 
 @app.get("/validate-token/{token}")
 async def validate_token(request: Request, token: str):
-    if (
-        not request.user.is_authenticated
-        or (not __demo_account(request.user.display_name, token) and token != cache.get(request.user.display_name)["otp"])
+    if not request.user.is_authenticated or (
+        not __demo_account(request.user.display_name, token)
+        and token != cache.get(request.user.display_name)["otp"]
     ):
         return JSONResponse({"message": "Failure"}, status_code=401)
 
@@ -142,10 +144,10 @@ async def ai_assist(request: Request):
 
     prompt_key = QUESTIONS_TO_PROMPT.get("Reflect on the journal entry")
     variables = {
-        "features_df": json.dumps(features_df.to_csv(index=False), cls=__utils.DecimalEncoder),
-        "user_answers": json.dumps(
-            user_answers[0], cls=__utils.DecimalEncoder
+        "features_df": json.dumps(
+            features_df.to_csv(index=False), cls=__utils.DecimalEncoder
         ),
+        "user_answers": json.dumps(user_answers[0], cls=__utils.DecimalEncoder),
         "journal_entry": json.dumps(journal_entry, cls=__utils.DecimalEncoder),
     }
 
@@ -246,8 +248,12 @@ async def ai_assist(request: Request, question: Question):
             {"date": str(time.time()), "email": request.user.display_name}
         ]
 
-    journal_entry = user_answers_rows[0]["journal_entry"]
-    client_ip_details = user_answers[0]["client_ip_details"]
+    assessment_scores_df =  pd.DataFrame(user_answers_rows, columns=['assessment_score', "date"])
+
+    journal_entry = user_answers_rows[0].pop("journal_entry", None)
+    user_answers_rows[0].pop("feedback", None)
+    user_answers_rows[0].pop("assessment_score", None)
+    client_ip_details = user_answers[0].pop("client_ip_details", None)
 
     prompt_key = QUESTIONS_TO_PROMPT.get(question.question)
     variables = {
@@ -258,7 +264,9 @@ async def ai_assist(request: Request, question: Question):
         ),
         "journal_entry": json.dumps(journal_entry, cls=__utils.DecimalEncoder),
         "client_ip_details": json.dumps(client_ip_details, cls=__utils.DecimalEncoder),
+        "assessment_scores": json.dumps(assessment_scores_df.to_json(), cls=__utils.DecimalEncoder),
     }
+
     prompt = generate_prompt(prompt_key, variables)
 
     client = __configs.get_config().openai_client
