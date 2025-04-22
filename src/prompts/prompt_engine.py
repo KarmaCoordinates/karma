@@ -1,7 +1,6 @@
 from jinja2 import Template
 from .base_prompt_templates import PROMPT_TEMPLATES
 from storage.s3_functions import save_csv_to_s3, cache_csv_from_s3
-import ast
 from __utils import safe_eval, is_none_or_empty
 
 bucket_name = 'karmacoordinates'
