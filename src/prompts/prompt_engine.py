@@ -13,7 +13,6 @@ def save_prompt_in_s3():
 
 def generate_prompt(question: str, variables: dict) -> str:
 
-    save_prompt_in_s3()
     df = cache_csv_from_s3(bucket_name=bucket_name, object_key=object_key)
 
     popular_questions = df[df["popular_questions"].str.contains(question, na=False)]
@@ -28,7 +27,6 @@ def generate_prompt(question: str, variables: dict) -> str:
     return template.render(**variables)
 
 def popular_questions():
-    save_prompt_in_s3()
     df = cache_csv_from_s3(bucket_name=bucket_name, object_key=object_key)
 
     df['popular_questions'] = df['popular_questions'].dropna().apply(
