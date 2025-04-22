@@ -3,11 +3,18 @@ import boto3
 import pandas as pd
 from pathlib import Path
 import logging
+from functools import lru_cache
 
 
 temp_folder = '.tmp'
 pickle_file_extension = 'pkl'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
+
+# first row is header
+# first column is index column 
+def save_csv_to_s3(csv_filename, csv_seperator, bucket_name, object_key):
+    df = pd.read_csv(f'{temp_folder}/{csv_filename}', sep=csv_seperator, header=0, index_col=0)
+    save_pickle_obj_to_s3(df, bucket_name, object_key)
 
 # return df
 def cache_csv_from_s3(bucket_name, object_key):
@@ -50,11 +57,6 @@ def save_html_to_s3(filename, bucket_name, object_key):
     s3 = boto3.client("s3")
     s3.upload_file(filename, bucket_name, object_key, ExtraArgs={'ContentType': 'text/html', "ContentEncoding" : "utf-8"})
 
-# first row is header
-# first column is index column 
-def save_csv_to_s3(csv_filename, csv_seperator, bucket_name, object_key):
-    df = pd.read_csv(f'{temp_folder}/{csv_filename}', sep=csv_seperator, header=0, index_col=0)
-    save_pickle_obj_to_s3(df, bucket_name, object_key)
 
 def main():
     pass

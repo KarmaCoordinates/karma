@@ -1,6 +1,6 @@
 from jinja2 import Template
 from .base_prompt_templates import PROMPT_TEMPLATES
-from storage.s3_functions import save_csv_to_s3, cache_csv_from_s3
+from storage.s3_functions import save_csv_to_s3, cache_pickle_obj_from_s3
 from __utils import safe_eval, is_none_or_empty
 
 bucket_name = 'karmacoordinates'
@@ -13,7 +13,7 @@ def save_prompt_in_s3():
 
 def generate_prompt(question: str, variables: dict) -> str:
 
-    df = cache_csv_from_s3(bucket_name=bucket_name, object_key=object_key)
+    df = cache_pickle_obj_from_s3(bucket_name=bucket_name, object_key=object_key)
 
     popular_questions = df[df["popular_questions"].str.contains(question, na=False)]
     popular_question = popular_questions.iloc[0] if not popular_questions.empty else None
@@ -27,7 +27,7 @@ def generate_prompt(question: str, variables: dict) -> str:
     return template.render(**variables)
 
 def popular_questions():
-    df = cache_csv_from_s3(bucket_name=bucket_name, object_key=object_key)
+    df = cache_pickle_obj_from_s3(bucket_name=bucket_name, object_key=object_key)
 
     df['popular_questions'] = df['popular_questions'].dropna().apply(
         lambda x: safe_eval(x) if isinstance(x, str) else x
