@@ -36,7 +36,7 @@ def popular_questions():
     )
     flat_list = [item for sublist in df['popular_questions'].to_list() for item in sublist]
 
-    return flat_list
+    return {"popular_questions" : flat_list}
 
 
 
