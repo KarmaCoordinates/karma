@@ -12,8 +12,8 @@ logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=lo
 
 # first row is header
 # first column is index column 
-def save_csv_to_s3(csv_filename, csv_seperator, bucket_name, object_key):
-    df = pd.read_csv(f'{temp_folder}/{csv_filename}', sep=csv_seperator, header=0, index_col=0)
+def save_csv_to_s3(csv_filename, csv_seperator, bucket_name, object_key, header=None, index_col=None):
+    df = pd.read_csv(f'{temp_folder}/{csv_filename}', sep=csv_seperator, header=header, index_col=index_col)
     save_pickle_obj_to_s3(df, bucket_name, object_key)
 
 # return df

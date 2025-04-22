@@ -7,8 +7,11 @@ bucket_name = 'karmacoordinates'
 csv_filename = 'karma_coordinates_prompts.csv'
 object_key = 'karma_coordinates_prompts.csv'
 
+# Remember:
+# call this from __runner.py to load the file in s3
+# remember to delete the current .pkl file from the aws karma/.tmp as wll so it fetches the new file
 def save_prompt_in_s3():
-    save_csv_to_s3(csv_filename=csv_filename, csv_seperator=",", bucket_name=bucket_name, object_key=object_key)
+    save_csv_to_s3(csv_filename=csv_filename, csv_seperator=",", bucket_name=bucket_name, object_key=object_key, header=0, index_col=0)
 
 
 def generate_prompt(question: str, variables: dict) -> str:

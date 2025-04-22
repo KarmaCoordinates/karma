@@ -8,3 +8,9 @@ if __name__ == '__main__':
     # To create prompts file in s3 use the following command
     # pe.save_prompt_in_s3()
 
+    # upload secrets file
+    # sap.save_to_s3()
+    # sender_email = sap.get_value('SENDER_EMAIL')
+    # print(f'testing : {sender_email}')
+
+

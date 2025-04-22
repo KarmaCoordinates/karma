@@ -14,3 +14,9 @@ fastapi dev src/fastapi_app.py
 ## production
 fastapi run src/fastapi_app.py 
 
+# To upload updated data files to s3
+# use __runner.py utility
+# for e.g. to upload prompt changes, call prompt_engine.save_prompt_in_s3()
+# remember to delete the current .pkl file from the aws karma/.tmp as wll so it fetches the new file
+
+
