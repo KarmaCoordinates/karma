@@ -6,7 +6,7 @@ from prompts import prompt_engine as pe
 if __name__ == '__main__': 
     # sap.main()
     # To create prompts file in s3 use the following command
-    # pe.save_prompt_in_s3()
+    pe.save_prompt_in_s3()
 
     # upload secrets file
     # sap.save_to_s3()

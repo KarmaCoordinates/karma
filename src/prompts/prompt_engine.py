@@ -18,13 +18,13 @@ def generate_prompt(question: str, variables: dict) -> str:
 
     df = cache_pickle_obj_from_s3(bucket_name=bucket_name, object_key=object_key)
 
-    popular_questions = df[df["popular_questions"].str.contains(question, na=False)]
-    popular_question = popular_questions.iloc[0] if not popular_questions.empty else None
+    questions = df[df["questions"].str.contains(question, na=False)]
+    question = questions.iloc[0] if not questions.empty else None
 
-    if is_none_or_empty(popular_question):
+    if is_none_or_empty(question):
         raw_template = PROMPT_TEMPLATES.get("default_prompt")
     else: 
-       raw_template = popular_question["prompt"]
+       raw_template = question["prompt"]
 
     template = Template(raw_template)
     return template.render(**variables)
@@ -35,7 +35,14 @@ def popular_questions():
     df['popular_questions'] = df['popular_questions'].dropna().apply(
         lambda x: safe_eval(x) if isinstance(x, str) else x
     )
-    flat_list = [item for sublist in df['popular_questions'].to_list() for item in sublist]
+
+    flat_list = [
+        item
+        for sublist in df['popular_questions']
+        if isinstance(sublist, list)
+        for item in sublist
+    ]    
+    # flat_list = [item for sublist in df['popular_questions'].to_list() for item in sublist]
 
     return {"popular_questions" : flat_list}
 
