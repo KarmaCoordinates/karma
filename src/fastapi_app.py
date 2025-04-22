@@ -21,8 +21,7 @@ from security.jwt_auth import create_access_token, JWTAuthBackend
 from security.jwt_auth import cache
 from pydantic import BaseModel, field_validator, ValidationError
 from ip2geotools.databases.noncommercial import DbIpCity
-from prompts.base_prompt_templates import QUESTIONS_TO_PROMPT, POPULAR_QUESTIONS
-from prompts.prompt_engine import generate_prompt
+from prompts.prompt_engine import generate_prompt, popular_questions as pq
 import pandas as pd
 
 temp_folder = ".tmp"
@@ -142,7 +141,7 @@ async def ai_assist(request: Request):
         "karma_coordinates_categories_data_dictionary.csv",
     )
 
-    prompt_key = QUESTIONS_TO_PROMPT.get("Reflect on the journal entry")
+    # prompt_key = QUESTIONS_TO_PROMPT.get("Reflect on the journal entry")
     variables = {
         "features_df": json.dumps(
             features_df.to_csv(index=False), cls=__utils.DecimalEncoder
@@ -151,7 +150,7 @@ async def ai_assist(request: Request):
         "journal_entry": json.dumps(journal_entry, cls=__utils.DecimalEncoder),
     }
 
-    prompt = generate_prompt(prompt_key, variables)
+    prompt = generate_prompt("Reflect on the journal entry", variables)
 
     client = __configs.get_config().openai_client
     assistant = __configs.get_config().openai_assistant
@@ -221,7 +220,7 @@ async def get_plot(request: Request):
 @app.get("/ai-assist/popular-questions")
 async def popular_questions(request: Request):
     return JSONResponse(
-        POPULAR_QUESTIONS,
+        pq(),
         status_code=200,
     )
 
@@ -255,7 +254,6 @@ async def ai_assist(request: Request, question: Question):
     user_answers_rows[0].pop("assessment_score", None)
     client_ip_details = user_answers[0].pop("client_ip_details", None)
 
-    prompt_key = QUESTIONS_TO_PROMPT.get(question.question)
     variables = {
         "question": question,
         "features_df": json.dumps(features_df.to_csv(), cls=__utils.DecimalEncoder),
@@ -267,7 +265,7 @@ async def ai_assist(request: Request, question: Question):
         "assessment_scores": json.dumps(assessment_scores_df.to_json(), cls=__utils.DecimalEncoder),
     }
 
-    prompt = generate_prompt(prompt_key, variables)
+    prompt = generate_prompt(question.question, variables)
 
     client = __configs.get_config().openai_client
     assistant = __configs.get_config().openai_assistant
@@ -285,7 +283,6 @@ async def ai_assist(request: Request, question: Question):
             thread.id,
         )
     )
-
 
 async def __user_latest_record(request: Request):
     if not request.user.is_authenticated:

@@ -7,6 +7,7 @@ import json
 from decimal import Decimal
 import time
 from datetime import datetime, timedelta, date
+import ast
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -14,6 +15,23 @@ class DecimalEncoder(json.JSONEncoder):
             return str(obj)
         return super().default(obj)
 
+def safe_eval(cell):
+    # Replace curly quotes with straight quotes
+    cleaned = cell.replace('“', '"').replace('”', '"')
+    try:
+        return ast.literal_eval(cleaned)
+    except Exception as e:
+        print(f"Skipping: {cell} due to {e}")
+        return []
+
+def is_none_or_empty(value):
+    if value is None:
+        return True
+    if isinstance(value, (str, list, tuple, dict, set)):
+        return len(value) == 0
+    if isinstance(value, pd.Series) or isinstance(value, pd.DataFrame):
+        return value.empty
+    return False
 
 def internet_on():
     try:
@@ -21,7 +39,7 @@ def internet_on():
         return True
     except request.URLError as err: 
         return False
-    
+        
 def hard_wrap_string_vectorized(s, width):
     """Wrap a string into lines with a maximum width and returns a single string with <br> for line breaks."""
     if not s:
