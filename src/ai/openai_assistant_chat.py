@@ -10,6 +10,7 @@ import streamlit_functions.streamlit_button_list as ifunc
 import random
 import string
 import unicodedata
+from prompts.prompt_engine import popular_questions
 
 class Query:
     def __init__(self, query, ai_query=None, status=None):
@@ -19,12 +20,6 @@ class Query:
         else:
             self.ai_query=query
         self.status = status
-
-@st.cache_data
-def cache_button_list_from_s3():
-    bucket_name = 'karmacoordinates'
-    object_key = 'karma_coordinates_prompts.csv'
-    return s3f.cache_csv_from_s3(bucket_name, object_key).iloc[1:, 0].to_list()        
 
 # Initialise session state to store conversation history locally to display on UI
 def __init():
@@ -60,7 +55,7 @@ def __render_user_input(user_query_container):
         # show suggested options (if auth=false)
         if not st.session_state.auth:
             st.markdown('FAQs')
-            ifunc.render_buttons(button_list=[item for item in cache_button_list_from_s3() if item not in st.session_state.query_history], on_click_callback=__callback_button_on_click)
+            ifunc.render_buttons(button_list=[item for item in popular_questions().get("popular_questions") if item not in st.session_state.query_history], on_click_callback=__callback_button_on_click)
 
         # draw user input box
         user_query = st.chat_input(ai_default_question)        

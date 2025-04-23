@@ -1,6 +1,7 @@
 from jinja2 import Template
 from storage.s3_functions import save_csv_to_s3, cache_pickle_obj_from_s3
 from __utils import safe_eval, is_none_or_empty
+from functools import lru_cache
 
 bucket_name = "karmacoordinates"
 csv_filename = "karma_coordinates_prompts.csv"
@@ -40,7 +41,7 @@ def generate_prompt(question: str, variables: dict) -> str:
     template = Template(raw_template)
     return template.render(**variables)
 
-
+@lru_cache
 def popular_questions():
     df = cache_pickle_obj_from_s3(bucket_name=bucket_name, object_key=object_key)
 
