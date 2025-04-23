@@ -42,7 +42,6 @@ def popular_questions():
         if isinstance(sublist, list)
         for item in sublist
     ]    
-    # flat_list = [item for sublist in df['popular_questions'].to_list() for item in sublist]
 
     return {"popular_questions" : flat_list}
 

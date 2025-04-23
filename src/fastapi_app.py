@@ -249,6 +249,8 @@ async def ai_assist(request: Request, question: Question):
 
     assessment_scores_df =  pd.DataFrame(user_answers_rows, columns=['assessment_score', "date"])
 
+    latest_assessment_score = user_answers[0].get("assessment_score")
+  
     journal_entry = user_answers_rows[0].pop("journal_entry", None)
     user_answers_rows[0].pop("feedback", None)
     user_answers_rows[0].pop("assessment_score", None)
@@ -263,6 +265,7 @@ async def ai_assist(request: Request, question: Question):
         "journal_entry": json.dumps(journal_entry, cls=__utils.DecimalEncoder),
         "client_ip_details": json.dumps(client_ip_details, cls=__utils.DecimalEncoder),
         "assessment_scores": json.dumps(assessment_scores_df.to_json(), cls=__utils.DecimalEncoder),
+        "latest_assessment_score" : json.dumps(latest_assessment_score, cls=__utils.DecimalEncoder)
     }
 
     prompt = generate_prompt(question.question, variables)
