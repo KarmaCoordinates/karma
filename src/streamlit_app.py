@@ -78,6 +78,7 @@ def run_app():
             pdf.download_journal()
 
     
+    st.subheader('App Support')
     appsup.user_feedback()
 
     if st.session_state.auth:
