@@ -38,6 +38,8 @@ class UserIdentifier(BaseModel):
 class JournalEntry(BaseModel):
     journal_entry: str
 
+class DeviceToken(BaseModel):
+    device_token: str
 
 class Question(BaseModel):
     question: str | None = None
@@ -130,6 +132,15 @@ async def journal_entry(request: Request, journal_entry: JournalEntry):
     db.insert(user_activity_data=user_answers[0])
     return JSONResponse({"message": "Successful"}, status_code=200)
 
+
+@app.post("/device-token")
+async def journal_entry(request: Request, device_token: DeviceToken):
+    user_answers = await __user_latest_record(request)
+    user_answers[0].update(
+        {"device_token": device_token.device_token, "date": str(time.time())}
+    )
+    db.insert(user_activity_data=user_answers[0])
+    return JSONResponse({"message": "Successful"}, status_code=200)
 
 @app.get("/ai-assist/reflect")
 async def ai_assist(request: Request):
