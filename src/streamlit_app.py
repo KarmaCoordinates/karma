@@ -9,6 +9,7 @@ import security.auth_functions as af
 import journal.journal_functions as jf
 import analytics.plot_functions as pf
 import streamlit_functions.state_mgmt_functions as smf
+import feedback.appsupport_functions as appsup
 
 
 def page_config(static_files_folder):
@@ -75,6 +76,9 @@ def run_app():
         if st.session_state.auth:
             st.subheader('Download Journal as PDF')    
             pdf.download_journal()
+
+    
+    appsup.user_feedback()
 
     if st.session_state.auth:
         st.subheader('Your feedback')
