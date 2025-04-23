@@ -9,7 +9,6 @@ import security.auth_functions as af
 import journal.journal_functions as jf
 import analytics.plot_functions as pf
 import streamlit_functions.state_mgmt_functions as smf
-import jinja2
 
 
 def page_config(static_files_folder):
