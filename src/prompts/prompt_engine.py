@@ -33,7 +33,7 @@ def generate_prompt(question: str, variables: dict) -> str:
     question = filtered_df.iloc[0] if not filtered_df.empty else None
 
     if is_none_or_empty(question):
-        return 
+        raise ValueError("Prompt engine unable to determine an appropriate prompt.")
     else:
         raw_template = question["prompt"]
 

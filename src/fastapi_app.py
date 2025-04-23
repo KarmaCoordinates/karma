@@ -38,8 +38,10 @@ class UserIdentifier(BaseModel):
 class JournalEntry(BaseModel):
     journal_entry: str
 
+
 class DeviceToken(BaseModel):
     device_token: str
+
 
 class Question(BaseModel):
     question: str | None = None
@@ -141,6 +143,7 @@ async def journal_entry(request: Request, device_token: DeviceToken):
     )
     db.insert(user_activity_data=user_answers[0])
     return JSONResponse({"message": "Successful"}, status_code=200)
+
 
 @app.get("/ai-assist/reflect")
 async def ai_assist(request: Request):
@@ -258,10 +261,12 @@ async def ai_assist(request: Request, question: Question):
             {"date": str(time.time()), "email": request.user.display_name}
         ]
 
-    assessment_scores_df =  pd.DataFrame(user_answers_rows, columns=['assessment_score', "date"])
+    assessment_scores_df = pd.DataFrame(
+        user_answers_rows, columns=["assessment_score", "date"]
+    )
 
     latest_assessment_score = user_answers[0].get("assessment_score")
-  
+
     journal_entry = user_answers_rows[0].pop("journal_entry", None)
     user_answers_rows[0].pop("feedback", None)
     user_answers_rows[0].pop("assessment_score", None)
@@ -275,8 +280,12 @@ async def ai_assist(request: Request, question: Question):
         ),
         "journal_entry": json.dumps(journal_entry, cls=__utils.DecimalEncoder),
         "client_ip_details": json.dumps(client_ip_details, cls=__utils.DecimalEncoder),
-        "assessment_scores": json.dumps(assessment_scores_df.to_json(), cls=__utils.DecimalEncoder),
-        "latest_assessment_score" : json.dumps(latest_assessment_score, cls=__utils.DecimalEncoder)
+        "assessment_scores": json.dumps(
+            assessment_scores_df.to_json(), cls=__utils.DecimalEncoder
+        ),
+        "latest_assessment_score": json.dumps(
+            latest_assessment_score, cls=__utils.DecimalEncoder
+        ),
     }
 
     prompt = generate_prompt(question.question, variables)
@@ -298,6 +307,7 @@ async def ai_assist(request: Request, question: Question):
         )
     )
 
+
 async def __user_latest_record(request: Request):
     if not request.user.is_authenticated:
         raise HTTPException(status_code=401, detail="Failure")
@@ -317,6 +327,11 @@ async def http_exception_handler(request: Request, exc):
         status_code=exc.status_code,
         content={"message": exc.detail},
     )
+
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    return JSONResponse(status_code=400, content={"message": str(exc)})
 
 
 def __client_ip_details(request: Request):
