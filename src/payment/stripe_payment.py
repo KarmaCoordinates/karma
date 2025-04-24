@@ -8,7 +8,7 @@ def subscribe():
     st.subheader('Donate to support this open source community initiative')
     col1, col2 = st.columns([1,1])
     with col1:
-        st.markdown('[Subscribe](https://buy.stripe.com/14keWy5LffpzeKkaEE) for unlimited AI (ChatGPT) queries into Indian epics and spiritual content such as Sankhya, Yoga, Vedas, Upanishad, Ramayan, Mahabharat, etc. AI indexing and querying is costly. Your support will go a long way in bringing ancient Indian epics and philosophy doctrines to everyone.')
+        st.markdown('[Subscribe](https://buy.stripe.com/14keWy5LffpzeKkaEE) to support free for all queries into Indian epics and spiritual content such as Sankhya, Yoga, Vedas, Upanishad, Ramayan, Mahabharat, etc. AI indexing and querying is costly. Your support will go a long way in bringing ancient Indian epics and philosophy doctrines to everyone.')
     with col2:
         st.image('.static/qr_14keWy5LffpzeKkaEE.png', width=100)
 
