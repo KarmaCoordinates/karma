@@ -53,9 +53,9 @@ def __render_user_input(user_query_container):
     with user_query_container:
 
         # show suggested options (if auth=false)
-        if not st.session_state.auth:
-            st.markdown('FAQs')
-            ifunc.render_buttons(button_list=[item for item in popular_questions().get("popular_questions") if item not in st.session_state.query_history], on_click_callback=__callback_button_on_click)
+        # if not st.session_state.auth:
+        st.markdown('FAQs')
+        ifunc.render_buttons(button_list=[item for item in popular_questions().get("popular_questions") if item not in st.session_state.query_history], on_click_callback=__callback_button_on_click)
 
         # draw user input box
         user_query = st.chat_input(ai_default_question)        

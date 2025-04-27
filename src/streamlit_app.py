@@ -44,7 +44,8 @@ def run_app():
         streamlit_content.background(static_files_folder)
         # qz.take_quiz()
 
-    osc.prompt()
+    if st.session_state.auth:
+        osc.prompt()
 
     # af.identity_msg()
 
