@@ -89,7 +89,7 @@ def run_app():
             ff.user_feedback(st.session_state.user_answers, percent_completed)
 
     streamlit_content.sankhya_references(static_files_folder)
-    sp.subscribe()
+    # sp.subscribe()
 
 
 def main():
