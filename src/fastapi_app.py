@@ -43,6 +43,11 @@ class DeviceToken(BaseModel):
     device_token: str
 
 
+class Preferences(BaseModel):
+    notification: str
+    location: str | None = None
+
+
 class Question(BaseModel):
     question: str | None = None
 
@@ -136,13 +141,43 @@ async def journal_entry(request: Request, journal_entry: JournalEntry):
 
 
 @app.post("/device-token")
-async def journal_entry(request: Request, device_token: DeviceToken):
+async def device_token(request: Request, device_token: DeviceToken):
     user_answers = await __user_latest_record(request)
     user_answers[0].update(
         {"device_token": device_token.device_token, "date": str(time.time())}
     )
     db.insert(user_activity_data=user_answers[0])
     return JSONResponse({"message": "Successful"}, status_code=200)
+
+
+@app.post("/save-preferences")
+async def save_preferences(request: Request, preferences: Preferences):
+    user_answers = await __user_latest_record(request)
+    user_answers[0].update(
+        {
+            "preferences": str(preferences),
+            "date": str(time.time()),
+        }
+    )
+    db.insert(user_activity_data=user_answers[0])
+    return JSONResponse({"message": "Successful"}, status_code=200)
+
+
+@app.get("/get-preferences")
+async def get_preferences(request: Request):
+    user_answers = await __user_latest_record(request)
+    preferences = user_answers[0].pop("preferences", None)
+    return JSONResponse(
+        json.dumps(
+            {
+                "preferences": preferences,
+            },
+            cls=__utils.DecimalEncoder,
+        )
+        .encode("ascii")
+        .decode("unicode-escape"),
+        status_code=200,
+    )
 
 
 @app.get("/ai-assist/reflect")

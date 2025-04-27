@@ -12,5 +12,3 @@ if __name__ == '__main__':
     # sap.save_to_s3()
     # sender_email = sap.get_value('SENDER_EMAIL')
     # print(f'testing : {sender_email}')
-
-
