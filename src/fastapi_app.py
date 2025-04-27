@@ -23,6 +23,7 @@ from pydantic import BaseModel, field_validator, ValidationError
 from ip2geotools.databases.noncommercial import DbIpCity
 from prompts.prompt_engine import generate_prompt, popular_questions as pq
 import pandas as pd
+import analytics.plot_functions as apf
 
 temp_folder = ".tmp"
 logging.basicConfig(
@@ -264,6 +265,12 @@ async def get_plot(request: Request):
             json.dumps(user_answers_rows, cls=__utils.DecimalEncoder)
         )
     )
+
+
+@app.get("/plot/society/json")
+async def get_society_bellcurve(request: Request):
+    lives_to_moksha_df = db.query_columns()
+    return HTMLResponse(apf.bell_curve_json(lives_to_moksha_df=lives_to_moksha_df))
 
 
 @app.get("/ai-assist/popular-questions")

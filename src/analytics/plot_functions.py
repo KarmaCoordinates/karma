@@ -9,6 +9,7 @@ from streamlit_plotly_events import plotly_events
 import __utils
 import scipy.stats as stats
 import plotly.graph_objects as go
+import plotly.io as pio
 import statsmodels.api as sm
 
 def progress_chart():    
@@ -120,23 +121,29 @@ def clickable_progress_chart():
 
 
 
-def bell_curve():
-    response_df = db.query_columns()
-    if response_df is None or response_df.empty:
+def bell_curve():       
+    lives_to_moksha_df = db.query_columns()
+    st.plotly_chart(__bell_curve_fig(lives_to_moksha_df), use_container_width=True)
+
+def bell_curve_json(lives_to_moksha_df):
+    return pio.to_json(__bell_curve_fig(lives_to_moksha_df))
+
+def __bell_curve_fig(lives_to_moksha_df):
+    if lives_to_moksha_df is None or lives_to_moksha_df.empty:
         return
-    data = pd.to_numeric(response_df['lives_to_moksha'].dropna()).to_list()
+    lives_to_moksha_list = pd.to_numeric(lives_to_moksha_df['lives_to_moksha'].dropna()).to_list()
 
     # Create the histogram
     histogram = go.Histogram(
-        x=data,
+        x=lives_to_moksha_list,
         histnorm='probability density',
         name='Score histogram',
         nbinsx=15,
         opacity=0.75
     )
 
-    mean = np.mean(data)
-    std_dev = np.std(data)
+    mean = np.mean(lives_to_moksha_list)
+    std_dev = np.std(lives_to_moksha_list)
     # Create a range for the x values
     x_values = np.linspace(mean - 4*std_dev, mean + 4*std_dev, 100)
     # Calculate the corresponding y values for the normal distribution
@@ -167,8 +174,7 @@ def bell_curve():
     # Update the layout
     fig.update_layout(title=f'Score of the society',
                     xaxis_title=f'Lives to Moksha',
-                    yaxis_title=f'Probability Density ({len(data)} assessments)')
-        
-
-    st.plotly_chart(fig, use_container_width=True)
-
+                    yaxis_title=f'Probability Density ({len(lives_to_moksha_list)} assessments)')
+    print("***2")
+    
+    return fig
