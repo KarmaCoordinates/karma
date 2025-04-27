@@ -13,8 +13,10 @@ openai
 statsmodels
 plotly
 streamlit_plotly_events
-fastapi
+fastapi[standard]
 starlette
 cachetools
 ip2geotools
 jinja2
+fpdf2
+PyJWT
