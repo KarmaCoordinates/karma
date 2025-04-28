@@ -349,10 +349,12 @@ async def ai_assist(request: Request, question: Question):
         )
     )
 
-
-async def __user_latest_record(request: Request):
+async def __is_auth(request: Request):
     if not request.user.is_authenticated:
         raise HTTPException(status_code=401, detail="Failure")
+
+async def __user_latest_record(request: Request):
+    __is_auth(request)
     user_answers = db.query(request.user.display_name, "latest")
     if (
         not user_answers[0]["auth_code"]
