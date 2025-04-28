@@ -3,8 +3,6 @@ import jwt
 import __configs
 from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, SimpleUser
 import cachetools
-from fastapi import Request, Response
-import json
 
 cache = cachetools.TTLCache(maxsize=1000, ttl=120)
 
@@ -18,16 +16,19 @@ class JWTAuthBackend(AuthenticationBackend):
             scheme, token = auth.split()
             if scheme.lower() != "bearer":
                 return
+        
+            payload = decode_token(token)
+            payload['auth_code']=token
+            cache[payload["sub"]] = payload
+            user = SimpleUser(payload["sub"])
+
+            return AuthCredentials(["authenticated"]), user
+
+        except AuthenticationError:
+            return
         except ValueError:
             return
-        
-        payload = decode_token(token)
-        payload['auth_code']=token
-        cache[payload["sub"]] = payload
-        user = SimpleUser(payload["sub"])
 
-        return AuthCredentials(["authenticated"]), user
-    
     
 def create_access_token(subject: str, otp: str, expires_in_days: 1):
     expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=expires_in_days)

@@ -24,6 +24,9 @@ from ip2geotools.databases.noncommercial import DbIpCity
 from prompts.prompt_engine import generate_prompt, popular_questions as pq
 import pandas as pd
 import analytics.plot_functions as apf
+from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, SimpleUser
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 
 temp_folder = ".tmp"
 logging.basicConfig(
@@ -351,10 +354,11 @@ async def ai_assist(request: Request, question: Question):
 
 async def __is_auth(request: Request):
     if not request.user.is_authenticated:
-        raise HTTPException(status_code=401, detail="Failure")
+        raise HTTPException(status_code=401, detail="Unauthenticated")
 
 async def __user_latest_record(request: Request):
-    __is_auth(request)
+    await __is_auth(request)
+    
     user_answers = db.query(request.user.display_name, "latest")
     if (
         not user_answers[0]["auth_code"]
@@ -371,6 +375,10 @@ async def http_exception_handler(request: Request, exc):
         status_code=exc.status_code,
         content={"message": exc.detail},
     )
+
+@app.exception_handler(StarletteHTTPException)
+async def value_error_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(status_code=401, content={"message": str(exc)})
 
 
 @app.exception_handler(ValueError)
