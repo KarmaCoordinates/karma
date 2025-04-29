@@ -24,7 +24,6 @@ from ip2geotools.databases.noncommercial import DbIpCity
 from prompts.prompt_engine import generate_prompt, popular_questions as pq
 import pandas as pd
 import analytics.plot_functions as apf
-from starlette.authentication import AuthenticationBackend, AuthenticationError, AuthCredentials, SimpleUser
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
@@ -62,6 +61,8 @@ app = FastAPI(
 )
 origins = [
     "http://localhost:8100",
+    "http://localhost:8101",
+    "http://localhost:8102",
     "https://localhost",
     "http://localhost",
     "capacitor://localhost",
