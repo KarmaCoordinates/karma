@@ -67,6 +67,7 @@ origins = [
     "https://localhost",
     "http://localhost",
     "capacitor://localhost",
+    "ionic://localhost"
 ]
 app.add_middleware(
     CORSMiddleware,
