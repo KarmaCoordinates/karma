@@ -257,23 +257,12 @@ async def get_score_plot(request: Request):
     assessment_percent_completion = int(
         (len(user_answers[0]) / __constants.NUMBER_OF_ASSESSMENT_QUESTIONS) * 100
     )
-
-    score_df = pd.DataFrame(
-        {
-            "labels": [
-                "Moksha",
-                "Viparyayah",
-                "Aśakti",
-                "Tuṣṭi",
-                "Siddhi",
-                "Lifestyle",
-            ],
-            "values": [lives_to_moksha, 1, 2, 3, 4, 5],
-        }
-    ).astype(str)
+    assessment_score_df = pd.DataFrame(assessment_score)
+    new_row = pd.DataFrame([{"category": "Moksha", "score": lives_to_moksha}])
+    assessment_score_df = pd.concat([new_row, assessment_score_df], ignore_index=True).astype(str)
 
     return HTMLResponse(
-        clickable_score_diagram(score_df)
+        clickable_score_diagram(assessment_score_df, assessment_percent_completion)
     )
 
 
