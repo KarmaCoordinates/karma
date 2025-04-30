@@ -5,6 +5,7 @@ from api.ai_assist import (
     stream_ai_assist_reflect_response,
     clickable_progress_chart,
     stream_ai_assist_explore_response,
+    clickable_score_diagram,
 )
 import __configs, __utils, __constants
 import storage.dynamodb_functions as db
@@ -248,6 +249,34 @@ async def journal_entry(request: Request):
     )
 
 
+@app.get("/plot/score/json")
+async def get_score_plot(request: Request):
+    user_answers = await __user_latest_record(request)
+    assessment_score = user_answers[0].pop("assessment_score", None)
+    lives_to_moksha = user_answers[0].pop("lives_to_moksha", None)
+    assessment_percent_completion = int(
+        (len(user_answers[0]) / __constants.NUMBER_OF_ASSESSMENT_QUESTIONS) * 100
+    )
+
+    score_df = pd.DataFrame(
+        {
+            "labels": [
+                "Moksha",
+                "Viparyayah",
+                "Aśakti",
+                "Tuṣṭi",
+                "Siddhi",
+                "Lifestyle",
+            ],
+            "values": [lives_to_moksha, 1, 2, 3, 4, 5],
+        }
+    ).astype(str)
+
+    return HTMLResponse(
+        clickable_score_diagram(score_df)
+    )
+
+
 @app.get("/plot/journey/json")
 async def get_plot(request: Request):
     user_answers = await __user_latest_record(request)
@@ -353,13 +382,15 @@ async def ai_assist(request: Request, question: Question):
         )
     )
 
+
 async def __is_auth(request: Request):
     if not request.user.is_authenticated:
         raise HTTPException(status_code=401, detail="Unauthenticated")
 
+
 async def __user_latest_record(request: Request):
     await __is_auth(request)
-    
+
     user_answers = db.query(request.user.display_name, "latest")
     if (
         not user_answers[0]["auth_code"]
@@ -376,6 +407,7 @@ async def http_exception_handler(request: Request, exc):
         status_code=exc.status_code,
         content={"message": exc.detail},
     )
+
 
 @app.exception_handler(StarletteHTTPException)
 async def value_error_handler(request: Request, exc: StarletteHTTPException):
