@@ -56,7 +56,7 @@ class Question(BaseModel):
     question: str | None = None
 
 
-app = FastAPI()
+# app = FastAPI()
 app = FastAPI(
     middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())]
 )
