@@ -295,7 +295,7 @@ def clickable_score_diagram(score_df, assessment_percent_completion):
 
     # Add Moksha score as center text
     fig.update_layout(
-        title_text="# of Lives to Moksha and Contributing Factors",
+        title_text="# of Lives to Moksha <br>and Contributing Factors",
         annotations=[
             dict(
                 text=f"<b>{moksha_score}</b><br>Lives to<br> Moksha",
