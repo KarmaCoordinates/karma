@@ -175,6 +175,5 @@ def __bell_curve_fig(lives_to_moksha_df):
     fig.update_layout(title=f'Score of the society',
                     xaxis_title=f'Lives to Moksha',
                     yaxis_title=f'Probability Density ({len(lives_to_moksha_list)} assessments)')
-    print("***2")
     
     return fig
