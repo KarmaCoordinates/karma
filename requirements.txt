@@ -20,3 +20,4 @@ ip2geotools
 jinja2
 fpdf2
 PyJWT
+marked
