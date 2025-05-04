@@ -43,6 +43,10 @@ class JournalEntry(BaseModel):
     journal_entry: str
 
 
+class DeleteAccount(BaseModel):
+    delete_confirmation: str
+
+
 class DeviceToken(BaseModel):
     device_token: str
 
@@ -67,7 +71,7 @@ origins = [
     "https://localhost",
     "http://localhost",
     "capacitor://localhost",
-    "ionic://localhost"
+    "ionic://localhost",
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -144,6 +148,19 @@ async def journal_entry(request: Request, journal_entry: JournalEntry):
         {"journal_entry": journal_entry.journal_entry, "date": str(time.time())}
     )
     db.insert(user_activity_data=user_answers[0])
+    return JSONResponse({"message": "Successful"}, status_code=200)
+
+
+@app.post("/delete-account")
+async def delete_account(request: Request, delete_account: DeleteAccount):
+    # user_answers = await __user_latest_record(request)
+    if delete_account.delete_confirmation != "delete":
+        return JSONResponse({"message": "Delete confirmation failed."}, status_code=500)
+
+    response = db.delete(request.user.display_name)
+    if not response:
+        return JSONResponse({"message": "Deletion failed."}, status_code=500)
+
     return JSONResponse({"message": "Successful"}, status_code=200)
 
 
@@ -260,7 +277,9 @@ async def get_score_plot(request: Request):
     )
     assessment_score_df = pd.DataFrame(assessment_score)
     new_row = pd.DataFrame([{"category": "Moksha", "score": lives_to_moksha}])
-    assessment_score_df = pd.concat([new_row, assessment_score_df], ignore_index=True).astype(str)
+    assessment_score_df = pd.concat(
+        [new_row, assessment_score_df], ignore_index=True
+    ).astype(str)
 
     return HTMLResponse(
         clickable_score_diagram(assessment_score_df, assessment_percent_completion)
@@ -382,6 +401,9 @@ async def __user_latest_record(request: Request):
     await __is_auth(request)
 
     user_answers = db.query(request.user.display_name, "latest")
+    if __utils.is_none_or_empty(user_answers):
+        raise HTTPException(status_code=401, detail="Account not found")
+
     if (
         not user_answers[0]["auth_code"]
         or user_answers[0]["auth_code"]

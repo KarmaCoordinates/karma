@@ -1,7 +1,10 @@
+import random
+import time
 import boto3
 from boto3.dynamodb.conditions import Key
 import logging
 import pandas as pd
+from botocore.exceptions import ClientError
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
@@ -71,6 +74,51 @@ def query_columns(columns_to_fetch=['lives_to_moksha']):
     except:
         return None
     
+
+
+def delete(partition_key_value):
+    try:
+        dynamodb = boto3.resource(resource_name)
+        table = dynamodb.Table(table_name)
+
+        response = table.query(
+            KeyConditionExpression=boto3.dynamodb.conditions.Key('email').eq(partition_key_value)
+        )
+
+        items = response['Items']
+
+
+        # Constants
+        BATCH_SIZE = 25
+        MAX_RETRIES = 5
+
+        # Helper: retry logic with exponential backoff
+        def retry_delete(item, attempt=1):
+            try:
+                table.delete_item(
+                    Key={'email': item['email'], 'date': item['date']}
+                )
+            except ClientError as e:
+                if attempt <= MAX_RETRIES and "ProvisionedThroughputExceededException" in str(e):
+                    wait = 2 ** attempt + random.uniform(0, 1)
+                    # print(f"Retrying {item['date']} (Attempt {attempt}) in {wait:.2f}s...")
+                    time.sleep(wait)
+                    retry_delete(item, attempt + 1)
+                else:
+                    print(f"Failed to delete {item['email']}{item['date']}: {e}")
+
+        # Process batches
+        for i in range(0, len(items), BATCH_SIZE):
+            batch = items[i:i + BATCH_SIZE]
+            # print(f"Processing batch {i // BATCH_SIZE + 1}")
+            for item in batch:
+                retry_delete(item)
+            time.sleep(1)  # Throttle        
+            
+        return "Successful"
+    except Exception as e:
+        print(f"Error {e} occurred while deleting items.")
+        return None
 
 def main():
     insert()
