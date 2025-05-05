@@ -136,6 +136,8 @@ def __process_prompt(client, assistant, user_query, random_key=generate_random_s
                         assistant_reply += event.data.delta.content[0].text.value
                         # display the new text
                         assistant_reply_box.markdown(assistant_reply)
+
+                # check for steps
             
             # Once the stream is over, update chat history
             # print(f'random_key@assistant:{random_key}')

@@ -36,11 +36,16 @@ def send_email(recipient, token):
         body = f"Your token is {token}"
         msg = f"Subject: {subject}\n\n{body}"
 
+        print(f'{smtp_server}:{smtp_port}:{smtp_username}:{sender_email}:{smtp_password}')
+        try:
         # Connect to the SMTP server
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_username, smtp_password)
-            server.sendmail(sender_email, recipient, msg)
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(smtp_username, smtp_password)
+                server.sendmail(sender_email, recipient, msg)
+        except Exception as e:
+            print(f'Error({e}):{smtp_server}:{smtp_port}:{smtp_username}:{sender_email}:{smtp_password}')
+
 
         # sending_email_bar.success("Emailed!")
 

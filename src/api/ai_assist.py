@@ -226,7 +226,6 @@ async def stream_ai_assist_explore_response(
     async with stream as event_stream:
         async for event in event_stream:
             if event.event == "thread.message.delta":
-                print("**1")
                 delta = event.data.delta
                 if hasattr(delta, 'content') and delta.content:
                     if isinstance(delta.content, list):
@@ -240,52 +239,9 @@ async def stream_ai_assist_explore_response(
 
             elif event.event == "thread.run.requires_action":
                 # Handle function/tool calls
-                tool_calls = event.data.required_action.submit_tool_outputs.tool_calls
-                tool_outputs = []
-
-                for tool_call in tool_calls:
-                    name = tool_call.function.name
-                    args = json.loads(tool_call.function.arguments)
-
-
-                    if name == "delete_account":
-                        confirm_text = args.get("delete_confirmation")
-                        required_text = f"I ({request.user.display_name}) hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
-                        if confirm_text == required_text:
-                            # Call delete account function here
-                            # Make internal delete-account call
-                            delete_url = urljoin(str(request.base_url), "delete-account")
-                            token = request.headers.get("authorization")
-                            async with aiohttp.ClientSession() as session:
-                                async with session.post(
-                                    f"{delete_url}",
-                                    json={"delete_confirmation": confirm_text},
-                                    headers={"Authorization": token}
-                                ) as resp:
-                                    result = await resp.json()
-                                    if resp.status == 200:
-                                        result = {"message": "Account successfully deleted."}
-                                        yield "\n✅ Account successfully deleted.\n"
-                                        tool_output_yielded = True
-                                    else:
-                                        result = {"message": "Account deletion failed."}
-                                        yield f"\n❌ Deletion failed: {result.get('message')}\n"
-                                        tool_output_yielded = True
-                        else:
-                            result = {"message": "Invalid confirmation string."}
-                            yield "\n❌ Invalid confirmation string. Please type the exact phrase to proceed.\n"
-                            tool_output_yielded = True
-
-                        tool_outputs.append({
-                            "tool_call_id": tool_call.id,
-                            "output": json.dumps(result),
-                        })
-
-                await async_client.beta.threads.runs.submit_tool_outputs(
-                    thread_id=thread_id,
-                    run_id=event.data.id,
-                    tool_outputs=tool_outputs
-                )
+                async for text in __handleRequiresActions(async_client, thread_id, event, request):
+                    tool_output_yielded = True 
+                    yield text
 
             elif event.event == "thread.run.completed":
                 break
@@ -294,18 +250,51 @@ async def stream_ai_assist_explore_response(
                 yield "[Assistant run failed or was cancelled]"
                 break
 
-            # # Step Delta for streaming response
-            # elif event.event == "thread.run.step.delta":
-            #     print("content")
-            #     if hasattr(event.data.delta, 'content') and event.data.delta.content:
-            #         content = event.data.delta.content
-            #         print(content)
-            #         complete_text += content
-            #         yield content
-
     if not complete_text and not tool_output_yielded:
         yield "[No response received from assistant]"
 
+
+async def __handleRequiresActions(async_client, thread_id, event, request):
+    tool_calls = event.data.required_action.submit_tool_outputs.tool_calls
+    tool_outputs = []
+
+    for tool_call in tool_calls:
+        name = tool_call.function.name
+        args = json.loads(tool_call.function.arguments)
+
+        if name == "delete_account":
+            confirm_text = args.get("delete_confirmation")
+            required_text = f"I ({request.user.display_name}) hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
+            if confirm_text == required_text:
+                delete_url = urljoin(str(request.base_url), "delete-account")
+                token = request.headers.get("authorization")
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(
+                        f"{delete_url}",
+                        json={"delete_confirmation": confirm_text},
+                        headers={"Authorization": token}
+                    ) as resp:
+                        result = await resp.json()
+                        if resp.status == 200:
+                            result = {"message": "Account successfully deleted."}
+                            yield "\n✅ Account successfully deleted.\n"
+                        else:
+                            result = {"message": "Account deletion failed."}
+                            yield f"\n❌ Deletion failed: {result.get('message')}\n"
+            else:
+                result = {"message": "Invalid confirmation string."}
+                yield "\n❌ Invalid confirmation string. Please type the exact phrase to proceed.\n"
+
+            tool_outputs.append({
+                "tool_call_id": tool_call.id,
+                "output": json.dumps(result),
+            })
+
+    await async_client.beta.threads.runs.submit_tool_outputs(
+        thread_id=thread_id,
+        run_id=event.data.id,
+        tool_outputs=tool_outputs
+    )
 
 
 async def stream_ai_assist_explore_response1(
