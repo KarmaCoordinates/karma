@@ -21,3 +21,4 @@ jinja2
 fpdf2
 PyJWT
 marked
+aiohttp

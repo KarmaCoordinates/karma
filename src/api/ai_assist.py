@@ -1,3 +1,6 @@
+import json
+
+import aiohttp
 import __utils, __configs
 import assessment.score_functions as sf
 import storage.dynamodb_functions as db
@@ -13,6 +16,7 @@ import plotly.io as pio
 import plotly.graph_objects as go
 from io import StringIO
 import math
+from urllib.parse import urljoin
 
 
 def cache_questionnaire(
@@ -192,8 +196,119 @@ async def stream_ai_assist_reflect_response(
         )
     )
 
-
 async def stream_ai_assist_explore_response(
+    request: Request,
+    features_df,
+    categories_df,
+    features_df_stats,
+    assistant_id,
+    thread_id,
+):
+    async_client = __configs.get_config().openai_async_client
+
+    # Ensure no active run before starting a new one
+    existing_runs = await async_client.beta.threads.runs.list(thread_id=thread_id, limit=1)
+    if existing_runs.data and existing_runs.data[0].status in ["in_progress", "queued", "requires_action"]:
+        raise Exception("Thread already has an active run.")
+
+    # Start new run with streaming
+    stream = await async_client.beta.threads.runs.create(
+        assistant_id=assistant_id,
+        thread_id=thread_id,
+        tool_choice="auto",
+        stream=True,
+    )
+
+    tool_call_ids_to_output = {}
+    complete_text = ""
+    tool_output_yielded = False
+
+    async with stream as event_stream:
+        async for event in event_stream:
+            if event.event == "thread.message.delta":
+                print("**1")
+                delta = event.data.delta
+                if hasattr(delta, 'content') and delta.content:
+                    if isinstance(delta.content, list):
+                        for part in delta.content:
+                            if hasattr(part, "text") and part.text.value:
+                                complete_text += part.text.value
+                                yield part.text.value
+                    elif isinstance(delta.content, str):
+                        complete_text += delta.content
+                        yield delta.content
+
+            elif event.event == "thread.run.requires_action":
+                # Handle function/tool calls
+                tool_calls = event.data.required_action.submit_tool_outputs.tool_calls
+                tool_outputs = []
+
+                for tool_call in tool_calls:
+                    name = tool_call.function.name
+                    args = json.loads(tool_call.function.arguments)
+
+
+                    if name == "delete_account":
+                        confirm_text = args.get("delete_confirmation")
+                        required_text = f"I ({request.user.display_name}) hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
+                        if confirm_text == required_text:
+                            # Call delete account function here
+                            # Make internal delete-account call
+                            delete_url = urljoin(str(request.base_url), "delete-account")
+                            token = request.headers.get("authorization")
+                            async with aiohttp.ClientSession() as session:
+                                async with session.post(
+                                    f"{delete_url}",
+                                    json={"delete_confirmation": confirm_text},
+                                    headers={"Authorization": token}
+                                ) as resp:
+                                    result = await resp.json()
+                                    if resp.status == 200:
+                                        result = {"message": "Account successfully deleted."}
+                                        yield "\n✅ Account successfully deleted.\n"
+                                        tool_output_yielded = True
+                                    else:
+                                        result = {"message": "Account deletion failed."}
+                                        yield f"\n❌ Deletion failed: {result.get('message')}\n"
+                                        tool_output_yielded = True
+                        else:
+                            result = {"message": "Invalid confirmation string."}
+                            yield "\n❌ Invalid confirmation string. Please type the exact phrase to proceed.\n"
+                            tool_output_yielded = True
+
+                        tool_outputs.append({
+                            "tool_call_id": tool_call.id,
+                            "output": json.dumps(result),
+                        })
+
+                await async_client.beta.threads.runs.submit_tool_outputs(
+                    thread_id=thread_id,
+                    run_id=event.data.id,
+                    tool_outputs=tool_outputs
+                )
+
+            elif event.event == "thread.run.completed":
+                break
+
+            elif event.event in ["thread.run.failed", "thread.run.expired", "thread.run.cancelled"]:
+                yield "[Assistant run failed or was cancelled]"
+                break
+
+            # # Step Delta for streaming response
+            # elif event.event == "thread.run.step.delta":
+            #     print("content")
+            #     if hasattr(event.data.delta, 'content') and event.data.delta.content:
+            #         content = event.data.delta.content
+            #         print(content)
+            #         complete_text += content
+            #         yield content
+
+    if not complete_text and not tool_output_yielded:
+        yield "[No response received from assistant]"
+
+
+
+async def stream_ai_assist_explore_response1(
     request: Request,
     features_df: DataFrame,
     categories_df: DataFrame,
@@ -210,10 +325,10 @@ async def stream_ai_assist_explore_response(
     complete_text = ""
     async with stream as stream:
         async for text in stream.text_deltas:
-            # formatted_text = text.replace('\n', '\\n')
             complete_text += text
             yield f"{text}"
-            # yield f"data: {text}\n\n"
+
+
 
 
 def clickable_progress_chart(rows: str):

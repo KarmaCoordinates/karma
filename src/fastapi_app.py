@@ -154,7 +154,9 @@ async def journal_entry(request: Request, journal_entry: JournalEntry):
 @app.post("/delete-account")
 async def delete_account(request: Request, delete_account: DeleteAccount):
     # user_answers = await __user_latest_record(request)
-    if delete_account.delete_confirmation != "delete":
+    required_delete_confirmation = f"I ({request.user.display_name}) hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
+
+    if delete_account.delete_confirmation != required_delete_confirmation:
         return JSONResponse({"message": "Delete confirmation failed."}, status_code=500)
 
     response = db.delete(request.user.display_name)
@@ -373,6 +375,8 @@ async def ai_assist(request: Request, question: Question):
     }
 
     prompt = generate_prompt(question.question, variables)
+    print(prompt)
+    
 
     client = __configs.get_config().openai_client
     assistant = __configs.get_config().openai_assistant
