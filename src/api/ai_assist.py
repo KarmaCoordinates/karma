@@ -196,6 +196,7 @@ async def stream_ai_assist_reflect_response(
         )
     )
 
+
 async def stream_ai_assist_explore_response(
     request: Request,
     features_df,
@@ -207,8 +208,14 @@ async def stream_ai_assist_explore_response(
     async_client = __configs.get_config().openai_async_client
 
     # Ensure no active run before starting a new one
-    existing_runs = await async_client.beta.threads.runs.list(thread_id=thread_id, limit=1)
-    if existing_runs.data and existing_runs.data[0].status in ["in_progress", "queued", "requires_action"]:
+    existing_runs = await async_client.beta.threads.runs.list(
+        thread_id=thread_id, limit=1
+    )
+    if existing_runs.data and existing_runs.data[0].status in [
+        "in_progress",
+        "queued",
+        "requires_action",
+    ]:
         raise Exception("Thread already has an active run.")
 
     # Start new run with streaming
@@ -227,7 +234,7 @@ async def stream_ai_assist_explore_response(
         async for event in event_stream:
             if event.event == "thread.message.delta":
                 delta = event.data.delta
-                if hasattr(delta, 'content') and delta.content:
+                if hasattr(delta, "content") and delta.content:
                     if isinstance(delta.content, list):
                         for part in delta.content:
                             if hasattr(part, "text") and part.text.value:
@@ -239,14 +246,20 @@ async def stream_ai_assist_explore_response(
 
             elif event.event == "thread.run.requires_action":
                 # Handle function/tool calls
-                async for text in __handleRequiresActions(async_client, thread_id, event, request):
-                    tool_output_yielded = True 
+                async for text in __handleRequiresActions(
+                    async_client, thread_id, event, request
+                ):
+                    tool_output_yielded = True
                     yield text
 
             elif event.event == "thread.run.completed":
                 break
 
-            elif event.event in ["thread.run.failed", "thread.run.expired", "thread.run.cancelled"]:
+            elif event.event in [
+                "thread.run.failed",
+                "thread.run.expired",
+                "thread.run.cancelled",
+            ]:
                 yield "[Assistant run failed or was cancelled]"
                 break
 
@@ -272,7 +285,7 @@ async def __handleRequiresActions(async_client, thread_id, event, request):
                     async with session.post(
                         f"{delete_url}",
                         json={"delete_confirmation": confirm_text},
-                        headers={"Authorization": token}
+                        headers={"Authorization": token},
                     ) as resp:
                         result = await resp.json()
                         if resp.status == 200:
@@ -285,39 +298,16 @@ async def __handleRequiresActions(async_client, thread_id, event, request):
                 result = {"message": "Invalid confirmation string."}
                 yield "\n❌ Invalid confirmation string. Please type the exact phrase to proceed.\n"
 
-            tool_outputs.append({
-                "tool_call_id": tool_call.id,
-                "output": json.dumps(result),
-            })
+            tool_outputs.append(
+                {
+                    "tool_call_id": tool_call.id,
+                    "output": json.dumps(result),
+                }
+            )
 
     await async_client.beta.threads.runs.submit_tool_outputs(
-        thread_id=thread_id,
-        run_id=event.data.id,
-        tool_outputs=tool_outputs
+        thread_id=thread_id, run_id=event.data.id, tool_outputs=tool_outputs
     )
-
-
-async def stream_ai_assist_explore_response1(
-    request: Request,
-    features_df: DataFrame,
-    categories_df: DataFrame,
-    features_df_stats,
-    assistant_id,
-    thread_id,
-):
-    async_client = __configs.get_config().openai_async_client
-
-    stream = async_client.beta.threads.runs.stream(
-        assistant_id=assistant_id, thread_id=thread_id
-    )
-
-    complete_text = ""
-    async with stream as stream:
-        async for text in stream.text_deltas:
-            complete_text += text
-            yield f"{text}"
-
-
 
 
 def clickable_progress_chart(rows: str):
@@ -326,6 +316,14 @@ def clickable_progress_chart(rows: str):
 
     json_file = StringIO(rows)
     df = pd.read_json(json_file)
+
+    if (
+        not db.Columns().lives_to_moksha in df.columns
+        or not db.Columns().journal_entry in df.columns
+        or not db.Columns().date in df.columns
+    ):
+        return
+
     df = df[
         [db.Columns().date, db.Columns().lives_to_moksha, db.Columns().journal_entry]
     ].dropna()
@@ -378,7 +376,9 @@ def clickable_score_diagram(score_df, assessment_percent_completion):
     score_df.loc[:, "score"] = pd.to_numeric(score_df["score"], errors="coerce")
     # custom_colors = ["#FF5733", "#33FF57", "#3357FF", "#F39C12", "#9B59B6"]
     custom_colors = ["#FF5733", "#1E90FF", "#228B22", "#D35400", "#8E44AD"]
-    custom_text = [f"{label}:<br>{value}" for label, value in zip(labels, original_values)]
+    custom_text = [
+        f"{label}:<br>{value}" for label, value in zip(labels, original_values)
+    ]
 
     # Create donut chart (using abs value if you want positive slices)
     fig = go.Figure(

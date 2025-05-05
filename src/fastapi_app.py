@@ -374,9 +374,7 @@ async def ai_assist(request: Request, question: Question):
         ),
     }
 
-    prompt = generate_prompt(question.question, variables)
-    print(prompt)
-    
+    prompt = generate_prompt(question.question, variables)    
 
     client = __configs.get_config().openai_client
     assistant = __configs.get_config().openai_assistant
