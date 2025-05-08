@@ -5,7 +5,7 @@ from api.ai_assist import (
     stream_ai_assist_reflect_response,
     clickable_progress_chart,
     stream_ai_assist_explore_response,
-    clickable_score_diagram,
+    clickable_score_diagram
 )
 import __configs, __utils, __constants
 import storage.dynamodb_functions as db
@@ -154,7 +154,7 @@ async def journal_entry(request: Request, journal_entry: JournalEntry):
 @app.post("/delete-account")
 async def delete_account(request: Request, delete_account: DeleteAccount):
     # user_answers = await __user_latest_record(request)
-    required_delete_confirmation = f"I ({request.user.display_name}) hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
+    required_delete_confirmation = f"I, {request.user.display_name}, hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
 
     if delete_account.delete_confirmation != required_delete_confirmation:
         return JSONResponse({"message": "Delete confirmation failed."}, status_code=500)
@@ -379,6 +379,7 @@ async def ai_assist(request: Request, question: Question):
     client = __configs.get_config().openai_client
     assistant = __configs.get_config().openai_assistant
     thread = client.beta.threads.create()
+
     client.beta.threads.messages.create(
         thread_id=thread.id, role="user", content=prompt
     )

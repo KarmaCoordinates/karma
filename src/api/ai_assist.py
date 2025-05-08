@@ -277,7 +277,8 @@ async def __handleRequiresActions(async_client, thread_id, event, request):
 
         if name == "delete_account":
             confirm_text = args.get("delete_confirmation")
-            required_text = f"I ({request.user.display_name}) hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
+            required_text = f"I, {request.user.display_name}, hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
+            print(f'{confirm_text}:{required_text}')
             if confirm_text == required_text:
                 delete_url = urljoin(str(request.base_url), "delete-account")
                 token = request.headers.get("authorization")
@@ -308,7 +309,6 @@ async def __handleRequiresActions(async_client, thread_id, event, request):
     await async_client.beta.threads.runs.submit_tool_outputs(
         thread_id=thread_id, run_id=event.data.id, tool_outputs=tool_outputs
     )
-
 
 def clickable_progress_chart(rows: str):
     if rows is None:
