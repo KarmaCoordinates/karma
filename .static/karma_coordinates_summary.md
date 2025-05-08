@@ -6,12 +6,6 @@
     index to track progress toward greater clarity of thought. By focusing on clarity and using Karma Coordinates as a
     guide, individuals can improve decision-making, foster personal growth, and achieve success in life!
   </p>
-  <p>
-    Karma Coordinates is an app for enhancing <strong>clarity of thinking</strong> through AI-based reflective journaling,
-    assessment, and recommended activities. The Karma Coordinates—the "Lives to Moksha" metric—serves as an
-    index to track progress toward greater clarity of thought. By focusing on clarity and using Karma Coordinates as a
-    guide, individuals can improve decision-making, foster personal growth, and achieve success in life!
-  </p>
 
 <h3>How does it work?</h3>
   <p> Karma Coordinates interprets your journal entries, uses that interpretation to answer relevant questions from the
@@ -26,7 +20,7 @@
     articulates that the purpose of the universe is to provide experiences to every life-form. Each experience results
     in a physical modification of the brain or intellect (<em>Buddhi</em>), commonly referred to as memory. These modifications
     are classified into four categories: Ignorance (<em>Viparyay</em>), Incapacity (<em>Ashakti</em>), Complacency (<em>Tushti</em>), or True Knowledge (<em>Siddhi</em>). 
-    Sankhya futher defines 5, 28, 9, and 8 subcategories for these categories respectively. The clarity of thinking questionnaire 
+    Sankhya further defines 5, 28, 9, and 8 subcategories for these categories respectively. The clarity of thinking questionnaire 
     contains 50 questions to determine the current state of these 50 subcategories. In addition Lifestyle is added as a bonus category 
     to take into account the modern ways of life. 
     Attaining the state of <em>Siddhi</em> allows one to experience the ultimate truth. At that point, the purpose of the
