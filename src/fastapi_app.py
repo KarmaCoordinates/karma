@@ -49,6 +49,7 @@ class DeleteAccount(BaseModel):
 
 class DeviceToken(BaseModel):
     device_token: str
+    device_type: str
 
 
 class Preferences(BaseModel):
@@ -111,7 +112,7 @@ async def validate_token(request: Request, token: str):
     ):
         return JSONResponse({"message": "Failure"}, status_code=401)
 
-    expiration_timestamp = __utils.future_timestamp(90)
+    auth_code_expiration_timestamp = __utils.future_timestamp(90)
     user_answers = db.query(request.user.display_name, "latest")
     client_ip_details = __client_ip_details(request)
     if client_ip_details:
@@ -122,7 +123,7 @@ async def validate_token(request: Request, token: str):
             {
                 "date": str(time.time()),
                 "auth_code": cache.get(request.user.display_name)["auth_code"],
-                "expiration_date": str(expiration_timestamp),
+                "auth_code_expiration_timestamp": str(auth_code_expiration_timestamp),
                 "email": request.user.display_name,
                 "client_ip_details": client_ip_details,
             }
@@ -130,7 +131,7 @@ async def validate_token(request: Request, token: str):
     else:
         user_answers[0].update(
             {
-                "expiration_date": str(expiration_timestamp),
+                "auth_code_expiration_timestamp": str(auth_code_expiration_timestamp),
                 "auth_code": cache.get(request.user.display_name)["auth_code"],
                 "date": str(time.time()),
                 "client_ip_details": client_ip_details,
@@ -170,7 +171,7 @@ async def delete_account(request: Request, delete_account: DeleteAccount):
 async def device_token(request: Request, device_token: DeviceToken):
     user_answers = await __user_latest_record(request)
     user_answers[0].update(
-        {"device_token": device_token.device_token, "date": str(time.time())}
+        {"device_token": device_token.device_token, "device_type":device_token.device_type, "device_registration_date": str(time.time())}
     )
     db.insert(user_activity_data=user_answers[0])
     return JSONResponse({"message": "Successful"}, status_code=200)

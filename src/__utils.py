@@ -162,16 +162,15 @@ def current_month_timestamp():
 
 def unix_epoc(months_ago=1):
     today = date.today()
-    six_months_ago = today - timedelta(days=months_ago*30) #Approximating a month as 30 days
-    datetime_six_months_ago = datetime(six_months_ago.year, six_months_ago.month, six_months_ago.day, 0, 0, 0)
-    timestamp_six_months_ago = int(time.mktime(datetime_six_months_ago.timetuple()))
-    return timestamp_six_months_ago
+    x_months_ago = today - timedelta(days=months_ago*30) #Approximating a month as 30 days
+    datetime_x_months_ago = datetime(x_months_ago.year, x_months_ago.month, x_months_ago.day, 0, 0, 0)
+    timestamp_x_months_ago = int(time.mktime(datetime_x_months_ago.timetuple()))
+    return timestamp_x_months_ago
 
 def future_timestamp(days_in_future: int):
     current_datetime = datetime.fromtimestamp(time.time())
-    expiration_datetime = current_datetime + timedelta(days=days_in_future)
-    expiration_timestamp = expiration_datetime.timestamp()
-    return expiration_timestamp
+    future_datetime = current_datetime + timedelta(days=days_in_future)
+    return future_datetime.timestamp()
 
 
 def main():
