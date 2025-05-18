@@ -16,7 +16,12 @@ import plotly.graph_objects as go
 from io import StringIO
 import math
 from urllib.parse import urljoin
+import logging
 
+temp_folder = ".tmp"
+logging.basicConfig(
+    filename=f"{temp_folder}/kc-app.log", filemode="w", level=logging.INFO
+)
 
 def cache_questionnaire(
     bucket_name, features_data_dict_object_key, categories_data_dict_object_key
@@ -160,7 +165,6 @@ async def __update_ai_assessment(
 
             db.insert(user_activity_data=user_answers[0])
 
-
 async def stream_ai_assist_reflect_response(
     request: Request,
     user_answers,
@@ -172,7 +176,57 @@ async def stream_ai_assist_reflect_response(
 ):
     async_client = __configs.get_config().openai_async_client
 
-    stream = async_client.beta.threads.runs.stream(
+    # ✅ Start the assistant run with streaming enabled
+    run = await async_client.beta.threads.runs.create(
+        assistant_id=assistant_id,
+        thread_id=thread_id,
+        stream=True,
+    )
+
+    complete_text = ""
+    async with run as event_stream:
+        async for event in event_stream:
+            if event.event == "thread.message.delta":
+                delta = event.data.delta
+                if hasattr(delta, "content") and delta.content:
+                    for part in delta.content:
+                        if hasattr(part, "text") and part.text.value:
+                            complete_text += part.text.value
+                            yield part.text.value
+
+            elif event.event in [
+                "thread.run.failed",
+                "thread.run.expired",
+                "thread.run.cancelled",
+            ]:
+                yield "[Assistant run failed or was cancelled]"
+                break
+
+    # ✅ Kick off async background task with complete text
+    asyncio.create_task(
+        __update_ai_assessment(
+            request,
+            user_answers,
+            features_df,
+            categories_df,
+            features_df_stats,
+            complete_text,
+        )
+    )
+
+
+async def stream_ai_assist_reflect_response1(
+    request: Request,
+    user_answers,
+    features_df: DataFrame,
+    categories_df: DataFrame,
+    features_df_stats,
+    assistant_id,
+    thread_id,
+):
+    async_client = __configs.get_config().openai_async_client
+
+    stream = await async_client.beta.threads.runs.stream(
         assistant_id=assistant_id, thread_id=thread_id
     )
 
@@ -260,9 +314,6 @@ async def stream_ai_assist_explore_response(
                     "thread.run.expired",
                     "thread.run.cancelled",
                 ]:
-                    print("⚠️ Assistant run error event:")
-                    print(f"Event: {event.event}")
-                    print(f"Data: {event.data}")
                     yield "[Assistant run failed or was cancelled]"
                     break
 
@@ -270,7 +321,7 @@ async def stream_ai_assist_explore_response(
             yield "[No response received from assistant]"
             
     except Exception as e:
-        print("❌ Exception during assistant stream:", e)
+        logging.error(f"❌ Exception during assistant stream: {e}")
         yield "[Assistant stream crashed]"
 
 async def __handleRequiresActions(async_client, thread_id, event, request):
@@ -284,7 +335,6 @@ async def __handleRequiresActions(async_client, thread_id, event, request):
         if name == "delete_account":
             confirm_text = args.get("delete_confirmation")
             required_text = f"I, {request.user.display_name}, hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
-            print(f'{confirm_text}:{required_text}')
             if confirm_text == required_text:
                 delete_url = urljoin(str(request.base_url), "delete-account")
                 token = request.headers.get("authorization")
