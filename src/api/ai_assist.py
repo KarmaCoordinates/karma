@@ -229,42 +229,49 @@ async def stream_ai_assist_explore_response(
     complete_text = ""
     tool_output_yielded = False
 
-    async with stream as event_stream:
-        async for event in event_stream:
-            if event.event == "thread.message.delta":
-                delta = event.data.delta
-                if hasattr(delta, "content") and delta.content:
-                    if isinstance(delta.content, list):
-                        for part in delta.content:
-                            if hasattr(part, "text") and part.text.value:
-                                complete_text += part.text.value
-                                yield part.text.value
-                    elif isinstance(delta.content, str):
-                        complete_text += delta.content
-                        yield delta.content
+    try:
+        async with stream as event_stream:
+            async for event in event_stream:
+                if event.event == "thread.message.delta":
+                    delta = event.data.delta
+                    if hasattr(delta, "content") and delta.content:
+                        if isinstance(delta.content, list):
+                            for part in delta.content:
+                                if hasattr(part, "text") and part.text.value:
+                                    complete_text += part.text.value
+                                    yield part.text.value
+                        elif isinstance(delta.content, str):
+                            complete_text += delta.content
+                            yield delta.content
 
-            elif event.event == "thread.run.requires_action":
-                # Handle function/tool calls
-                async for text in __handleRequiresActions(
-                    async_client, thread_id, event, request
-                ):
-                    tool_output_yielded = True
-                    yield text
+                elif event.event == "thread.run.requires_action":
+                    # Handle function/tool calls
+                    async for text in __handleRequiresActions(
+                        async_client, thread_id, event, request
+                    ):
+                        tool_output_yielded = True
+                        yield text
 
-            elif event.event == "thread.run.completed":
-                break
+                elif event.event == "thread.run.completed":
+                    break
 
-            elif event.event in [
-                "thread.run.failed",
-                "thread.run.expired",
-                "thread.run.cancelled",
-            ]:
-                yield "[Assistant run failed or was cancelled]"
-                break
+                elif event.event in [
+                    "thread.run.failed",
+                    "thread.run.expired",
+                    "thread.run.cancelled",
+                ]:
+                    print("⚠️ Assistant run error event:")
+                    print(f"Event: {event.event}")
+                    print(f"Data: {event.data}")
+                    yield "[Assistant run failed or was cancelled]"
+                    break
 
-    if not complete_text and not tool_output_yielded:
-        yield "[No response received from assistant]"
-
+        if not complete_text and not tool_output_yielded:
+            yield "[No response received from assistant]"
+            
+    except Exception as e:
+        print("❌ Exception during assistant stream:", e)
+        yield "[Assistant stream crashed]"
 
 async def __handleRequiresActions(async_client, thread_id, event, request):
     tool_calls = event.data.required_action.submit_tool_outputs.tool_calls

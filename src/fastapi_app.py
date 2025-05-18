@@ -228,12 +228,14 @@ async def ai_assist(request: Request):
 
     prompt = generate_prompt("Reflect on the journal entry", variables)
 
-    client = __configs.get_config().openai_client
+    async_client = __configs.get_config().openai_async_client
     assistant = __configs.get_config().openai_assistant
-    thread = client.beta.threads.create()
-    client.beta.threads.messages.create(
+    # ✅ Proper async thread and message creation
+    thread = await async_client.beta.threads.create()
+    await async_client.beta.threads.messages.create(
         thread_id=thread.id, role="user", content=prompt
     )
+
     return StreamingResponse(
         stream_ai_assist_reflect_response(
             request,
@@ -354,11 +356,11 @@ async def ai_assist(request: Request, question: Question):
 
     prompt = generate_prompt(question.question, variables)    
 
-    client = __configs.get_config().openai_client
+    async_client = __configs.get_config().openai_async_client
     assistant = __configs.get_config().openai_assistant
-    thread = client.beta.threads.create()
-
-    client.beta.threads.messages.create(
+    # ✅ Proper async thread and message creation
+    thread = await async_client.beta.threads.create()
+    await async_client.beta.threads.messages.create(
         thread_id=thread.id, role="user", content=prompt
     )
     return StreamingResponse(
