@@ -247,29 +247,6 @@ async def ai_assist(request: Request):
     )
 
 
-@app.get("/score/latest")
-async def journal_entry(request: Request):
-    user_answers = await __user_latest_record(request)
-    assessment_score = user_answers[0].pop("assessment_score", None)
-    lives_to_moksha = user_answers[0].pop("lives_to_moksha", None)
-    assessment_percent_completion = int(
-        (len(user_answers[0]) / __constants.NUMBER_OF_ASSESSMENT_QUESTIONS) * 100
-    )
-    return JSONResponse(
-        json.dumps(
-            {
-                "assessment_score": assessment_score,
-                "assessment_percent_completion": assessment_percent_completion,
-                "lives_to_moksha": lives_to_moksha,
-            },
-            cls=__utils.DecimalEncoder,
-        )
-        .encode("ascii")
-        .decode("unicode-escape"),
-        status_code=200,
-    )
-
-
 @app.get("/plot/score/json")
 async def get_score_plot(request: Request):
     user_answers = await __user_latest_record(request)

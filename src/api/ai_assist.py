@@ -1,5 +1,4 @@
 import json
-
 import aiohttp
 import __utils, __configs
 import assessment.score_functions as sf
