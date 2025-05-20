@@ -293,7 +293,8 @@ async def get_plot(request: Request):
 
 @app.get("/plot/society/json")
 async def get_society_bellcurve(request: Request):
-    lives_to_moksha_df = db.query_columns()
+    response = db.query_index()    
+    lives_to_moksha_df = pd.DataFrame(response['Items'], columns=[db.Columns().lives_to_moksha])
     return HTMLResponse(apf.bell_curve_json(lives_to_moksha_df=lives_to_moksha_df))
 
 

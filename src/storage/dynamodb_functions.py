@@ -5,6 +5,7 @@ from boto3.dynamodb.conditions import Key
 import logging
 import pandas as pd
 from botocore.exceptions import ClientError
+import __configs
 
 temp_folder = '.tmp'
 logging.basicConfig(filename=f'{temp_folder}/kc-app.log', filemode='w', level=logging.INFO)
@@ -30,7 +31,7 @@ sort_key_name = 'date'
 
 def insert(user_activity_data):
     # session = boto3.Session()
-    dynamodb = boto3.resource(resource_name)
+    dynamodb = boto3.resource(resource_name, __configs.get_config().boto3_region)
     table = dynamodb.Table(table_name)
     response = table.put_item(
         Item=user_activity_data
@@ -43,7 +44,7 @@ def insert(user_activity_data):
 
 def query(partition_key_value, sort_key_prefix=17, ascending=True, numer_of_rows=250):
     try:
-        dynamodb = boto3.resource(resource_name)
+        dynamodb = boto3.resource(resource_name, __configs.get_config().boto3_region)
         table = dynamodb.Table(table_name)
         response = table.query(
             KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).begins_with(str(sort_key_prefix)),
@@ -56,7 +57,7 @@ def query(partition_key_value, sort_key_prefix=17, ascending=True, numer_of_rows
 
 def query_by_sort_key_between(partition_key_value, sort_key_start, sort_key_end):
     try:
-        dynamodb = boto3.resource(resource_name)
+        dynamodb = boto3.resource(resource_name, __configs.get_config().boto3_region)
         table = dynamodb.Table(table_name)
         response = table.query(
             KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).between(str(sort_key_start), str(sort_key_end))
@@ -67,13 +68,27 @@ def query_by_sort_key_between(partition_key_value, sort_key_start, sort_key_end)
 
 def query_columns(columns_to_fetch=['lives_to_moksha']):
     try:
-        dynamodb = boto3.resource(resource_name)
+        dynamodb = boto3.resource(resource_name, __configs.get_config().boto3_region)
         table = dynamodb.Table(table_name)
         response = table.scan()
         return pd.DataFrame(response['Items'], columns=columns_to_fetch)
     except:
         return None
     
+def query_index(
+    index_name="date-index", key="date", value="latest"
+):
+    try:
+        dynamodb = boto3.resource(resource_name, __configs.get_config().boto3_region)
+        table = dynamodb.Table(table_name)
+
+        response = table.query(
+            IndexName=index_name, KeyConditionExpression=Key(key).eq(value)
+        )
+        return response
+    except Exception as e:
+        print(f"Error querying index: {e}")
+        return None
 
 
 def delete(partition_key_value):

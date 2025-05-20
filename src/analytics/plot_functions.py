@@ -122,7 +122,9 @@ def clickable_progress_chart():
 
 
 def bell_curve():       
-    lives_to_moksha_df = db.query_columns()
+    # lives_to_moksha_df = db.query_columns()
+    response = db.query_index()    
+    lives_to_moksha_df = pd.DataFrame(response['Items'], columns=[db.Columns().lives_to_moksha])
     st.plotly_chart(__bell_curve_fig(lives_to_moksha_df), use_container_width=True)
 
 def bell_curve_json(lives_to_moksha_df):
