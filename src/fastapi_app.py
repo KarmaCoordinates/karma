@@ -186,7 +186,7 @@ async def save_preferences(request: Request, preferences: Preferences):
     user_answers = await __user_latest_record(request)
     user_answers[0].update(
         {
-            "preferences": str(preferences),
+            "preferences": preferences.model_dump(),
             "date": str(time.time()),
         }
     )
@@ -343,7 +343,13 @@ async def ai_assist(request: Request, question: Question):
     journal_entry = user_answers_rows[0].pop("journal_entry", None)
     user_answers_rows[0].pop("feedback", None)
     user_answers_rows[0].pop("assessment_score", None)
+
+
     client_ip_details = user_answers[0].pop("client_ip_details", None)
+
+    preferences = user_answers[0].pop("preferences", None)
+    if preferences and preferences.get("location"):
+        client_ip_details = preferences.get("location")
 
     variables = {
         "question": question,
@@ -352,7 +358,7 @@ async def ai_assist(request: Request, question: Question):
             user_answers_rows[0], cls=__utils.DecimalEncoder
         ),
         "journal_entry": json.dumps(journal_entry, cls=__utils.DecimalEncoder),
-        "client_ip_details": json.dumps(client_ip_details, cls=__utils.DecimalEncoder),
+        "client_ip_details": json.dumps(client_ip_details, cls=__utils.DecimalEncoder),        
         "assessment_scores": json.dumps(
             assessment_scores_df.to_json(), cls=__utils.DecimalEncoder
         ),
