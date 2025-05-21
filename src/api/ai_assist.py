@@ -23,6 +23,7 @@ logging.basicConfig(
     filename=f"{temp_folder}/kc-app.log", filemode="w", level=logging.INFO
 )
 
+
 def cache_questionnaire(
     bucket_name, features_data_dict_object_key, categories_data_dict_object_key
 ):
@@ -165,6 +166,7 @@ async def __update_ai_assessment(
 
             db.insert(user_activity_data=user_answers[0])
 
+
 async def stream_ai_assist_reflect_response(
     request: Request,
     user_answers,
@@ -213,42 +215,6 @@ async def stream_ai_assist_reflect_response(
             complete_text,
         )
     )
-
-
-async def stream_ai_assist_reflect_response1(
-    request: Request,
-    user_answers,
-    features_df: DataFrame,
-    categories_df: DataFrame,
-    features_df_stats,
-    assistant_id,
-    thread_id,
-):
-    async_client = __configs.get_config().openai_async_client
-
-    stream = await async_client.beta.threads.runs.stream(
-        assistant_id=assistant_id, thread_id=thread_id
-    )
-
-    complete_text = ""
-    async with stream as stream:
-        async for text in stream.text_deltas:
-            # formatted_text = text.replace('\n', '\\n')
-            complete_text += text
-            yield f"{text}"
-            # yield f"data: {text}\n\n"
-
-    asyncio.create_task(
-        __update_ai_assessment(
-            request,
-            user_answers,
-            features_df,
-            categories_df,
-            features_df_stats,
-            complete_text,
-        )
-    )
-
 
 async def stream_ai_assist_explore_response(
     request: Request,
@@ -319,10 +285,81 @@ async def stream_ai_assist_explore_response(
 
         if not complete_text and not tool_output_yielded:
             yield "[No response received from assistant]"
-            
+
     except Exception as e:
+        print(f'error:{e}{e.message}')
         logging.error(f"❌ Exception during assistant stream: {e}")
         yield "[Assistant stream crashed]"
+
+
+# Refactor helper for delete_account
+async def __handle_delete_account(tool_call, args, request):
+    confirm_text = args.get("delete_confirmation")
+    required_text = f"I, {request.user.display_name}, hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
+
+    if confirm_text != required_text:
+        return (
+            tool_call.id,
+            "\n❌ Invalid confirmation string. Please type the exact phrase to proceed.\n",
+            {"message": "Invalid confirmation string."},
+        )
+
+    delete_url = urljoin(str(request.base_url), "delete-account")
+    token = request.headers.get("authorization")
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            f"{delete_url}",
+            json={"delete_confirmation": confirm_text},
+            headers={"Authorization": token},
+        ) as resp:
+            result = await resp.json()
+            if resp.status == 200:
+                return (
+                    tool_call.id,
+                    "\n✅ Account successfully deleted.\n",
+                    {"message": "Account successfully deleted."},
+                )
+            else:
+                return (
+                    tool_call.id,
+                    f"\n❌ Deletion failed: {result.get('message')}\n",
+                    {"message": "Account deletion failed."},
+                )
+
+
+# Refactor helper for change_location
+async def __handle_change_location(tool_call, args, request):
+    confirm_text = args.get("change_location_confirmation")
+    required_text = f"I, {request.user.display_name}, hereby confirm my request to change my location to Cleveland, Ohio."
+
+    if confirm_text != required_text:
+        return (
+            tool_call.id,
+            "\n❌ Invalid confirmation string. Please type the exact phrase to proceed.\n",
+            {"message": "Invalid confirmation string."},
+        )
+
+    save_preferences_url = urljoin(str(request.base_url), "save-preferences")
+    token = request.headers.get("authorization")
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            f"{save_preferences_url}",
+            json={"location": "Cleveland, Ohio"},
+            headers={"Authorization": token},
+        ) as resp:
+            result = await resp.json()
+            if resp.status == 200:
+                return (
+                    tool_call.id,
+                    "\n✅ Location successfully changed.\n",
+                    {"message": "Location successfully changed."},
+                )
+            else:
+                return (
+                    tool_call.id,
+                    f"\n❌ Change failed: {result.get('message')}\n",
+                    {"message": "Location change failed."},
+                )
 
 async def __handleRequiresActions(async_client, thread_id, event, request):
     tool_calls = event.data.required_action.submit_tool_outputs.tool_calls
@@ -332,39 +369,40 @@ async def __handleRequiresActions(async_client, thread_id, event, request):
         name = tool_call.function.name
         args = json.loads(tool_call.function.arguments)
 
-        if name == "delete_account":
-            confirm_text = args.get("delete_confirmation")
-            required_text = f"I, {request.user.display_name}, hereby confirm my request to delete my account permanently. I understand that all my journal entries, AI assessments, and scores will be lost forever."
-            if confirm_text == required_text:
-                delete_url = urljoin(str(request.base_url), "delete-account")
-                token = request.headers.get("authorization")
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(
-                        f"{delete_url}",
-                        json={"delete_confirmation": confirm_text},
-                        headers={"Authorization": token},
-                    ) as resp:
-                        result = await resp.json()
-                        if resp.status == 200:
-                            result = {"message": "Account successfully deleted."}
-                            yield "\n✅ Account successfully deleted.\n"
-                        else:
-                            result = {"message": "Account deletion failed."}
-                            yield f"\n❌ Deletion failed: {result.get('message')}\n"
+        try:
+            if name == "delete_account":
+                tool_call_id, message, result = await __handle_delete_account(tool_call, args, request)
+                yield message
+                tool_outputs.append({"tool_call_id": tool_call_id, "output": json.dumps(result)})
+
+            elif name == "change_location":
+                tool_call_id, message, result = await __handle_change_location(tool_call, args, request)
+                yield message
+                tool_outputs.append({"tool_call_id": tool_call_id, "output": json.dumps(result)})
+
             else:
-                result = {"message": "Invalid confirmation string."}
-                yield "\n❌ Invalid confirmation string. Please type the exact phrase to proceed.\n"
-
-            tool_outputs.append(
-                {
+                # Unknown tool, send a fallback response
+                tool_outputs.append({
                     "tool_call_id": tool_call.id,
-                    "output": json.dumps(result),
-                }
-            )
+                    "output": json.dumps({"message": f"Tool '{name}' not recognized."})
+                })
 
-    await async_client.beta.threads.runs.submit_tool_outputs(
-        thread_id=thread_id, run_id=event.data.id, tool_outputs=tool_outputs
-    )
+        except Exception as e:
+            # Handle exception so at least a response is sent back
+            tool_outputs.append({
+                "tool_call_id": tool_call.id,
+                "output": json.dumps({"message": f"Error handling tool '{name}': {str(e)}"})
+            })
+            yield f"❌ Error in tool `{name}`: {str(e)}"
+
+    if tool_outputs:
+        await async_client.beta.threads.runs.submit_tool_outputs(
+            thread_id=thread_id, run_id=event.data.id, tool_outputs=tool_outputs
+        )
+    else:
+        # Don't submit if we truly have nothing (should never happen now)
+        print("⚠️ No tool outputs to submit. Skipping submission.")
+
 
 def clickable_progress_chart(rows: str):
     if rows is None:

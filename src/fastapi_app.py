@@ -53,7 +53,7 @@ class DeviceToken(BaseModel):
 
 
 class Preferences(BaseModel):
-    notification: str
+    notification: str | None = None
     location: str | None = None
 
 
@@ -179,6 +179,7 @@ async def device_token(request: Request, device_token: DeviceToken):
 
 @app.post("/save-preferences")
 async def save_preferences(request: Request, preferences: Preferences):
+    print(f'preferences:{preferences}')
     user_answers = await __user_latest_record(request)
     user_answers[0].update(
         {
