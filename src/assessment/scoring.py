@@ -90,7 +90,7 @@ def __calculate_siddhi_influence(y, y_min=0, y_max=22.5, x_min=0.01, x_max=0.02)
         
         with np.errstate(divide="ignore"):
             x_value = (1 / c2) * np.log((y - c3) / c1)
-    except:
+    except Exception as e:
         print(f"Exception in calculation for c2={c2}, c1={c1}: {e}")
         x_value = 0
 

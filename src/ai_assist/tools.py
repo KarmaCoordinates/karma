@@ -1,5 +1,7 @@
 import aiohttp
 from urllib.parse import urljoin
+import re
+from typing import Optional
 
 # Refactor helper for delete_account
 async def handle_delete_account(tool_call, args, request):
@@ -35,13 +37,30 @@ async def handle_delete_account(tool_call, args, request):
                     {"message": "Account deletion failed."},
                 )
 
+def extract_location(confirm_text: str, user_email: str) -> Optional[str]:
+    prefix = f"I, {user_email}, hereby confirm my request to change my location to "
+
+    if not confirm_text.startswith(prefix):
+        return None
+
+    location = confirm_text[len(prefix):].strip()
+    if location.endswith('.'):
+        location = location[:-1].strip()
+    if not location or "{" in location or "}" in location or location == 'new-location':
+        return None
+    
+    return location
 
 # Refactor helper for change_location
 async def handle_change_location(tool_call, args, request):
+    # print(tool_call.function.arguments)
     confirm_text = args.get("change_location_confirmation")
-    required_text = f"I, {request.user.display_name}, hereby confirm my request to change my location to Cleveland, Ohio."
+    location = extract_location(confirm_text=confirm_text, user_email=request.user.display_name)
+    # print(f"location:{location}")
 
-    if confirm_text != required_text:
+    # required_text = f"I, {request.user.display_name}, hereby confirm my request to change my location to Cleveland, Ohio."
+
+    if not location:
         return (
             tool_call.id,
             "\n❌ Invalid confirmation string. Please type the exact phrase to proceed.\n",
@@ -53,7 +72,7 @@ async def handle_change_location(tool_call, args, request):
     async with aiohttp.ClientSession() as session:
         async with session.post(
             f"{save_preferences_url}",
-            json={"location": "Cleveland, Ohio"},
+            json={"location": f"{location}"},
             headers={"Authorization": token},
         ) as resp:
             result = await resp.json()
