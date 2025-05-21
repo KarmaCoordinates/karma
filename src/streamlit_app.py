@@ -4,10 +4,10 @@ import ai.openai_assistant_chat as osc
 import payment.stripe_payment as sp
 import assessment.questionnaire_pratyay_sargah as qps
 import feedback.feedback_functions as ff
-import analytics.pdf_functions as pdf
+import analytics.pdfs as pdf
 import security.auth_functions as af
 import journal.journal_functions as jf
-import analytics.plot_functions as pf
+import analytics.plots as pf
 import streamlit_functions.state_mgmt_functions as smf
 import feedback.appsupport_functions as appsup
 

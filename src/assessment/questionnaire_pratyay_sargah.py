@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import storage.s3_functions as s3f
-import assessment.score_functions as sf
+import assessment.scoring as sf
 import __configs
 import random
 import storage.dynamodb_functions as db

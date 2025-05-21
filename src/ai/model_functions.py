@@ -15,7 +15,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import storage.s3_functions as s3f
 import streamlit_functions.state_mgmt_functions as sf
-import assessment.score_functions as scf
+import assessment.scoring as scf
 
 
 prediction_init = False

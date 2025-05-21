@@ -1,12 +1,11 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
-from api.ai_assist import (
-    cache_questionnaire,
+from assessment.questionnaire import cache_questionnaire
+from ai_assist.streaming import (
     stream_ai_assist_reflect_response,
-    clickable_progress_chart,
     stream_ai_assist_explore_response,
-    clickable_score_diagram
 )
+from analytics.charts import clickable_progress_chart, clickable_score_diagram
 import __configs, __utils, __constants
 import storage.dynamodb_functions as db
 import json
@@ -24,7 +23,7 @@ from pydantic import BaseModel, field_validator, ValidationError
 from ip2geotools.databases.noncommercial import DbIpCity
 from prompts.prompt_engine import generate_prompt, popular_questions as pq
 import pandas as pd
-import analytics.plot_functions as apf
+import analytics.plots as apf
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
@@ -171,7 +170,11 @@ async def delete_account(request: Request, delete_account: DeleteAccount):
 async def device_token(request: Request, device_token: DeviceToken):
     user_answers = await __user_latest_record(request)
     user_answers[0].update(
-        {"device_token": device_token.device_token, "device_type":device_token.device_type, "device_registration_date": str(time.time())}
+        {
+            "device_token": device_token.device_token,
+            "device_type": device_token.device_type,
+            "device_registration_date": str(time.time()),
+        }
     )
     db.insert(user_activity_data=user_answers[0])
     return JSONResponse({"message": "Successful"}, status_code=200)
@@ -179,7 +182,7 @@ async def device_token(request: Request, device_token: DeviceToken):
 
 @app.post("/save-preferences")
 async def save_preferences(request: Request, preferences: Preferences):
-    print(f'preferences:{preferences}')
+    print(f"preferences:{preferences}")
     user_answers = await __user_latest_record(request)
     user_answers[0].update(
         {
@@ -294,8 +297,10 @@ async def get_plot(request: Request):
 
 @app.get("/plot/society/json")
 async def get_society_bellcurve(request: Request):
-    response = db.query_index()    
-    lives_to_moksha_df = pd.DataFrame(response['Items'], columns=[db.Columns().lives_to_moksha])
+    response = db.query_index()
+    lives_to_moksha_df = pd.DataFrame(
+        response["Items"], columns=[db.Columns().lives_to_moksha]
+    )
     return HTMLResponse(apf.bell_curve_json(lives_to_moksha_df=lives_to_moksha_df))
 
 
@@ -356,7 +361,7 @@ async def ai_assist(request: Request, question: Question):
         ),
     }
 
-    prompt = generate_prompt(question.question, variables)    
+    prompt = generate_prompt(question.question, variables)
 
     async_client = __configs.get_config().openai_async_client
     assistant = __configs.get_config().openai_assistant

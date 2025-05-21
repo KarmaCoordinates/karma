@@ -2,6 +2,55 @@ import math
 import numpy as np
 import __constants
 
+def __score_summary(category_score):
+    clarity_of_thinking_index = sum(category_score.values())
+    clarity_of_thinking_index_dict = {
+        "clarity_of_thinking_index": str(sum(category_score.values()))
+    }
+    category_score_str = ""
+    category_score_dict = {}
+    for category, score in category_score.items():
+        category_score_str = category_score_str + f"""{category}:{round(score, 1)}, """
+        category_score_dict.update({category: str(round(score, 1))})
+
+    # score_md is for backward-compatibility
+    score_md = f"""Your **Clarity of Thinking** score: **{clarity_of_thinking_index}** [{category_score_str}] """
+
+    category_score_array = [
+        {"category": k, "score": category_score_dict[k]} for k in category_score_dict
+    ]
+
+    return (
+        score_md,
+        {"assessment_score": category_score_array},
+        clarity_of_thinking_index_dict,
+    )
+
+
+def __calc_category_score(features_df, categories_df, user_answers):
+    category_score = {}
+    for category_tpl in categories_df.itertuples():
+        category_score[category_tpl.category_name] = 0
+        for feature_tpl in features_df.loc[
+            features_df["Category"] == category_tpl.category_name
+        ].itertuples():
+            default_index = 0
+            default_selected_option = None
+            if feature_tpl.Question in user_answers:
+                default_selected_option = user_answers[feature_tpl.Question]
+            else:
+                default_selected_option = feature_tpl.options_list[default_index]
+
+            # st.session_state.user_answers.update({feature_tpl.Question:default_selected_option})
+            selected_option_score = feature_tpl.options_dict.get(
+                default_selected_option
+            )
+
+            if selected_option_score:
+                category_score[category_tpl.category_name] += selected_option_score
+
+    return category_score
+
 def __calculate_siddhi_influence(y, y_min=0, y_max=22.5, x_min=0.01, x_max=0.02):
     """
     Calculates steepness based on siddhi. Steepness is used in calculating lives
