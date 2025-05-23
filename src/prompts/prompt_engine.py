@@ -26,8 +26,8 @@ def generate_prompt(question: str, variables: dict) -> str:
 
     df = cache_pickle_obj_from_s3(bucket_name=bucket_name, object_key=object_key)
 
-    contains_question = df['questions'].str.contains(question, na=False, case=False)
-    contains_star = df['questions'].str.contains(r'\*', na=False)
+    contains_question = df["questions"].str.contains(question, na=False, case=False)
+    contains_star = df["questions"].str.contains(r"\*", na=False)
 
     filtered_df = df[contains_question | (~contains_question & contains_star)]
 
@@ -38,24 +38,32 @@ def generate_prompt(question: str, variables: dict) -> str:
     else:
         raw_template = question["prompt"]
 
-    template = Template(raw_template)
-    return template.render(**variables)
+    content = Template(raw_template).render(**variables)
+    is_tool = (
+        "auto"
+        if question["is_tool"]
+        and (
+            str(question["is_tool"]).lower == "yes"
+            or "hereby confirm my request" in content
+        )
+        else "none"
+    )
+    # print(f'question:{content}, is_tool:{is_tool}')
+    return content, is_tool
+
 
 @lru_cache
 def popular_questions():
     df = cache_pickle_obj_from_s3(bucket_name=bucket_name, object_key=object_key)
-
     df["popular_questions"] = (
         df["popular_questions"]
         .dropna()
         .apply(lambda x: safe_eval(x) if isinstance(x, str) else x)
     )
-
     flat_list = [
         item
         for sublist in df["popular_questions"]
         if isinstance(sublist, list)
         for item in sublist
     ]
-
     return {"popular_questions": flat_list}

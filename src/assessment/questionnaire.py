@@ -1,9 +1,18 @@
 import pandas as pd
 from storage import s3_functions as s3f
 
+
+# Cache dictionary
+_questionnaire_cache = {}
+
 def cache_questionnaire(
     bucket_name, features_data_dict_object_key, categories_data_dict_object_key
 ):
+    cache_key = (bucket_name, features_data_dict_object_key, categories_data_dict_object_key)
+
+    if cache_key in _questionnaire_cache:
+        return _questionnaire_cache[cache_key]    
+    
     features_df = s3f.cache_csv_from_s3(
         bucket_name=bucket_name, object_key=features_data_dict_object_key
     )
@@ -33,7 +42,7 @@ def cache_questionnaire(
     minimum_score = value_columns.min(axis=1).sum()
     maximum_score = value_columns.max(axis=1).sum()
 
-    return (
+    result = (
         features_df,
         categories_df,
         {
@@ -42,3 +51,6 @@ def cache_questionnaire(
             "number_of_questions": len(features_df),
         },
     )
+    _questionnaire_cache[cache_key] = result
+    return result
+

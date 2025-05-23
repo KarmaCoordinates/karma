@@ -20,6 +20,7 @@ async def stream_ai_assist_reflect_response(
     features_df_stats,
     assistant_id,
     thread_id,
+    is_tool="auto"
 ):
     async_client = __configs.get_config().openai_async_client
 
@@ -27,6 +28,7 @@ async def stream_ai_assist_reflect_response(
     run = await async_client.beta.threads.runs.create(
         assistant_id=assistant_id,
         thread_id=thread_id,
+        tool_choice=is_tool,
         stream=True,
     )
 
@@ -68,6 +70,7 @@ async def stream_ai_assist_explore_response(
     features_df_stats,
     assistant_id,
     thread_id,
+    is_tool="auto"
 ):
     async_client = __configs.get_config().openai_async_client
 
@@ -86,7 +89,7 @@ async def stream_ai_assist_explore_response(
     stream = await async_client.beta.threads.runs.create(
         assistant_id=assistant_id,
         thread_id=thread_id,
-        tool_choice="auto",
+        tool_choice=is_tool,
         stream=True,
     )
 
@@ -94,6 +97,8 @@ async def stream_ai_assist_explore_response(
     complete_text = ""
     tool_output_yielded = False
 
+    # print("Tool call:", tool_call.function.name)
+    # print("Arguments:", tool_call.function.arguments)
     try:
         async with stream as event_stream:
             async for event in event_stream:

@@ -230,7 +230,7 @@ async def ai_assist(request: Request):
         "journal_entry": json.dumps(journal_entry, cls=__utils.DecimalEncoder),
     }
 
-    prompt = generate_prompt("Reflect on the journal entry", variables)
+    prompt, is_tool = generate_prompt("Reflect on the journal entry", variables)
 
     async_client = __configs.get_config().openai_async_client
     assistant = __configs.get_config().openai_assistant
@@ -249,6 +249,7 @@ async def ai_assist(request: Request):
             features_df_stats,
             assistant.id,
             thread.id,
+            is_tool
         )
     )
 
@@ -338,7 +339,7 @@ async def ai_assist(request: Request, question: Question):
         user_answers_rows, columns=["assessment_score", "date"]
     )
 
-    latest_assessment_score = user_answers[0].get("assessment_score")
+    latest_assessment_score = user_answers[0].get("assessment_score" , {})
 
     journal_entry = user_answers_rows[0].pop("journal_entry", None)
     user_answers_rows[0].pop("feedback", None)
@@ -367,7 +368,7 @@ async def ai_assist(request: Request, question: Question):
         ),
     }
 
-    prompt = generate_prompt(question.question, variables)
+    prompt, is_tool = generate_prompt(question.question, variables)
 
     async_client = __configs.get_config().openai_async_client
     assistant = __configs.get_config().openai_assistant
@@ -384,6 +385,7 @@ async def ai_assist(request: Request, question: Question):
             features_df_stats,
             assistant.id,
             thread.id,
+            is_tool
         )
     )
 
