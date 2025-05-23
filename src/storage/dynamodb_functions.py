@@ -3,7 +3,6 @@ import time
 import boto3
 from boto3.dynamodb.conditions import Key
 import logging
-import pandas as pd
 from botocore.exceptions import ClientError
 import __configs
 
@@ -62,16 +61,7 @@ def query_by_sort_key_between(partition_key_value, sort_key_start, sort_key_end)
         response = table.query(
             KeyConditionExpression=Key(partition_key_name).eq(partition_key_value) & Key(sort_key_name).between(str(sort_key_start), str(sort_key_end))
         )
-        return pd.DataFrame(response['Items'])
-    except:
-        return None
-
-def query_columns(columns_to_fetch=['lives_to_moksha']):
-    try:
-        dynamodb = boto3.resource(resource_name, __configs.get_config().boto3_region)
-        table = dynamodb.Table(table_name)
-        response = table.scan()
-        return pd.DataFrame(response['Items'], columns=columns_to_fetch)
+        return response['Items']
     except:
         return None
     
