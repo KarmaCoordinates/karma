@@ -31,7 +31,7 @@ temp_folder = ".tmp"
 logging.basicConfig(
     filename=f"{temp_folder}/kc-app.log", filemode="w", level=logging.INFO
 )
-
+default_token_expiration_days = 90
 
 class UserIdentifier(BaseModel):
     email: str
@@ -96,7 +96,7 @@ def __demo_account(email: str, token: str):
 @app.post("/get-token")
 async def get_token(request: Request, user_id: UserIdentifier):
     token = secrets.token_hex(4)
-    auth_code = create_access_token(user_id.email, token, 1)
+    auth_code = create_access_token(user_id.email, token, default_token_expiration_days)
     b_email = send_email(user_id.email, token)
     if not b_email:
         return JSONResponse({"message": "Unable to send token"}, status_code=500)
@@ -111,7 +111,7 @@ async def validate_token(request: Request, token: str):
     ):
         return JSONResponse({"message": "Failure"}, status_code=401)
 
-    auth_code_expiration_timestamp = __utils.future_timestamp(90)
+    auth_code_expiration_timestamp = __utils.future_timestamp(default_token_expiration_days)
     user_answers = db.query(request.user.display_name, "latest")
     client_ip_details = __client_ip_details(request)
     if client_ip_details:
