@@ -13,7 +13,13 @@
     completion of the questionnaire. As you continue to make new journal entries, the completion percentage goes up.
   </p>
 
-  <h3>How is the assessment questionnaire prepared?</h3>
+<h3>Download the App</h3>
+  <p>
+    <a href="{{apple_url}}" target="_blank">{{apple_download_logo | safe}}</a>
+    <a href="{{android_url}}" target="_blank">{{android_download_logo | safe}}</a>
+  </p>
+
+<h3>How is the assessment questionnaire prepared?</h3>
   <p>
     {{kapil_muni}}
     The assessment questionnaire is based on <em>Sankhya</em> — a doctrine by Sage Kapil <em>Muni</em>, dating back to 5561 BCE—which

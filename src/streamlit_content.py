@@ -25,6 +25,23 @@ def overview(static_files_folder):
             height: 150px;
             padding-right: 15px !important;
         }
+        .logo-img-wrap {
+            object-fit: cover;
+            width: auto;
+            height: 150px;
+            padding-right: 15px !important;
+        }
+        .app-store-logos {
+        display: flex;
+        align-items: center;
+        }
+        .app-store-badge {
+        height: 42px; /* Adjust as needed */
+        padding: 0 10.45px; /* Applies padding to optically match Google's badge */
+        }
+        .google-play-badge {
+        height: 60px; /* Adjust to match the height of the Apple badge */
+        }        
         </style>
         '''
 
@@ -72,11 +89,21 @@ def background(static_files_folder):
     # st.markdown(about_karma_coordinates)
 
     logo_str = f'<img class="logo-img" src="data:image/png;base64,{base64.b64encode(open(logo, "rb").read()).decode()}"  alt="Karma Coordinates">'
-    
+
+    apple_url = 'https://apps.apple.com/us/app/karma-coordinates/id6744322484'
+    apple_store_download_logo = f'{static_files_folder}/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg'
+    apple_store_download_logo_str = f'<img class="app-store-badge" src="data:image/svg+xml;base64,{base64.b64encode(open(apple_store_download_logo, "rb").read()).decode()}"  alt="Download app from Apple Store">'
+
+    android_url = 'https://play.google.com/store/apps/details?id=app.sankhya'
+    android_store_download_logo = f'{static_files_folder}/GetItOnGooglePlay_Badge_Web_color_English.svg'
+    android_store_download_logo_str = f'<img class="google-play-badge" src="data:image/svg+xml;base64,{base64.b64encode(open(android_store_download_logo, "rb").read()).decode()}"  alt="Download app from Google Store">'
+
     kapil_muni_str =  f'<img class="logo-img" src="data:image/png;base64,{base64.b64encode(open(kapil_muni, "rb").read()).decode()}" alt="Kapil Muni 5561 BCE">'
     
     template = Template(about_karma_coordinates)
-    md = template.render(logo = logo_str, kapil_muni = kapil_muni_str )
+    md = template.render(logo = logo_str, apple_download_logo = apple_store_download_logo_str, apple_url = apple_url,
+                         android_download_logo=android_store_download_logo_str, android_url = android_url,
+                         kapil_muni = kapil_muni_str )
 
     st.markdown(
         f'''
