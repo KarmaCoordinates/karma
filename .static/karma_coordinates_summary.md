@@ -1,9 +1,8 @@
 <h3>What is Karma Coordinates?</h3>
   <p>
-    {{logo}}
-    Clarity breeds true knowledge, true knowledge guides right decisions, and right decisions shape success! Karma Coordinates is an app for enhancing <strong>clarity of thinking</strong> through AI-based reflective journaling. The Karma Coordinates—the "Lives to Moksha" metric—serves as an
-    index to track progress. By focusing on developing clarity and using Karma Coordinates as a
-    guide, individuals can improve decision-making, foster personal growth, and achieve success in life!
+    {{logo}} 
+    Clarity yields true knowledge, true knowledge leads to right decisions, and right decisions shape success! Karma Coordinates is an app for enhancing clarity of thinking through AI-based <strong>reflective journaling</strong>. The Karma Coordinates—the "Lives to Moksha" metric—serves as an
+    index to track progress. Within just a few days of using Karma Coordinates, you'll begin to see your path to success manifest!
   </p>
 
 <h3>How does it work?</h3>
