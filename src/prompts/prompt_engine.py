@@ -43,7 +43,7 @@ def generate_prompt(question: str, variables: dict) -> str:
         "auto"
         if question["is_tool"]
         and (
-            str(question["is_tool"]).lower == "yes"
+            str(question["is_tool"]).lower() == "yes"
             or "hereby confirm my request" in content
         )
         else "none"
