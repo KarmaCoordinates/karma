@@ -1,10 +1,9 @@
 import streamlit as st
 from openai import OpenAIError
-from openai.types.beta.assistant_stream_event import ThreadMessageDelta
-from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
 import time
 import storage.s3_functions as s3f
 import __configs
+from ai_assist import assistant
 import pandas as pd
 import streamlit_functions.streamlit_button_list as ifunc
 import random
@@ -74,21 +73,7 @@ def __render_chat_history():
                 st.markdown(message["content"])
     
 
-# Function to check if there is an active run
-def __check_active_run(client, thread_id):
-    try:
-        # Fetch runs for the thread and check their status
-        active_runs = client.beta.threads.runs.list(thread_id=thread_id)
-        for run in active_runs.data:
-            if run.status in ["in_progress", "queued"]:
-                return True
-        return False
-    except OpenAIError as e:
-        print(f"Failed to check runs: {str(e)}")
-        return False
-
-
-def __process_prompt(client, assistant, user_query, random_key=generate_random_string()):    
+def __process_prompt(client, user_query, random_key=generate_random_string()):    
     # print(f'random_key@user:{random_key}')
     # Display the user's query
     with st.chat_message("user"):
@@ -100,18 +85,12 @@ def __process_prompt(client, assistant, user_query, random_key=generate_random_s
                                         "key":random_key})
 
     try:
-        # Add user query to the thread
-        client.beta.threads.messages.create(
-            thread_id=st.session_state.thread_id,
-            role="user",
-            content=user_query.ai_query
-            )
-
-        # Stream the assistant's reply
+        # Stream the assistant's reply, continuing the conversation so far
         with st.chat_message("assistant"):
-            stream = client.beta.threads.runs.create(
-                thread_id=st.session_state.thread_id,
-                assistant_id=assistant.id,
+            stream = client.responses.create(
+                # The account tools need the API's handlers, so this chat only searches the knowledge base
+                **{**assistant.response_args(user_query.ai_query, tools=[assistant.FILE_SEARCH_TOOL]), "store": True},
+                previous_response_id=st.session_state.get("previous_response_id"),
                 stream=True
                 )
             
@@ -125,17 +104,19 @@ def __process_prompt(client, assistant, user_query, random_key=generate_random_s
             # Iterate through the stream 
             for event in stream:
                 # There are various types of streaming events
-                # See here: https://platform.openai.com/docs/api-reference/assistants-streaming/events
+                # See here: https://platform.openai.com/docs/api-reference/responses-streaming
 
                 # Here, we only consider if there's a delta text
-                if isinstance(event, ThreadMessageDelta):
-                    if isinstance(event.data.delta.content[0], TextDeltaBlock):
-                        # empty the container
-                        assistant_reply_box.empty()
-                        # add the new text
-                        assistant_reply += event.data.delta.content[0].text.value
-                        # display the new text
-                        assistant_reply_box.markdown(assistant_reply)
+                if event.type == "response.output_text.delta":
+                    # empty the container
+                    assistant_reply_box.empty()
+                    # add the new text
+                    assistant_reply += event.delta
+                    # display the new text
+                    assistant_reply_box.markdown(assistant_reply)
+
+                elif event.type == "response.completed":
+                    st.session_state.previous_response_id = event.response.id
 
                 # check for steps
             
@@ -154,26 +135,17 @@ def __process_prompt(client, assistant, user_query, random_key=generate_random_s
     except Exception as e:
         print(f'Failed to process_prompt {e}')
 
-def __process_queue(client, assistant, process_prompt_container):
+def __process_queue(client, process_prompt_container):
     # print(f'queue: {st.session_state.queue}')
 
     try:
-        # Create a new thread if it does not exist
-        if "thread_id" not in st.session_state:
-            thread = client.beta.threads.create()
-            st.session_state.thread_id = thread.id
-
         while st.session_state.query_queue and len(st.session_state.query_queue) > 0:
-            # Wait until there is no active run
-            while __check_active_run(client, st.session_state.thread_id):
-                time.sleep(1)  # Wait for 10 seconds before checking again      
-
             queued_user_query = st.session_state.query_queue.pop(0)
             # print(f'processing queued_user_query:{queued_user_query}')
 
             # Streaming process
             with process_prompt_container:
-                __process_prompt(client, assistant, queued_user_query)      
+                __process_prompt(client, queued_user_query)      
     except:
         with process_prompt_container:
             st.markdown('Unable to connect.')
@@ -203,7 +175,7 @@ def prompt():
             st.divider()
             __render_chat_history()        
         __render_user_input(user_query_container=user_query_container)
-        processing = __process_queue(client=__configs.get_config().openai_client, assistant=__configs.get_config().openai_assistant, process_prompt_container=process_prompt_container)
+        processing = __process_queue(client=__configs.get_config().openai_client, process_prompt_container=process_prompt_container)
 
 
 def prompt_specific(query, ai_query, plh):
@@ -215,7 +187,7 @@ def prompt_specific(query, ai_query, plh):
     cached_result = get_assistant_answer_from_cache(query)
     if not cached_result:
         st.session_state.query_queue.append(Query(query=query, ai_query=ai_query))
-        processing = __process_queue(client=__configs.get_config().openai_client, assistant=__configs.get_config().openai_assistant, process_prompt_container=plh)
+        processing = __process_queue(client=__configs.get_config().openai_client, process_prompt_container=plh)
 
 
 def main():
