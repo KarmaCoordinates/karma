@@ -9,7 +9,7 @@ boto3
 s3fs
 st-star-rating
 stripe
-openai>=1.76
+openai>=1.76,<2
 statsmodels
 plotly
 streamlit_plotly_events
