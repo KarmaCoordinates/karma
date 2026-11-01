@@ -41,6 +41,12 @@ def insert(user_activity_data):
         Item=latest_dict
     )
 
+# Saves one item as is, without also updating the user's "latest" record.
+def put(item):
+    dynamodb = boto3.resource(resource_name, __configs.get_config().boto3_region)
+    table = dynamodb.Table(table_name)
+    table.put_item(Item=item)
+
 def query(partition_key_value, sort_key_prefix=17, ascending=True, numer_of_rows=250):
     try:
         dynamodb = boto3.resource(resource_name, __configs.get_config().boto3_region)

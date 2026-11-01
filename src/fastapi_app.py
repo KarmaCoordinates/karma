@@ -212,7 +212,7 @@ async def get_preferences(request: Request):
 
 
 @app.get("/ai-assist/reflect")
-async def ai_assist(request: Request):
+async def ai_assist(request: Request, include_guna: bool = False):
     user_answers = await __user_latest_record(request)
     journal_entry = user_answers[0].get("journal_entry")
     features_df, categories_df, features_df_stats = cache_questionnaire(
@@ -240,9 +240,32 @@ async def ai_assist(request: Request):
             categories_df,
             features_df_stats,
             prompt,
-            is_tool
+            is_tool,
+            include_guna,
         )
     )
+
+
+@app.get("/guna/history")
+async def guna_history(request: Request, days: int = 7):
+    await __is_auth(request)
+    days = min(max(days, 1), 366)
+    start = time.time() - days * 86400
+    items = db.query_by_sort_key_between(
+        request.user.display_name, f"guna#{start}", f"guna#{time.time()}"
+    )
+    if items is None:
+        return JSONResponse({"message": "Unable to read guna history"}, status_code=500)
+    history = [
+        {
+            "date": float(item["date"].removeprefix("guna#")),
+            # DynamoDB returns numbers as Decimal, which JSONResponse can't encode
+            **{key: int(item.get(key, 0)) for key in ("sattva", "rajas", "tamas")},
+            **{key: item.get(key) for key in ("dominant", "insight", "practice")},
+        }
+        for item in items
+    ]
+    return JSONResponse({"guna": history}, status_code=200)
 
 
 @app.get("/plot/score/json")
