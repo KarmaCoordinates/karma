@@ -30,9 +30,11 @@ class JWTAuthBackend(AuthenticationBackend):
             return
 
     
-def create_access_token(subject: str, otp: str, expires_in_days: 1):
+def create_access_token(subject: str, nonce: str, expires_in_days: 1):
+    # Never put the emailed sign-in code in here: a JWT can be read by anyone who has it.
+    # The nonce only links the token to the code kept on the server (security/otp_store.py).
     expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=expires_in_days)
-    to_encode = {"exp": expire, "sub": subject, "otp": otp}
+    to_encode = {"exp": expire, "sub": subject, "nonce": nonce}
     jwt_secret = __configs.get_config().jwt_secret
     jwt_algorithm=__configs.get_config().jwt_algorithm
     encoded_jwt = jwt.encode(to_encode, jwt_secret, algorithm=jwt_algorithm)

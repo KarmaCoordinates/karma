@@ -19,6 +19,7 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 import logging
 from security.jwt_auth import create_access_token, JWTAuthBackend
 from security.jwt_auth import cache
+from security import otp_store
 from pydantic import BaseModel, field_validator, ValidationError
 from ip2geotools.databases.noncommercial import DbIpCity
 from prompts.prompt_engine import generate_prompt, popular_questions as pq
@@ -95,8 +96,8 @@ def __demo_account(email: str, token: str):
 
 @app.post("/get-token")
 async def get_token(request: Request, user_id: UserIdentifier):
-    token = secrets.token_hex(4)
-    auth_code = create_access_token(user_id.email, token, default_token_expiration_days)
+    token, nonce = otp_store.issue(user_id.email)
+    auth_code = create_access_token(user_id.email, nonce, default_token_expiration_days)
     b_email = send_email(user_id.email, token)
     if not b_email:
         return JSONResponse({"message": "Unable to send token"}, status_code=500)
@@ -107,7 +108,11 @@ async def get_token(request: Request, user_id: UserIdentifier):
 async def validate_token(request: Request, token: str):
     if not request.user.is_authenticated or (
         not __demo_account(request.user.display_name, token)
-        and token != cache.get(request.user.display_name)["otp"]
+        and not otp_store.verify(
+            request.user.display_name,
+            token,
+            (cache.get(request.user.display_name) or {}).get("nonce"),
+        )
     ):
         return JSONResponse({"message": "Failure"}, status_code=401)
 
