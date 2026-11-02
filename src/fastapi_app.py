@@ -382,6 +382,11 @@ async def ai_assist(request: Request, question: Question):
         ),
     }
 
+    # The weekly activity suggestion also uses the user's recent guna balance
+    # and the suggestions they were already sent, so it fits them and doesn't repeat.
+    if "suggest an activity" in question.question.lower():
+        variables.update(__activity_suggestion_context(request.user.display_name))
+
     prompt, is_tool = generate_prompt(question.question, variables)
 
     return StreamingResponse(
@@ -395,6 +400,26 @@ async def ai_assist(request: Request, question: Question):
         )
     )
 
+
+
+def __activity_suggestion_context(email):
+    guna_rows = db.query(
+        partition_key_value=email, sort_key_prefix="guna#", ascending=False, numer_of_rows=4
+    ) or []
+    guna_balance = [
+        {k: row.get(k) for k in ("journal_entry_date", "sattva", "rajas", "tamas", "dominant")}
+        for row in guna_rows
+    ]
+    sent_rows = db.query(
+        partition_key_value=email, sort_key_prefix="notification#", ascending=False, numer_of_rows=8
+    ) or []
+    past_suggestions = [
+        {"title": row.get("title"), "message": row.get("message")} for row in sent_rows
+    ]
+    return {
+        "guna_balance": json.dumps(guna_balance, cls=__utils.DecimalEncoder),
+        "past_suggestions": json.dumps(past_suggestions, cls=__utils.DecimalEncoder),
+    }
 
 async def __is_auth(request: Request):
     if not request.user.is_authenticated:
