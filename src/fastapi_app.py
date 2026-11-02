@@ -149,8 +149,11 @@ async def validate_token(request: Request, token: str):
 async def journal_entry(request: Request, journal_entry: JournalEntry):
     user_answers = await __user_latest_record(request)
     user_answers[0].pop("_journal_entry", None)
+    now = str(time.time())
+    # journal_entry_date is when the entry was written; "date" also changes on other updates.
+    # The daily reminder (sankhya-notification) uses it to tell who hasn't journaled today.
     user_answers[0].update(
-        {"journal_entry": journal_entry.journal_entry, "date": str(time.time())}
+        {"journal_entry": journal_entry.journal_entry, "date": now, "journal_entry_date": now}
     )
     db.insert(user_activity_data=user_answers[0])
     return JSONResponse({"message": "Successful"}, status_code=200)
