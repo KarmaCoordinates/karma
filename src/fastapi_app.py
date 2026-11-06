@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
+from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse, PlainTextResponse
 from assessment.questionnaire import cache_questionnaire
 from ai_assist.streaming import (
     stream_ai_assist_reflect_response,
@@ -65,6 +65,33 @@ class Question(BaseModel):
 app = FastAPI(
     middleware=[Middleware(AuthenticationMiddleware, backend=JWTAuthBackend())]
 )
+# Karma Coordinates 3.0 (Expo + Supabase) replaced this API on 2026-11-06. The 2.x app still calls it,
+# so writes are accepted but not stored, and the AI screens ask people to update. Reads (charts)
+# still work. Turn off by setting RETIRED = False. Defined before CORS so CORS wraps these responses.
+RETIRED = True
+NOOP_WRITES = {"/journal-entry", "/device-token", "/save-preferences"}
+UPDATE_SCREENS = {"/ai-assist/reflect", "/ai-assist/explore"}
+UPDATE_MESSAGE = (
+    "### Please update Karma Coordinates\n\n"
+    "This version of the app has been retired, so **what you just wrote was not saved**.\n\n"
+    "Update to the new version from the "
+    "[App Store](https://apps.apple.com/app/id6744322484) or "
+    "[Google Play](https://play.google.com/store/apps/details?id=app.sankhya), "
+    "then sign in with the same email. All your past entries and scores are already there.\n"
+)
+
+
+@app.middleware("http")
+async def retired_app(request: Request, call_next):
+    if RETIRED and request.method != "OPTIONS":
+        if request.method == "POST" and request.url.path in NOOP_WRITES:
+            logging.info(f"retired: ignored {request.url.path}")
+            return JSONResponse({"message": "Successful"}, status_code=200)
+        if request.url.path in UPDATE_SCREENS:
+            return PlainTextResponse(UPDATE_MESSAGE, status_code=200)
+    return await call_next(request)
+
+
 origins = [
     "http://localhost:8100",
     "http://localhost:8101",
